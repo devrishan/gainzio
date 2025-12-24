@@ -3,7 +3,8 @@
     "build": "npm run build --prefix sparkio",
     "dev": "npm run dev --prefix sparkio",
     "start": "npm run start --prefix sparkio",
-    "lint": "npm run lint --prefix sparkio"
+    "lint": "npm run lint --prefix sparkio",
+    "postinstall": "npm install --prefix sparkio"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.957.0",
