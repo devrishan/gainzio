@@ -47,10 +47,10 @@ export function SiteFooter() {
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/20 text-lg font-semibold text-primary">
               ✦
             </span>
-            <span className="text-xl font-semibold tracking-tight">Earniq</span>
+            <span className="text-xl font-semibold tracking-tight">Gainzio</span>
           </div>
           <p className="text-sm text-muted-foreground">
-            Transparent, task-based earnings for India. Track referrals, wallets, and UPI withdrawals—no hidden fees.
+            Earn rewards by completing tasks and referring friends. Fast payouts, transparent tracking, and a trusted earning experience.
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <p className="mx-auto mt-10 max-w-6xl text-xs text-muted-foreground">© {new Date().getFullYear()} Earniq.</p>
+      <p className="mx-auto mt-10 max-w-6xl text-xs text-muted-foreground">© {new Date().getFullYear()} Gainzio. All rights reserved.</p>
     </motion.footer>
   );
 }

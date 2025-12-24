@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/sonner";
-import { EarniqLogo } from "./EarniqLogo";
+import { GainzioLogo } from "@/components/shared/logo";
 
 const forgotPasswordSchema = z.object({
   email: z.string().min(1, "Email is required.").email("Please enter a valid email."),
@@ -71,7 +71,7 @@ export function ForgotPasswordForm() {
     return (
       <div className="space-y-8">
         <div className="flex flex-col items-center gap-4 text-center">
-          <EarniqLogo href="/" />
+          <GainzioLogo href="/" />
           <div className="space-y-2">
             <h1 className="text-3xl font-semibold tracking-tight text-foreground">Check your email</h1>
             <p className="text-base text-muted-foreground">
@@ -116,7 +116,7 @@ export function ForgotPasswordForm() {
     <div className="space-y-8">
       {/* Logo and Header */}
       <div className="flex flex-col items-center gap-4 text-center">
-        <EarniqLogo href="/" />
+        <GainzioLogo href="/" />
         <div className="space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">Reset your password</h1>
           <p className="text-base text-muted-foreground">

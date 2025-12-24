@@ -39,7 +39,7 @@ export function WhyDifferent() {
     >
       <div className="mx-auto max-w-6xl space-y-12">
         <motion.div className="space-y-3 text-center" variants={fadeInUp}>
-          <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">Why Earniq is different</h2>
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">Why Gainzio is different</h2>
           <p className="text-base text-muted-foreground md:text-lg">
             Built for trust, speed, and transparency—because every rupee deserves a clean record.
           </p>

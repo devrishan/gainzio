@@ -157,7 +157,7 @@ export function AdminAdsManager({ ads }: AdminAdsManagerProps) {
       <div className="flex items-center justify-between border-b border-border/60 p-4 sm:p-6">
         <div>
           <h2 className="text-xl font-semibold text-foreground">Ad Placements</h2>
-          <p className="text-sm text-muted-foreground">Manage snippets that appear across the Sparkio platform.</p>
+          <p className="text-sm text-muted-foreground">Manage snippets that appear across the Gainzio platform.</p>
         </div>
         <Button onClick={openForCreate}>
           <Plus className="mr-2 h-4 w-4" />

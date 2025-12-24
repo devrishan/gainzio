@@ -35,7 +35,7 @@ function hashCode(code: string): string {
 
 async function sendViaMsg91(phone: string, code: string): Promise<void> {
   const apiKey = process.env.MSG91_API_KEY;
-  const senderId = process.env.MSG91_SENDER_ID || "SPARKIO";
+  const senderId = process.env.MSG91_SENDER_ID || "GAINZIO";
 
   if (!apiKey) {
     throw new Error("MSG91_API_KEY is not configured");
@@ -46,7 +46,7 @@ async function sendViaMsg91(phone: string, code: string): Promise<void> {
     formattedPhone = `91${phone}`;
   }
 
-  const message = `Your Sparkio verification code is ${code}. Valid for 5 minutes.`;
+  const message = `Your Gainzio verification code is ${code}. Valid for 5 minutes.`;
 
   try {
     const response = await axios.post(
@@ -105,7 +105,7 @@ async function sendViaTwilio(phone: string, code: string): Promise<void> {
   }
 
   const client = twilio(accountSid, authToken);
-  const message = `Your Sparkio verification code is ${code}. Valid for 5 minutes.`;
+  const message = `Your Gainzio verification code is ${code}. Valid for 5 minutes.`;
 
   try {
     await client.messages.create({

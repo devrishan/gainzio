@@ -18,7 +18,7 @@ export interface AuthUser {
 export async function getAuthUser(): Promise<AuthUser | null> {
   try {
     const cookieStore = cookies();
-    const accessToken = cookieStore.get('earniq_access_token')?.value;
+    const accessToken = cookieStore.get('gainzio_access_token')?.value;
 
     if (!accessToken) {
       return null;

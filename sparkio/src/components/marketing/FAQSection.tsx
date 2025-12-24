@@ -23,7 +23,7 @@ const faqs: readonly FAQ[] = [
   {
     question: "Is this safe and legal?",
     answer:
-      "Yes. Earniq partners with verified apps and pays out via compliant UPI transfers with full KYC and audit trails.",
+      "Yes. Gainzio partners with verified apps and pays out via compliant UPI transfers with full KYC and audit trails.",
   },
   {
     question: "Do I need to invest money to start?",
@@ -46,7 +46,7 @@ const SUPPORT_SIDEBAR = {
   description: "Chat with us inside the dashboard or raise a ticket if a task needs manual review.",
   buttonText: "Login & open support",
   buttonHref: "/login" as Route,
-  emailText: "Prefer email? Write to hello@sparkio.in",
+  emailText: "Prefer email? Write to hello@gainzio.com",
 } as const;
 
 interface FAQItemProps {
@@ -130,7 +130,7 @@ export const FAQSection = React.memo(() => {
             Frequently asked questions
           </h2>
           <p className="text-base text-muted-foreground md:text-lg">
-            Still curious? These quick answers cover the most common Earniq questions.
+            Still curious? These quick answers cover the most common Gainzio questions.
           </p>
         </div>
 

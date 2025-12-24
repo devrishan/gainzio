@@ -3,7 +3,7 @@
 import { Menu } from "lucide-react";
 import * as React from "react";
 
-import { SparkioLogo } from "@/components/shared/logo";
+import { GainzioLogo } from "@/components/shared/logo";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -28,7 +28,7 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
     <div className="grid min-h-screen w-full grid-cols-1 lg:grid-cols-[280px_1fr]">
       <aside className="hidden border-r border-border bg-muted/20 p-6 lg:block">
         <div className="flex flex-col gap-8">
-          <SparkioLogo href={role === "admin" ? "/admin/dashboard" : "/member/dashboard"} />
+          <GainzioLogo href={role === "admin" ? "/admin/dashboard" : "/member/dashboard"} />
           <Sidebar items={sidebarItems} />
         </div>
       </aside>
@@ -43,7 +43,7 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
             </SheetTrigger>
             <SheetContent side="left" className="w-72 p-6">
               <div className="flex flex-col gap-8">
-                <SparkioLogo href={role === "admin" ? "/admin/dashboard" : "/member/dashboard"} />
+                <GainzioLogo href={role === "admin" ? "/admin/dashboard" : "/member/dashboard"} />
                 <Sidebar items={sidebarItems} />
               </div>
             </SheetContent>

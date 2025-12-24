@@ -26,7 +26,7 @@ export function ReferralActions({ referralLink, referralCode }: ReferralActionsP
   };
 
   const handleShareWhatsApp = () => {
-    const message = `🎉 Join me on Earniq and start earning real rewards! Use my referral code: ${referralCode}\n\n${referralLink}`;
+    const message = `🎉 Join me on Gainzio and start earning real rewards! Use my referral code: ${referralCode}\n\n${referralLink}`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };

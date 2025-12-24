@@ -44,11 +44,10 @@ export function Hero() {
 
           <motion.div className="space-y-5" variants={fadeInUp}>
             <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-              Make every install, task, and share count toward real cash
+              Earn smarter with tasks & referrals
             </h1>
             <p className="text-balance text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Earniq turns referrals, UPI tasks, and micro-actions into a transparent wallet with no hidden fees, instant
-              OTP login, and UPI cash-outs you can trust.
+              Gainzio helps you earn rewards by completing tasks and referring friends. Transparent earnings, fast UPI withdrawals, and a trusted platform.
             </p>
           </motion.div>
 

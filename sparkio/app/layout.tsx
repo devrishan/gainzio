@@ -13,8 +13,39 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Sparkio Referral Platform",
-  description: "Track referrals, earnings, and manage payouts with Sparkio.",
+  title: "Gainzio – Smart Earning & Referral Platform",
+  description:
+    "Gainzio helps you earn rewards by completing tasks and referring friends. Transparent earnings, fast UPI withdrawals, and a trusted platform.",
+
+  keywords: [
+    "Gainzio",
+    "earn money online",
+    "referral platform",
+    "task earning app",
+    "UPI withdrawal",
+    "passive income India"
+  ],
+
+  openGraph: {
+    title: "Gainzio – Smart Earning & Referral Platform",
+    description:
+      "Complete tasks, invite friends, and earn real rewards with Gainzio.",
+    url: "https://gainzio.com",
+    siteName: "Gainzio",
+    type: "website"
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Gainzio",
+    description:
+      "Earn smarter with tasks and referrals on Gainzio."
+  },
+
+  robots: {
+    index: true,
+    follow: true
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

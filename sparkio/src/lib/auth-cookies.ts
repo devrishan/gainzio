@@ -27,7 +27,7 @@ export function setAuthCookies(response: NextResponse, options: AuthCookiesOptio
 
   // Set access token cookie
   response.cookies.set({
-    name: "earniq_access_token",
+    name: "gainzio_access_token",
     value: accessToken,
     httpOnly: true,
     secure: isProduction,
@@ -39,7 +39,7 @@ export function setAuthCookies(response: NextResponse, options: AuthCookiesOptio
   // Set refresh token cookie if provided
   if (refreshToken) {
     response.cookies.set({
-      name: "earniq_refresh_token",
+      name: "gainzio_refresh_token",
       value: refreshToken,
       httpOnly: true,
       secure: isProduction,
@@ -52,35 +52,12 @@ export function setAuthCookies(response: NextResponse, options: AuthCookiesOptio
   // Set user cookie (non-httpOnly for client-side access)
   if (user) {
     response.cookies.set({
-      name: "earniq_user",
+      name: "gainzio_user",
       value: JSON.stringify(user),
       httpOnly: false,
       secure: isProduction,
       sameSite: "lax",
       maxAge: refreshTokenTTL,
-      path: "/",
-    });
-  }
-
-  // Also set legacy cookies for backward compatibility
-  response.cookies.set({
-    name: "sparkio_token",
-    value: accessToken,
-    httpOnly: true,
-    sameSite: "lax",
-    secure: isProduction,
-    maxAge: accessTokenTTL,
-    path: "/",
-  });
-
-  if (user) {
-    response.cookies.set({
-      name: "sparkio_user",
-      value: JSON.stringify(user),
-      httpOnly: false,
-      sameSite: "lax",
-      secure: isProduction,
-      maxAge: accessTokenTTL,
       path: "/",
     });
   }

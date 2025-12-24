@@ -15,7 +15,7 @@ async function main() {
     update: {},
     create: {
       phone: '9999999999',
-      email: 'admin@earniq.app',
+      email: 'admin@gainzio.com',
       username: 'admin',
       role: Role.ADMIN,
       referralCode: adminReferralCode,
@@ -168,8 +168,8 @@ async function main() {
   for (const userData of testUsers) {
     const referrer = userData.referredBy
       ? await prisma.user.findUnique({
-          where: { referralCode: userData.referredBy },
-        })
+        where: { referralCode: userData.referredBy },
+      })
       : null;
 
     await prisma.user.upsert({

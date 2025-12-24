@@ -1,4 +1,4 @@
-// Prisma schema for Earniq platform
+// Prisma schema for Gainzio platform
 // Database: PostgreSQL
 
 generator client {

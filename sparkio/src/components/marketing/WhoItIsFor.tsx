@@ -41,7 +41,7 @@ export function WhoItIsFor() {
             Built for people who squeeze earnings between real life
           </h2>
           <p className="text-base text-muted-foreground md:text-lg">
-            Whether you’re studying, grinding a night shift, or juggling content calendars, Earniq wraps around your day.
+            Whether you’re studying, grinding a night shift, or juggling content calendars, Gainzio wraps around your day.
           </p>
         </motion.div>
 

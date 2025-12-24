@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/sonner";
-import { EarniqLogo } from "./EarniqLogo";
+import { GainzioLogo } from "@/components/shared/logo";
 import { PasswordInput } from "./PasswordInput";
 
 const registerSchema = z.object({
@@ -73,8 +73,8 @@ export function RegisterForm() {
     onSuccess: ({ user }) => {
       queryClient.invalidateQueries({ queryKey: ["session"] });
       setIsRedirecting(true);
-      toast.success("Account created", { description: "Welcome to Earniq!" });
-      
+      toast.success("Account created", { description: "Welcome to Gainzio!" });
+
       // Small delay to show the loading state, then redirect to dashboard
       setTimeout(() => {
         router.push("/member/dashboard");
@@ -98,7 +98,7 @@ export function RegisterForm() {
     return (
       <div className="space-y-8">
         <div className="flex flex-col items-center gap-4 text-center">
-          <EarniqLogo href="/" />
+          <GainzioLogo href="/" />
           <div className="space-y-4">
             <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" aria-hidden="true" />
             <div className="space-y-2">
@@ -119,9 +119,9 @@ export function RegisterForm() {
     <div className="space-y-8">
       {/* Logo and Header */}
       <div className="flex flex-col items-center gap-4 text-center">
-        <EarniqLogo href="/" />
+        <GainzioLogo href="/" />
         <div className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground">Create your Earniq account</h1>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">Create your Gainzio account</h1>
           <p className="text-base text-muted-foreground">
             Track tasks, referrals, and withdrawals in one place.
           </p>

@@ -12,9 +12,7 @@ export async function serverFetch<T = unknown>(
   { auth = true, headers, ...init }: ServerFetchOptions = {},
 ): Promise<T> {
   const cookieStore = cookies();
-  const accessToken = cookieStore.get("earniq_access_token")?.value;
-  const legacyToken = cookieStore.get("sparkio_token")?.value;
-  const token = accessToken || legacyToken;
+  const token = cookieStore.get("gainzio_access_token")?.value;
 
   const isNextApiRoute = path.startsWith("/api/") && !path.includes(".php");
   const baseUrl = isNextApiRoute ? "" : env.API_BASE_URL;
@@ -76,7 +74,7 @@ export function clearAuthCookies() {
 
   // Clear new cookie names
   response.cookies.set({
-    name: "earniq_access_token",
+    name: "gainzio_access_token",
     value: "",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -85,7 +83,7 @@ export function clearAuthCookies() {
     path: "/",
   });
   response.cookies.set({
-    name: "earniq_refresh_token",
+    name: "gainzio_refresh_token",
     value: "",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -94,7 +92,7 @@ export function clearAuthCookies() {
     path: "/",
   });
   response.cookies.set({
-    name: "earniq_user",
+    name: "gainzio_user",
     value: "",
     httpOnly: false,
     secure: process.env.NODE_ENV === "production",
@@ -103,19 +101,6 @@ export function clearAuthCookies() {
     path: "/",
   });
 
-  // Clear legacy cookies for backward compatibility
-  response.cookies.set({
-    name: "sparkio_token",
-    value: "",
-    maxAge: 0,
-    path: "/",
-  });
-  response.cookies.set({
-    name: "sparkio_user",
-    value: "",
-    maxAge: 0,
-    path: "/",
-  });
   return response;
 }
 

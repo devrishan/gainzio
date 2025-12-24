@@ -39,7 +39,7 @@ export function AuthLayout({ children, showMarketing = false }: AuthLayoutProps)
           >
             <motion.div className="space-y-4" variants={fadeInUp}>
               <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-                Join thousands earning with Earniq
+                Join thousands earning with Gainzio
               </h2>
               <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">
                 Track tasks, referrals, and withdrawals in one transparent dashboard with instant UPI cash-outs.

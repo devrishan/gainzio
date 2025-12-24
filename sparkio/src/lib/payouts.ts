@@ -79,7 +79,7 @@ async function processRazorpayPayout(options: PayoutOptions): Promise<PayoutResu
         },
         contact: {
           name: options.name || 'User',
-          email: `user${options.userId}@earniq.app`,
+          email: `user${options.userId}@gainzio.com`,
           contact: options.phone || '',
           type: 'customer',
         },
@@ -90,7 +90,7 @@ async function processRazorpayPayout(options: PayoutOptions): Promise<PayoutResu
       purpose: 'payout',
       queue_if_low_balance: true,
       reference_id: `WITHDRAWAL_${options.withdrawalId}`,
-      narration: `Earniq withdrawal for ${options.userId}`,
+      narration: `Gainzio withdrawal for ${options.userId}`,
     });
 
     return {
@@ -138,10 +138,10 @@ async function processCashfreePayout(options: PayoutOptions): Promise<PayoutResu
         amount: options.amount.toString(),
         transferId: transferId,
         transferMode: 'upi',
-        remarks: `Earniq withdrawal for ${options.userId}`,
+        remarks: `Gainzio withdrawal for ${options.userId}`,
         beneDetails: {
           name: options.name || 'User',
-          email: `user${options.userId}@earniq.app`,
+          email: `user${options.userId}@gainzio.com`,
           phone: options.phone || '',
           address: '',
           bankAccount: '',

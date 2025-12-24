@@ -14,7 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/sonner";
-import { EarniqLogo } from "./EarniqLogo";
+import { GainzioLogo } from "@/components/shared/logo";
 import { PasswordInput } from "./PasswordInput";
 
 const loginSchema = z.object({
@@ -81,9 +81,9 @@ export function LoginForm() {
     <div className="space-y-8">
       {/* Logo and Header */}
       <div className="flex flex-col items-center gap-4 text-center">
-        <EarniqLogo href="/" />
+        <GainzioLogo href="/" />
         <div className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground">Welcome back to Earniq</h1>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">Welcome back to Gainzio</h1>
           <p className="text-base text-muted-foreground">
             Sign in to see your dashboard, wallet, and tasks.
           </p>
@@ -219,7 +219,7 @@ export function LoginForm() {
 
       {/* Footer link */}
       <p className="text-center text-sm text-muted-foreground">
-        New to Earniq?{" "}
+        New to Gainzio?{" "}
         <Link
           href="/register"
           className="font-semibold text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"

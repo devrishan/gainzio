@@ -9,7 +9,7 @@ const s3Client = new S3Client({
   },
 });
 
-const BUCKET_NAME = process.env.S3_BUCKET || 'earniq-uploads';
+const BUCKET_NAME = process.env.S3_BUCKET || 'gainzio-uploads';
 
 export interface UploadFileOptions {
   file: Buffer | Uint8Array;
