@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "npm run build --prefix sparkio",
+    "build": "npm run db:generate --prefix sparkio && npm run build --prefix sparkio",
     "dev": "npm run dev --prefix sparkio",
     "start": "npm run start --prefix sparkio",
     "lint": "npm run lint --prefix sparkio",
