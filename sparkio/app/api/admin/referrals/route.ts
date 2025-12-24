@@ -1,8 +1,10 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
 import { Role } from '@prisma/client';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
