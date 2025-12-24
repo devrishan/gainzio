@@ -1,4 +1,4 @@
-import { cookies } from 'next/headers';
+﻿import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
@@ -19,7 +19,7 @@ export async function PUT(request: NextRequest) {
     let reviewerId: string;
     let userRole: string;
     try {
-      const payload = verifyAccessToken(accessToken);
+      const payload = await verifyAccessToken(accessToken);
       reviewerId = payload.sub;
       userRole = payload.role;
 
@@ -193,7 +193,7 @@ export async function PUT(request: NextRequest) {
             userId: submission.userId,
             type: 'TASK_APPROVED',
             title: 'Task Approved!',
-            body: `Your submission for "${submission.task.title}" has been approved. You've earned ₹${submission.task.rewardAmount} and ${submission.task.rewardCoins} coins!`,
+            body: `Your submission for "${submission.task.title}" has been approved. You've earned â‚¹${submission.task.rewardAmount} and ${submission.task.rewardCoins} coins!`,
             data: {
               taskId: submission.taskId,
               submissionId: submission.id,

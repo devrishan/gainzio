@@ -1,8 +1,12 @@
-import jwt from 'jsonwebtoken';
+import { SignJWT, jwtVerify } from 'jose';
 
 // Support both new format (JWT_ACCESS_TOKEN_SECRET) and legacy format (JWT_SECRET)
-const ACCESS_SECRET = process.env.JWT_ACCESS_TOKEN_SECRET || process.env.JWT_SECRET || 'fallback-secret-change-in-production';
-const REFRESH_SECRET = process.env.JWT_REFRESH_TOKEN_SECRET || process.env.JWT_SECRET || 'fallback-secret-change-in-production';
+const ACCESS_SECRET = new TextEncoder().encode(
+  process.env.JWT_ACCESS_TOKEN_SECRET || process.env.JWT_SECRET || 'fallback-secret-change-in-production'
+);
+const REFRESH_SECRET = new TextEncoder().encode(
+  process.env.JWT_REFRESH_TOKEN_SECRET || process.env.JWT_SECRET || 'fallback-secret-change-in-production'
+);
 
 if (!process.env.JWT_ACCESS_TOKEN_SECRET && !process.env.JWT_SECRET) {
   // In production, you should fail fast during startup if these are missing.
@@ -13,34 +17,42 @@ export interface JwtAccessPayload {
   sub: string; // user id
   role: string;
   type: 'access';
+  [key: string]: any; // Allow extra claims
 }
 
 export interface JwtRefreshPayload {
   sub: string; // user id
   sid: string; // session id
   type: 'refresh';
+  [key: string]: any; // Allow extra claims
 }
 
-export function signAccessToken(payload: Omit<JwtAccessPayload, 'type'>): string {
+export async function signAccessToken(payload: Omit<JwtAccessPayload, 'type'>): Promise<string> {
   const ttlSeconds = Number(process.env.JWT_ACCESS_TOKEN_TTL_SECONDS ?? 900);
-  return jwt.sign({ ...payload, type: 'access' as const }, ACCESS_SECRET, {
-    expiresIn: ttlSeconds,
-  });
+  return new SignJWT({ ...payload, type: 'access' })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(`${ttlSeconds}s`)
+    .sign(ACCESS_SECRET);
 }
 
-export function signRefreshToken(payload: Omit<JwtRefreshPayload, 'type'>): string {
+export async function signRefreshToken(payload: Omit<JwtRefreshPayload, 'type'>): Promise<string> {
   const ttlSeconds = Number(process.env.JWT_REFRESH_TOKEN_TTL_SECONDS ?? 60 * 60 * 24 * 30);
-  return jwt.sign({ ...payload, type: 'refresh' as const }, REFRESH_SECRET, {
-    expiresIn: ttlSeconds,
-  });
+  return new SignJWT({ ...payload, type: 'refresh' })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(`${ttlSeconds}s`)
+    .sign(REFRESH_SECRET);
 }
 
-export function verifyAccessToken(token: string): JwtAccessPayload {
-  return jwt.verify(token, ACCESS_SECRET) as JwtAccessPayload;
+export async function verifyAccessToken(token: string): Promise<JwtAccessPayload> {
+  const { payload } = await jwtVerify(token, ACCESS_SECRET);
+  return payload as unknown as JwtAccessPayload;
 }
 
-export function verifyRefreshToken(token: string): JwtRefreshPayload {
-  return jwt.verify(token, REFRESH_SECRET) as JwtRefreshPayload;
+export async function verifyRefreshToken(token: string): Promise<JwtRefreshPayload> {
+  const { payload } = await jwtVerify(token, REFRESH_SECRET);
+  return payload as unknown as JwtRefreshPayload;
 }
 
 

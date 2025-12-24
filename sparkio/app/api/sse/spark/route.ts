@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       try {
         const recentEvents = await getRecentSparkEvents(20, true); // publicOnly = true
         for (const event of recentEvents) {
-          send(`data: ${JSON.stringify({ type: 'event', ...event })}\n\n`);
+          send(`data: ${JSON.stringify({ type: 'event', data: event })}\n\n`);
         }
       } catch (error) {
         console.error('Error sending initial events:', error);
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
 
           for (const event of newEvents.reverse()) {
             // Send oldest first
-            send(`data: ${JSON.stringify({ type: 'event', ...event })}\n\n`);
+            send(`data: ${JSON.stringify({ type: 'event', data: event })}\n\n`);
             lastEventId = event.id;
           }
         } catch (error) {

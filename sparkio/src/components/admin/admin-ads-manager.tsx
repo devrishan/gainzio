@@ -83,7 +83,7 @@ export function AdminAdsManager({ ads }: AdminAdsManagerProps) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (values: AdFormValues & { id: number }) => {
+    mutationFn: async (values: AdFormValues & { id: string }) => {
       const response = await fetch("/api/admin/ads/update", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -107,7 +107,7 @@ export function AdminAdsManager({ ads }: AdminAdsManagerProps) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string) => {
       const response = await fetch("/api/admin/ads/delete", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },

@@ -11,7 +11,7 @@ export async function POST() {
     // Revoke session if refresh token exists
     if (refreshToken) {
       try {
-        const payload = verifyRefreshToken(refreshToken);
+        const payload = await verifyRefreshToken(refreshToken);
         await prisma.session.update({
           where: { id: payload.sid },
           data: {

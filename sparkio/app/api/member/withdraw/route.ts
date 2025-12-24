@@ -1,11 +1,11 @@
-import { cookies } from 'next/headers';
+﻿import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 const withdrawSchema = z.object({
-  amount: z.number().positive().min(100, 'Minimum withdrawal amount is ₹100'),
+  amount: z.number().positive().min(100, 'Minimum withdrawal amount is â‚¹100'),
   upiId: z.string().min(1, 'UPI ID is required').max(255),
 });
 
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     let userId: string;
     try {
-      const payload = verifyAccessToken(accessToken);
+      const payload = await verifyAccessToken(accessToken);
       userId = payload.sub;
     } catch {
       return NextResponse.json(
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     // Check minimum withdrawal amount
     if (amount < 100) {
       return NextResponse.json(
-        { success: false, error: 'Minimum withdrawal amount is ₹100' },
+        { success: false, error: 'Minimum withdrawal amount is â‚¹100' },
         { status: 400 },
       );
     }

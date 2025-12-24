@@ -65,7 +65,7 @@ interface MySQLWithdrawal {
 
 async function migrateUsers(mysqlConn: mysql.Connection) {
   console.log('📦 Migrating users...');
-  
+
   const [rows] = await mysqlConn.execute<mysql.RowDataPacket[]>(
     'SELECT * FROM users ORDER BY id'
   );
@@ -78,11 +78,11 @@ async function migrateUsers(mysqlConn: mysql.Connection) {
     try {
       // Map role
       const role = user.role === 'admin' ? Role.ADMIN : Role.USER;
-      
+
       // Generate phone number if not exists (use email or username as fallback)
       // In production, you'd want to extract phone from existing data or ask users
       const phone = `9${String(user.id).padStart(9, '0')}`; // Temporary phone generation
-      
+
       // Check if user already exists
       const existing = await prisma.user.findUnique({
         where: { phone },
@@ -145,7 +145,7 @@ async function migrateUsers(mysqlConn: mysql.Connection) {
 
 async function migrateWallets(mysqlConn: mysql.Connection) {
   console.log('💰 Migrating wallets...');
-  
+
   const [rows] = await mysqlConn.execute<mysql.RowDataPacket[]>(
     'SELECT * FROM wallets'
   );
@@ -164,7 +164,7 @@ async function migrateWallets(mysqlConn: mysql.Connection) {
       });
 
       const user = users[wallet.user_id - 1]; // Assuming sequential migration
-      
+
       if (!user || !user.wallet) {
         console.log(`  ⚠️  User with old ID ${wallet.user_id} not found, skipping wallet`);
         continue;
@@ -191,7 +191,7 @@ async function migrateWallets(mysqlConn: mysql.Connection) {
 
 async function migrateReferrals(mysqlConn: mysql.Connection) {
   console.log('🔗 Migrating referrals...');
-  
+
   const [rows] = await mysqlConn.execute<mysql.RowDataPacket[]>(
     'SELECT * FROM referrals ORDER BY id'
   );
@@ -215,12 +215,17 @@ async function migrateReferrals(mysqlConn: mysql.Connection) {
       }
 
       // Map status
-      const status = referral.status === 'verified' ? 'verified' : 
-                     referral.status === 'rejected' ? 'rejected' : 'pending';
+      const status = referral.status === 'verified' ? 'verified' :
+        referral.status === 'rejected' ? 'rejected' : 'pending';
+
+      if (!referrer) {
+        console.log(`  ⚠️  Referrer for referral ${referral.id} not found, skipping`);
+        continue;
+      }
 
       await prisma.referral.create({
         data: {
-          referrerId: referrer?.id || null,
+          referrerId: referrer.id,
           referredUserId: referredUser.id,
           status,
           commissionAmount: referral.commission_amount,
@@ -240,7 +245,7 @@ async function migrateReferrals(mysqlConn: mysql.Connection) {
 
 async function migrateWithdrawals(mysqlConn: mysql.Connection) {
   console.log('💸 Migrating withdrawals...');
-  
+
   const [rows] = await mysqlConn.execute<mysql.RowDataPacket[]>(
     'SELECT * FROM withdrawals ORDER BY id'
   );
@@ -256,7 +261,7 @@ async function migrateWithdrawals(mysqlConn: mysql.Connection) {
   for (const withdrawal of withdrawals) {
     try {
       const user = users[withdrawal.user_id - 1];
-      
+
       if (!user || !user.wallet) {
         console.log(`  ⚠️  User ${withdrawal.user_id} not found, skipping withdrawal`);
         continue;
@@ -264,8 +269,8 @@ async function migrateWithdrawals(mysqlConn: mysql.Connection) {
 
       // Map status
       const status = withdrawal.status === 'processed' ? WithdrawalStatus.COMPLETED :
-                     withdrawal.status === 'failed' ? WithdrawalStatus.FAILED :
-                     WithdrawalStatus.PENDING;
+        withdrawal.status === 'failed' ? WithdrawalStatus.FAILED :
+          WithdrawalStatus.PENDING;
 
       await prisma.withdrawal.create({
         data: {

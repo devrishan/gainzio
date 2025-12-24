@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
     let userId: string;
     try {
-      const payload = verifyAccessToken(accessToken);
+      const payload = await verifyAccessToken(accessToken);
       userId = payload.sub;
     } catch {
       return NextResponse.json(

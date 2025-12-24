@@ -1,4 +1,4 @@
-import { cookies } from 'next/headers';
+﻿import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     let userId: string;
     try {
-      const payload = verifyAccessToken(accessToken);
+      const payload = await verifyAccessToken(accessToken);
       userId = payload.sub;
     } catch {
       return NextResponse.json(
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
         category: validation.category || null,
         amount: validation.amount ? validation.amount : null,
         orderId: validation.orderId || null,
-        files: uploadedFiles.length > 0 ? uploadedFiles : null,
+        files: uploadedFiles.length > 0 ? uploadedFiles : undefined,
         status: 'pending',
         metadata: {
           uploadedAt: new Date().toISOString(),

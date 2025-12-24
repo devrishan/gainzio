@@ -50,7 +50,7 @@ export function MemberSubmissionsDashboard() {
     try {
       const response = await fetch("/api/member/submissions.php");
       const data: SubmissionsResponse = await response.json();
-      
+
       if (data.success) {
         setSubmissions(data.submissions);
       }
@@ -71,14 +71,13 @@ export function MemberSubmissionsDashboard() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "pending":
+      case "SUBMITTED":
+      case "REVIEWING":
         return <Clock className="h-5 w-5 text-primary" />;
-      case "approved":
+      case "APPROVED":
         return <CheckCircle2 className="h-5 w-5 text-success" />;
-      case "rejected":
+      case "REJECTED":
         return <XCircle className="h-5 w-5 text-destructive" />;
-      case "completed":
-        return <Trophy className="h-5 w-5 text-accent" />;
       default:
         return null;
     }
@@ -86,7 +85,7 @@ export function MemberSubmissionsDashboard() {
 
   const getRejectionReasonLabel = (reason: string | null) => {
     if (!reason) return null;
-    
+
     const labels: Record<string, string> = {
       screenshot_unclear: "Screenshot Unclear",
       wrong_product: "Wrong Product",
@@ -98,7 +97,7 @@ export function MemberSubmissionsDashboard() {
       not_eligible: "Not Eligible",
       other: "Other Reason"
     };
-    
+
     return labels[reason] || reason;
   };
 
@@ -111,7 +110,7 @@ export function MemberSubmissionsDashboard() {
             <CardTitle className="text-lg">{submission.task_title}</CardTitle>
           </div>
           <Badge variant="outline">
-            {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
+            {submission.status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')}
           </Badge>
         </div>
         <CardDescription>
@@ -147,7 +146,7 @@ export function MemberSubmissionsDashboard() {
           </p>
         )}
 
-        {submission.status === "rejected" && submission.rejection_reason && (
+        {submission.status === "REJECTED" && submission.rejection_reason && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
@@ -159,7 +158,7 @@ export function MemberSubmissionsDashboard() {
           </Alert>
         )}
 
-        {submission.status === "approved" && (
+        {submission.status === "APPROVED" && (
           <div className="rounded-lg bg-success/10 p-3 text-sm">
             <p className="font-medium text-success">Rewards Credited</p>
             <p className="text-muted-foreground mt-1">
@@ -168,7 +167,7 @@ export function MemberSubmissionsDashboard() {
           </div>
         )}
 
-        {submission.status === "pending" && (
+        {(submission.status === "SUBMITTED" || submission.status === "REVIEWING") && (
           <p className="text-sm text-muted-foreground">
             Usually reviewed within 24-48 hours
           </p>
@@ -190,10 +189,9 @@ export function MemberSubmissionsDashboard() {
     );
   }
 
-  const pendingSubmissions = filterSubmissions("pending");
-  const approvedSubmissions = filterSubmissions("approved");
-  const rejectedSubmissions = filterSubmissions("rejected");
-  const completedSubmissions = filterSubmissions("completed");
+  const pendingSubmissions = submissions.filter(sub => sub.status === "SUBMITTED" || sub.status === "REVIEWING");
+  const approvedSubmissions = submissions.filter(sub => sub.status === "APPROVED");
+  const rejectedSubmissions = submissions.filter(sub => sub.status === "REJECTED");
 
   return (
     <div className="space-y-6">
@@ -205,7 +203,7 @@ export function MemberSubmissionsDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="pending" className="relative">
             Pending
             {pendingSubmissions.length > 0 && (
@@ -227,14 +225,6 @@ export function MemberSubmissionsDashboard() {
             {rejectedSubmissions.length > 0 && (
               <Badge variant="secondary" className="ml-2 h-5 w-5 rounded-full p-0">
                 {rejectedSubmissions.length}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="completed">
-            Completed
-            {completedSubmissions.length > 0 && (
-              <Badge variant="secondary" className="ml-2 h-5 w-5 rounded-full p-0">
-                {completedSubmissions.length}
               </Badge>
             )}
           </TabsTrigger>
@@ -285,23 +275,6 @@ export function MemberSubmissionsDashboard() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {rejectedSubmissions.map((submission) => (
-                <SubmissionCard key={submission.id} submission={submission} />
-              ))}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="completed" className="space-y-4">
-          {completedSubmissions.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <Trophy className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium text-muted-foreground">No completed tasks</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {completedSubmissions.map((submission) => (
                 <SubmissionCard key={submission.id} submission={submission} />
               ))}
             </div>

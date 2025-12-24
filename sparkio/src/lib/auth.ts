@@ -26,7 +26,7 @@ export async function getAuthUser(): Promise<AuthUser | null> {
 
     let userId: string;
     try {
-      const payload = verifyAccessToken(accessToken);
+      const payload = await verifyAccessToken(accessToken);
       userId = payload.sub;
     } catch {
       return null;

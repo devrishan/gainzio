@@ -15,7 +15,7 @@ export async function GET(
     let userId: string | null = null;
     if (accessToken) {
       try {
-        const payload = verifyAccessToken(accessToken);
+        const payload = await verifyAccessToken(accessToken);
         userId = payload.sub;
       } catch {
         // Token invalid, continue without user context

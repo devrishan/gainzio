@@ -53,7 +53,7 @@ export async function calculateSuggestionScore(suggestionId: string): Promise<nu
   const userTaskCompletionRate =
     suggestion.user.submissions.length > 0
       ? suggestion.user.submissions.filter((s) => s.status === 'APPROVED').length /
-        suggestion.user.submissions.length
+      suggestion.user.submissions.length
       : 0;
   const userReferralCount = suggestion.user.referralEvents.length;
   const engagementScore = userTaskCompletionRate * 20 + Math.min(userReferralCount * 2, 10);
@@ -192,4 +192,30 @@ export async function invalidateTopSuggestionsCache(): Promise<void> {
   } catch (error) {
     console.warn('Error invalidating cache:', error);
   }
+}
+
+/**
+ * Feature or unfeature a suggestion
+ */
+export async function featureSuggestion(suggestionId: string, featured: boolean): Promise<void> {
+  const suggestion = await prisma.productSuggestion.findUnique({
+    where: { id: suggestionId },
+    select: { metadata: true }
+  });
+
+  if (!suggestion) return;
+
+  const currentMetadata = (suggestion.metadata as Record<string, any>) || {};
+
+  await prisma.productSuggestion.update({
+    where: { id: suggestionId },
+    data: {
+      metadata: {
+        ...currentMetadata,
+        featured
+      }
+    }
+  });
+
+  await invalidateTopSuggestionsCache();
 }

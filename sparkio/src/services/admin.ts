@@ -43,7 +43,7 @@ export interface AdminWithdrawal {
 }
 
 export interface AdminAd {
-  id: number;
+  id: string;
   name: string;
   ad_placement_id: string;
   ad_code_snippet: string;
@@ -52,7 +52,7 @@ export interface AdminAd {
 
 export interface AdminSubmission {
   id: number;
-  status: "pending" | "approved" | "rejected" | "completed";
+  status: "SUBMITTED" | "REVIEWING" | "APPROVED" | "REJECTED" | "DELETED";
   task_title: string;
   task_description: string;
   task_reward_coins: number;
@@ -71,9 +71,37 @@ export interface AdminSubmission {
   coins_earned: number;
   money_earned: number;
   xp_earned: number;
-  submitted_at: string;
   reviewed_at: string | null;
 }
+
+export interface ApiTaskSubmission {
+  id: string;
+  task: {
+    id: string;
+    title: string;
+    slug: string;
+    reward_amount: number;
+    reward_coins: number;
+  };
+  user: {
+    id: string;
+    username: string | null;
+    email: string | null;
+    phone: string;
+  };
+  status: "SUBMITTED" | "REVIEWING" | "APPROVED" | "REJECTED" | "DELETED";
+  proof_url: string;
+  proof_type: string | null;
+  notes: string | null;
+  submitted_at: string;
+  reviewed_at: string | null;
+  reviewer: {
+    id: string;
+    username: string | null;
+  } | null;
+}
+
+export type TaskSubmission = ApiTaskSubmission;
 
 interface PaginationMeta {
   page: number;
@@ -154,6 +182,52 @@ export async function getAdminSubmissions(status?: string): Promise<AdminSubmiss
       redirect("/login");
     }
     return data.submissions;
+  } catch {
+    redirect("/login");
+  }
+}
+
+export async function getTaskSubmissions({
+  status,
+  page,
+  per_page,
+}: {
+  status?: string;
+  page: number;
+  per_page: number;
+}): Promise<{
+  data: ApiTaskSubmission[];
+  pagination: PaginationMeta;
+}> {
+  try {
+    const query = new URLSearchParams();
+    if (status) query.set("status", status);
+    query.set("page", page.toString());
+    query.set("per_page", per_page.toString());
+
+    // Assuming existing API supports pagination or we just map standard response
+    // Use the new Next.js API route for tasks
+    const data = await serverFetch<{ success: boolean; data: ApiTaskSubmission[]; pagination?: PaginationMeta }>(
+      `/api/admin/tasks/submissions?${query.toString()}`
+    );
+
+    if (!data.success) {
+      redirect("/login");
+    }
+
+    // Handle potential variations in API response
+    const submissions = data.data || [];
+    const pagination = data.pagination || {
+      page,
+      per_page,
+      total: submissions.length,
+      total_pages: Math.ceil(submissions.length / per_page)
+    };
+
+    return {
+      data: submissions,
+      pagination,
+    };
   } catch {
     redirect("/login");
   }

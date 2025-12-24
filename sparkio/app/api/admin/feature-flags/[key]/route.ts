@@ -29,7 +29,7 @@ export async function GET(
 
     let userRole: string;
     try {
-      const payload = verifyAccessToken(accessToken);
+      const payload = await verifyAccessToken(accessToken);
       userRole = payload.role;
 
       // Only admins can access
@@ -85,7 +85,7 @@ export async function PUT(
 
     let userRole: string;
     try {
-      const payload = verifyAccessToken(accessToken);
+      const payload = await verifyAccessToken(accessToken);
       userRole = payload.role;
 
       // Only admins can update flags
@@ -157,7 +157,7 @@ export async function DELETE(
 
     let userRole: string;
     try {
-      const payload = verifyAccessToken(accessToken);
+      const payload = await verifyAccessToken(accessToken);
       userRole = payload.role;
 
       // Only admins can delete flags

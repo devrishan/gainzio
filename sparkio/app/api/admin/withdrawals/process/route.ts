@@ -1,4 +1,4 @@
-import { cookies } from 'next/headers';
+﻿import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
@@ -19,7 +19,7 @@ export async function PUT(request: NextRequest) {
 
     let userRole: string;
     try {
-      const payload = verifyAccessToken(accessToken);
+      const payload = await verifyAccessToken(accessToken);
       userRole = payload.role;
 
       // Only admins and payout managers can process
@@ -155,12 +155,12 @@ export async function PUT(request: NextRequest) {
 
       // Create notification
       const notificationTitle = 'Withdrawal Update';
-      let notificationBody = `Your withdrawal request of ₹${withdrawal.amount} has been ${newStatus.toLowerCase()}.`;
+      let notificationBody = `Your withdrawal request of â‚¹${withdrawal.amount} has been ${newStatus.toLowerCase()}.`;
 
       if (newStatus === 'COMPLETED') {
-        notificationBody = `Your withdrawal of ₹${withdrawal.amount} has been processed successfully!`;
+        notificationBody = `Your withdrawal of â‚¹${withdrawal.amount} has been processed successfully!`;
       } else if (newStatus === 'FAILED' || newStatus === 'REJECTED') {
-        notificationBody = `Your withdrawal request of ₹${withdrawal.amount} has been ${newStatus.toLowerCase()}.${notes ? ` Reason: ${notes}` : ''}`;
+        notificationBody = `Your withdrawal request of â‚¹${withdrawal.amount} has been ${newStatus.toLowerCase()}.${notes ? ` Reason: ${notes}` : ''}`;
       }
 
       await tx.notification.create({

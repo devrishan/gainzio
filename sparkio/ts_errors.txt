@@ -1,0 +1,63 @@
+src/components/auth/EarniqLogo.tsx(12,11): error TS2322: Type 'string' is not assignable to type 'UrlObject | RouteImpl<string>'.
+src/components/auth/LoginForm.tsx(66,22): error TS2345: Argument of type 'string' is not assignable to parameter of type 'RouteImpl<string>'.
+src/components/auth/RegisterForm.tsx(287,15): error TS2322: Type '"/terms"' is not assignable to type 'UrlObject | RouteImpl<"/terms">'.
+src/components/auth/RegisterForm.tsx(294,15): error TS2322: Type '"/privacy"' is not assignable to type 'UrlObject | RouteImpl<"/privacy">'.
+src/components/layout/app-shell.tsx(11,15): error TS2305: Module '"../navigation/sidebar"' has no exported member 'SidebarItem'.
+src/components/marketing/SiteFooter.tsx(64,27): error TS2322: Type 'string' is not assignable to type 'UrlObject | RouteImpl<string>'.
+src/components/member/member-dashboard-client.tsx(125,23): error TS2322: Type 'MemberReferral[]' is not assignable to type 'Referral[]'.
+  Type 'MemberReferral' is missing the following properties from type 'Referral': username, email
+src/components/member/member-referrals-table.tsx(27,18): error TS2339: Property 'username' does not exist on type 'MemberReferral'.
+src/components/member/member-referrals-table.tsx(28,18): error TS2339: Property 'email' does not exist on type 'MemberReferral'.
+src/components/member/member-referrals-table.tsx(94,62): error TS2339: Property 'username' does not exist on type 'MemberReferral'.
+src/components/member/member-referrals-table.tsx(95,72): error TS2339: Property 'email' does not exist on type 'MemberReferral'.
+src/components/member/member-withdraw-form.tsx(35,7): error TS2322: Type 'string' is not assignable to type 'number'.
+src/components/member/member-withdraw-form.tsx(78,71): error TS2345: Argument of type 'TFieldValues' is not assignable to parameter of type '{ amount: number; upi_id: string; }'.
+  Type 'FieldValues' is missing the following properties from type '{ amount: number; upi_id: string; }': amount, upi_id
+src/components/member/member-withdraw-form.tsx(80,13): error TS2322: Type 'Control<{ amount: number; upi_id: string; }, any, TFieldValues>' is not assignable to type 'Control<{ amount: number; upi_id: string; }, any, { amount: number; upi_id: string; }>'.
+  The types of '_options.resolver' are incompatible between these types.
+    Type 'Resolver<{ amount: number; upi_id: string; }, any, TFieldValues> | undefined' is not assignable to type 'Resolver<{ amount: number; upi_id: string; }, any, { amount: number; upi_id: string; }> | undefined'.
+      Type 'Resolver<{ amount: number; upi_id: string; }, any, TFieldValues>' is not assignable to type 'Resolver<{ amount: number; upi_id: string; }, any, { amount: number; upi_id: string; }>'.
+        Type 'TFieldValues' is not assignable to type '{ amount: number; upi_id: string; }'.
+          Type 'FieldValues' is missing the following properties from type '{ amount: number; upi_id: string; }': amount, upi_id
+src/components/member/member-withdraw-form.tsx(93,13): error TS2322: Type 'Control<{ amount: number; upi_id: string; }, any, TFieldValues>' is not assignable to type 'Control<{ amount: number; upi_id: string; }, any, { amount: number; upi_id: string; }>'.
+  The types of '_options.resolver' are incompatible between these types.
+    Type 'Resolver<{ amount: number; upi_id: string; }, any, TFieldValues> | undefined' is not assignable to type 'Resolver<{ amount: number; upi_id: string; }, any, { amount: number; upi_id: string; }> | undefined'.
+      Type 'Resolver<{ amount: number; upi_id: string; }, any, TFieldValues>' is not assignable to type 'Resolver<{ amount: number; upi_id: string; }, any, { amount: number; upi_id: string; }>'.
+        Type 'TFieldValues' is not assignable to type '{ amount: number; upi_id: string; }'.
+          Type 'FieldValues' is missing the following properties from type '{ amount: number; upi_id: string; }': amount, upi_id
+src/components/navigation/user-menu.tsx(33,17): error TS2345: Argument of type 'string' is not assignable to parameter of type 'RouteImpl<string>'.
+src/components/navigation/user-menu.tsx(53,17): error TS2322: Type '"/settings"' is not assignable to type 'UrlObject | RouteImpl<"/settings">'.
+src/components/providers/theme-provider.tsx(17,7): error TS2322: Type '{ children: ReactNode; attribute: string; defaultTheme: string; enableSystem: true; disableTransitionOnChange: true; suppressHydrationWarning: true; }' is not assignable to type 'IntrinsicAttributes & ThemeProviderProps'.
+  Property 'suppressHydrationWarning' does not exist on type 'IntrinsicAttributes & ThemeProviderProps'.
+src/components/shared/logo.tsx(7,11): error TS2322: Type 'string' is not assignable to type 'UrlObject | RouteImpl<string>'.
+src/components/ui/chart.tsx(145,9): error TS2578: Unused '@ts-expect-error' directive.
+src/components/ui/chart.tsx(175,45): error TS18046: 'item.payload' is of type 'unknown'.
+src/components/ui/chart.tsx(179,17): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+src/components/ui/chart.tsx(186,65): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Record<string, unknown>'.
+src/components/ui/chart.tsx(217,65): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+src/components/ui/chart.tsx(219,23): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+src/components/ui/chart.tsx(265,13): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+src/components/ui/chart.tsx(274,19): error TS2322: Type 'unknown' is not assignable to type 'BackgroundColor | undefined'.
+src/lib/__tests__/gamification.test.ts(60,9): error TS2353: Object literal may only specify known properties, and 'createdAt' does not exist in type '{ id: string; userId: string; rank: Rank; xp: number; streakDays: number; lastLoginAt: Date | null; }'.
+src/lib/__tests__/gamification.test.ts(81,9): error TS2353: Object literal may only specify known properties, and 'createdAt' does not exist in type '{ id: string; userId: string; rank: Rank; xp: number; streakDays: number; lastLoginAt: Date | null; }'.
+src/lib/__tests__/gamification.test.ts(91,9): error TS2353: Object literal may only specify known properties, and 'createdAt' does not exist in type '{ id: string; userId: string; rank: Rank; xp: number; streakDays: number; lastLoginAt: Date | null; }'.
+src/lib/__tests__/gamification.test.ts(110,9): error TS2353: Object literal may only specify known properties, and 'createdAt' does not exist in type '{ id: string; userId: string; rank: Rank; xp: number; streakDays: number; lastLoginAt: Date | null; }'.
+src/lib/__tests__/gamification.test.ts(120,9): error TS2353: Object literal may only specify known properties, and 'createdAt' does not exist in type '{ id: string; userId: string; rank: Rank; xp: number; streakDays: number; lastLoginAt: Date | null; }'.
+src/lib/payouts.ts(2,26): error TS2307: Cannot find module 'cashfree-sdk' or its corresponding type declarations.
+src/lib/payouts.ts(73,35): error TS2339: Property 'payouts' does not exist on type 'Razorpay'.
+src/lib/payouts.ts(222,35): error TS2339: Property 'payouts' does not exist on type 'Razorpay'.
+src/lib/spark-events.ts(45,9): error TS2353: Object literal may only specify known properties, and 'isPublic' does not exist in type '(Without<SparkEventCreateInput, SparkEventUncheckedCreateInput> & SparkEventUncheckedCreateInput) | (Without<...> & SparkEventCreateInput)'.
+src/lib/spark-events.ts(65,27): error TS2322: Type '{ isPublic: true; } | undefined' is not assignable to type 'SparkEventWhereInput | undefined'.
+  Object literal may only specify known properties, and 'isPublic' does not exist in type 'SparkEventWhereInput'.
+src/lib/top-suggestions.ts(36,7): error TS2353: Object literal may only specify known properties, and 'convertedToTask' does not exist in type 'ProductSuggestionInclude<DefaultArgs>'.
+src/lib/top-suggestions.ts(54,16): error TS2339: Property 'user' does not exist on type '{ status: string; id: string; createdAt: Date; updatedAt: Date; userId: string; amount: Decimal | null; metadata: JsonValue; productName: string; platform: string; category: string | null; orderId: string | null; files: JsonValue; }'.
+src/lib/top-suggestions.ts(55,20): error TS2339: Property 'user' does not exist on type '{ status: string; id: string; createdAt: Date; updatedAt: Date; userId: string; amount: Decimal | null; metadata: JsonValue; productName: string; platform: string; category: string | null; orderId: string | null; files: JsonValue; }'.
+src/lib/top-suggestions.ts(55,45): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/lib/top-suggestions.ts(56,18): error TS2339: Property 'user' does not exist on type '{ status: string; id: string; createdAt: Date; updatedAt: Date; userId: string; amount: Decimal | null; metadata: JsonValue; productName: string; platform: string; category: string | null; orderId: string | null; files: JsonValue; }'.
+src/lib/top-suggestions.ts(58,40): error TS2339: Property 'user' does not exist on type '{ status: string; id: string; createdAt: Date; updatedAt: Date; userId: string; amount: Decimal | null; metadata: JsonValue; productName: string; platform: string; category: string | null; orderId: string | null; files: JsonValue; }'.
+src/lib/top-suggestions.ts(75,18): error TS2339: Property 'convertedToTask' does not exist on type '{ status: string; id: string; createdAt: Date; updatedAt: Date; userId: string; amount: Decimal | null; metadata: JsonValue; productName: string; platform: string; category: string | null; orderId: string | null; files: JsonValue; }'.
+src/lib/top-suggestions.ts(76,29): error TS2339: Property 'convertedToTask' does not exist on type '{ status: string; id: string; createdAt: Date; updatedAt: Date; userId: string; amount: Decimal | null; metadata: JsonValue; productName: string; platform: string; category: string | null; orderId: string | null; files: JsonValue; }'.
+src/lib/top-suggestions.ts(135,7): error TS2353: Object literal may only specify known properties, and 'convertedToTask' does not exist in type 'ProductSuggestionInclude<DefaultArgs>'.
+vitest.config.ts(2,19): error TS2307: Cannot find module '@vitejs/plugin-react' or its corresponding type declarations.
+  There are types at 'E:/sparkio/sparkio/node_modules/@vitejs/plugin-react/dist/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+vitest.setup.ts(3,25): error TS2307: Cannot find module '@testing-library/react' or its corresponding type declarations.

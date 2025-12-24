@@ -198,7 +198,7 @@ export function AdminTaskSubmissionsClient({ submissions, pagination, statusFilt
                             <Button
                               variant="ghost"
                               size="icon"
-                              disabled={mutation.isPending || submission.status === "APPROVED"}
+                              disabled={mutation.isPending}
                             >
                               <CheckCircle2 className="h-4 w-4 text-success" />
                             </Button>
@@ -227,7 +227,7 @@ export function AdminTaskSubmissionsClient({ submissions, pagination, statusFilt
                             <Button
                               variant="ghost"
                               size="icon"
-                              disabled={mutation.isPending || submission.status === "REJECTED"}
+                              disabled={mutation.isPending}
                             >
                               <XCircle className="h-4 w-4 text-destructive" />
                             </Button>

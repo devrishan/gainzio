@@ -402,3 +402,62 @@ export async function handleReferralVerification(userId: string, referralId: str
   // Check and award badges
   await checkAndAwardBadges(userId);
 }
+
+/**
+ * Get user gamification stats including rank, xp, and badges
+ */
+export async function getUserGamificationStats(userId: string) {
+  const gamification = await prisma.gamificationState.findUnique({
+    where: { userId },
+    include: {
+      badges: {
+        include: {
+          badge: true,
+        },
+      },
+    },
+  });
+
+  if (!gamification) {
+    return {
+      xp: 0,
+      rank: Rank.NEWBIE,
+      streakDays: 0,
+      badges: [],
+      nextRankXP: XP_THRESHOLDS.PRO,
+      progress: 0,
+    };
+  }
+
+  // Calculate progress to next rank
+  let nextRankXP = XP_THRESHOLDS.PRO;
+  let prevRankXP = 0;
+
+  if (gamification.rank === Rank.PRO) {
+    nextRankXP = XP_THRESHOLDS.ELITE;
+    prevRankXP = XP_THRESHOLDS.PRO;
+  } else if (gamification.rank === Rank.ELITE) {
+    nextRankXP = XP_THRESHOLDS.MASTER;
+    prevRankXP = XP_THRESHOLDS.ELITE;
+  } else if (gamification.rank === Rank.MASTER) {
+    nextRankXP = XP_THRESHOLDS.MASTER; // Cap at master
+    prevRankXP = XP_THRESHOLDS.MASTER;
+  }
+
+  const progress =
+    gamification.rank === Rank.MASTER
+      ? 100
+      : Math.min(
+          100,
+          Math.max(
+            0,
+            ((gamification.xp - prevRankXP) / (nextRankXP - prevRankXP)) * 100
+          )
+        );
+
+  return {
+    ...gamification,
+    nextRankXP,
+    progress,
+  };
+}

@@ -34,7 +34,7 @@ export async function POST(
     let userId: string;
     let userRole: string;
     try {
-      const payload = verifyAccessToken(accessToken);
+      const payload = await verifyAccessToken(accessToken);
       userId = payload.sub;
       userRole = payload.role;
 

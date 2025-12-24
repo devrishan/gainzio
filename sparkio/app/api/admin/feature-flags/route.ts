@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verifyAccessToken } from '@/lib/jwt';
 import { Role } from '@prisma/client';
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
     let userRole: string;
     try {
-      const payload = verifyAccessToken(accessToken);
+      const payload = await verifyAccessToken(accessToken);
       userRole = payload.role;
 
       // Only admins can access
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
 
     let userRole: string;
     try {
-      const payload = verifyAccessToken(accessToken);
+      const payload = await verifyAccessToken(accessToken);
       userRole = payload.role;
 
       // Only admins can create flags

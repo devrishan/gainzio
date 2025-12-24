@@ -27,7 +27,7 @@ export async function PUT(
 
     let userRole: string;
     try {
-      const payload = verifyAccessToken(accessToken);
+      const payload = await verifyAccessToken(accessToken);
       userRole = payload.role;
 
       // Only admins can feature suggestions

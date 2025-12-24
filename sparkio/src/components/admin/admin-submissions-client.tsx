@@ -68,12 +68,12 @@ export function AdminSubmissionsClient({ submissions: initialSubmissions }: Admi
         prev.map((sub) =>
           sub.id === reviewDialog.submission?.id
             ? {
-                ...sub,
-                status: action === "approve" ? "approved" : "rejected",
-                reviewed_at: new Date().toISOString(),
-                rejection_reason: action === "reject" ? rejectionReason : null,
-                rejection_notes: action === "reject" ? rejectionNotes : null,
-              }
+              ...sub,
+              status: action === "approve" ? "APPROVED" : "REJECTED",
+              reviewed_at: new Date().toISOString(),
+              rejection_reason: action === "reject" ? rejectionReason : null,
+              rejection_notes: action === "reject" ? rejectionNotes : null,
+            }
             : sub,
         ),
       );
@@ -92,26 +92,27 @@ export function AdminSubmissionsClient({ submissions: initialSubmissions }: Admi
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
-      pending: { variant: "secondary", icon: Clock },
-      approved: { variant: "default", icon: CheckCircle },
-      rejected: { variant: "destructive", icon: XCircle },
+      SUBMITTED: { variant: "secondary", icon: Clock },
+      REVIEWING: { variant: "secondary", icon: Clock },
+      APPROVED: { variant: "default", icon: CheckCircle },
+      REJECTED: { variant: "destructive", icon: XCircle },
     };
 
-    const { variant, icon: Icon } = variants[status] || variants.pending;
+    const { variant, icon: Icon } = variants[status] || variants.SUBMITTED;
 
     return (
       <Badge variant={variant} className="gap-1">
         <Icon className="h-3 w-3" />
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()}
       </Badge>
     );
   };
 
   const filterByStatus = (status: string) => submissions.filter((sub) => sub.status === status);
 
-  const pendingSubmissions = filterByStatus("pending");
-  const approvedSubmissions = filterByStatus("approved");
-  const rejectedSubmissions = filterByStatus("rejected");
+  const pendingSubmissions = submissions.filter((sub) => sub.status === "SUBMITTED" || sub.status === "REVIEWING");
+  const approvedSubmissions = filterByStatus("APPROVED");
+  const rejectedSubmissions = filterByStatus("REJECTED");
 
   return (
     <div className="space-y-6">

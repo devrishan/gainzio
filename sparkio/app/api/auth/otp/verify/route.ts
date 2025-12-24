@@ -67,8 +67,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const accessToken = signAccessToken({ sub: user.id, role: user.role });
-    const refreshToken = signRefreshToken({ sub: user.id, sid: session.id });
+    const accessToken = await signAccessToken({ sub: user.id, role: user.role });
+    const refreshToken = await signRefreshToken({ sub: user.id, sid: session.id });
 
     await prisma.session.update({
       where: { id: session.id },
