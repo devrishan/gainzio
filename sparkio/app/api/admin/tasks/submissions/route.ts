@@ -1,4 +1,5 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { cookies } from 'next/headers';
 import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
@@ -122,9 +123,9 @@ export async function GET(request: NextRequest) {
         reviewed_at: submission.reviewedAt?.toISOString() || null,
         reviewer: submission.reviewedBy
           ? {
-              id: submission.reviewedBy.id,
-              username: submission.reviewedBy.username,
-            }
+            id: submission.reviewedBy.id,
+            username: submission.reviewedBy.username,
+          }
           : null,
       })),
       pagination: {

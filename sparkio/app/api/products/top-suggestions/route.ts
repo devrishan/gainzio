@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { getTopSuggestions } from '@/lib/top-suggestions';
 import { Cache, CacheKeys } from '@/lib/cache';
 import { measurePerformance } from '@/lib/performance';
