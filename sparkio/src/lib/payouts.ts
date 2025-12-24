@@ -70,7 +70,7 @@ async function processRazorpayPayout(options: PayoutOptions): Promise<PayoutResu
 
   try {
     // Razorpay Payouts API
-    const payout = await razorpay.payouts.create({
+    const payout = await (razorpay as any).payouts.create({
       account_number: process.env.RAZORPAY_ACCOUNT_NUMBER || '', // Fund account number
       fund_account: {
         account_type: 'vpa', // Virtual Payment Address (UPI)
@@ -219,7 +219,7 @@ export async function verifyRazorpayPayout(payoutId: string): Promise<PayoutResu
   }
 
   try {
-    const payout = await razorpay.payouts.fetch(payoutId);
+    const payout = await (razorpay as any).payouts.fetch(payoutId);
     return {
       success: true,
       payoutId: payout.id,
