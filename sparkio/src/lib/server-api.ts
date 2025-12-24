@@ -16,7 +16,7 @@ export async function serverFetch<T = unknown>(
   const legacyToken = cookieStore.get("sparkio_token")?.value;
   const token = accessToken || legacyToken;
 
-  const isNextApiRoute = path.startsWith("/api/");
+  const isNextApiRoute = path.startsWith("/api/") && !path.includes(".php");
   const baseUrl = isNextApiRoute ? "" : env.API_BASE_URL;
 
   const requestHeaders = new Headers({
@@ -73,7 +73,7 @@ export async function serverFetch<T = unknown>(
 
 export function clearAuthCookies() {
   const response = NextResponse.json({ success: true });
-  
+
   // Clear new cookie names
   response.cookies.set({
     name: "earniq_access_token",
@@ -102,7 +102,7 @@ export function clearAuthCookies() {
     maxAge: 0,
     path: "/",
   });
-  
+
   // Clear legacy cookies for backward compatibility
   response.cookies.set({
     name: "sparkio_token",
