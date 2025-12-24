@@ -8,12 +8,12 @@ import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-import type { SidebarItem } from "../navigation/sidebar";
+import { NavigationItem } from "@/config/navigation";
 import { Sidebar } from "../navigation/sidebar";
 import { UserMenu } from "../navigation/user-menu";
 
 interface AppShellProps {
-  sidebarItems: SidebarItem[];
+  sidebarItems: NavigationItem[];
   children: React.ReactNode;
   fallbackRole?: "member" | "admin";
 }

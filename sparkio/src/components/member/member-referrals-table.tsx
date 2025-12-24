@@ -24,8 +24,8 @@ export function MemberReferralsTable({ referrals }: { referrals: MemberReferral[
   const filteredReferrals = useMemo(() => {
     return referrals.filter((referral) => {
       const matchesSearch =
-        referral.username.toLowerCase().includes(search.toLowerCase()) ||
-        referral.email.toLowerCase().includes(search.toLowerCase());
+        (referral.referred_user.username || "").toLowerCase().includes(search.toLowerCase()) ||
+        (referral.referred_user.email || "").toLowerCase().includes(search.toLowerCase());
       const matchesStatus = status === "all" ? true : referral.status === status;
       return matchesSearch && matchesStatus;
     });
@@ -91,8 +91,8 @@ export function MemberReferralsTable({ referrals }: { referrals: MemberReferral[
           ) : (
             filteredReferrals.map((referral) => (
               <TableRow key={referral.id}>
-                <TableCell className="font-medium">{referral.username}</TableCell>
-                <TableCell className="text-muted-foreground">{referral.email}</TableCell>
+                <TableCell className="font-medium">{referral.referred_user.username}</TableCell>
+                <TableCell className="text-muted-foreground">{referral.referred_user.email}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className={statusColor[referral.status]}>
                     {referral.status.charAt(0).toUpperCase() + referral.status.slice(1)}

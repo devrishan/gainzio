@@ -32,7 +32,7 @@ export function MemberWithdrawForm({ balance }: MemberWithdrawFormProps) {
   const form = useForm<WithdrawFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      amount: "",
+      amount: "" as any,
       upi_id: "",
     },
   });

@@ -33,13 +33,6 @@ export async function calculateSuggestionScore(suggestionId: string): Promise<nu
           },
         },
       },
-      convertedToTask: {
-        include: {
-          submissions: {
-            where: { status: 'APPROVED' },
-          },
-        },
-      },
     },
   });
 
@@ -72,11 +65,8 @@ export async function calculateSuggestionScore(suggestionId: string): Promise<nu
   score += popularityScore;
 
   // Conversion rate factor (0-30 points)
-  if (suggestion.convertedToTask) {
-    const task = suggestion.convertedToTask;
-    const submissionCount = task.submissions.length;
-    const conversionScore = Math.min(submissionCount * 3, 30);
-    score += conversionScore;
+  if (suggestion.status === 'converted') {
+    score += 30; // Max bonus if already converted
   } else if (suggestion.status === 'approved') {
     score += 10; // Bonus for approved but not yet converted
   }
@@ -129,13 +119,6 @@ export async function getTopSuggestions(limit: number = 10): Promise<SuggestionS
           },
           referralEvents: {
             where: { status: 'verified' },
-          },
-        },
-      },
-      convertedToTask: {
-        include: {
-          submissions: {
-            where: { status: 'APPROVED' },
           },
         },
       },

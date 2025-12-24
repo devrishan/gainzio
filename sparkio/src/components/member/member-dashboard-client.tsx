@@ -122,7 +122,16 @@ export function MemberDashboardClient({ dashboard, referrals }: MemberDashboardC
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <ReferralList referrals={referrals.slice(0, 6)} />
+        <ReferralList
+          referrals={referrals.slice(0, 6).map((r) => ({
+            id: r.id,
+            username: r.referred_user.username || "Unknown",
+            email: r.referred_user.email || "",
+            commission_amount: r.commission_amount,
+            status: r.status as "verified" | "pending" | "rejected",
+            created_at: r.created_at,
+          }))}
+        />
 
         <Card className="border-border bg-card p-4 sm:p-6">
           <div className="flex items-center justify-between">

@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 
 interface Referral {
-  id: number;
+  id: string | number;
   username: string;
   email: string;
   commission_amount: number;
@@ -40,7 +40,7 @@ export const ReferralList = ({ referrals }: ReferralListProps) => {
   return (
     <Card className="border-border bg-card p-4 sm:p-6">
       <h3 className="mb-3 sm:mb-4 text-base sm:text-lg font-semibold text-foreground">Recent Referrals</h3>
-      
+
       <div className="space-y-2 sm:space-y-3">
         {referrals.length === 0 ? (
           <div className="py-6 sm:py-8 text-center">
@@ -68,7 +68,7 @@ export const ReferralList = ({ referrals }: ReferralListProps) => {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                   <span className="font-semibold text-sm sm:text-base text-primary">
                     +₹{referral.commission_amount.toFixed(2)}

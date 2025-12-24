@@ -57,8 +57,6 @@ describe('Gamification', () => {
         rank: Rank.NEWBIE,
         streakDays: 0,
         lastLoginAt: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       });
       vi.mocked(prisma.activityLog.create).mockResolvedValue({} as any);
 
@@ -78,8 +76,6 @@ describe('Gamification', () => {
         rank: Rank.NEWBIE,
         streakDays: 0,
         lastLoginAt: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       });
       vi.mocked(prisma.gamificationState.update).mockResolvedValue({
         id: 'gamification-1',
@@ -88,8 +84,6 @@ describe('Gamification', () => {
         rank: Rank.NEWBIE,
         streakDays: 0,
         lastLoginAt: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       });
       vi.mocked(prisma.activityLog.create).mockResolvedValue({} as any);
 
@@ -107,8 +101,6 @@ describe('Gamification', () => {
         rank: Rank.NEWBIE,
         streakDays: 0,
         lastLoginAt: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       });
       vi.mocked(prisma.gamificationState.update).mockResolvedValue({
         id: 'gamification-1',
@@ -117,8 +109,6 @@ describe('Gamification', () => {
         rank: Rank.PRO,
         streakDays: 0,
         lastLoginAt: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       });
       vi.mocked(prisma.activityLog.create).mockResolvedValue({} as any);
 
