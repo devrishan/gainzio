@@ -1,5 +1,6 @@
 import { AdminSubmissionsClient } from "@/components/admin/admin-submissions-client";
 import { getAdminSubmissions } from "@/services/admin";
+export const dynamic = "force-dynamic";
 
 export default async function AdminSubmissionsPage() {
   const submissions = await getAdminSubmissions();

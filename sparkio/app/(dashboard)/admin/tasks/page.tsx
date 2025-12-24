@@ -1,5 +1,6 @@
 import { AdminTaskSubmissionsClient } from "@/components/admin/admin-task-submissions-client";
 import { getTaskSubmissions } from "@/services/admin";
+export const dynamic = "force-dynamic";
 
 export default async function AdminTasksPage({
   searchParams,

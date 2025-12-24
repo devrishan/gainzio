@@ -341,6 +341,7 @@ model SparkEvent {
   type        String   @db.VarChar(50)
   message     String   @db.Text
   data        Json?
+  isPublic    Boolean  @default(true)
   createdAt   DateTime @default(now())
 
   @@index([createdAt])

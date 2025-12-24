@@ -77,18 +77,20 @@ export function MaintenanceScheduler() {
 
   const currentState = maintenanceQuery.data?.state ?? { enabled: false };
 
+  const serverState = maintenanceQuery.data?.state;
+
   useEffect(() => {
-    if (maintenanceQuery.data?.state) {
-      setIntentEnabled(maintenanceQuery.data.state.enabled);
-      setMessage(maintenanceQuery.data.state.message ?? "");
+    if (serverState) {
+      setIntentEnabled(serverState.enabled);
+      setMessage(serverState.message ?? "");
     }
-  }, [maintenanceQuery.data?.state?.enabled, maintenanceQuery.data?.state?.message]);
+  }, [serverState]);
 
   const scheduledEndLabel = currentState.scheduledEnd
     ? `${new Date(currentState.scheduledEnd).toLocaleString()} (${formatDistanceToNow(
-        new Date(currentState.scheduledEnd),
-        { addSuffix: true },
-      )})`
+      new Date(currentState.scheduledEnd),
+      { addSuffix: true },
+    )})`
     : null;
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

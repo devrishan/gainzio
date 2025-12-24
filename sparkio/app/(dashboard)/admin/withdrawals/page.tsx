@@ -1,5 +1,6 @@
 import { AdminWithdrawalsClient } from "@/components/admin/admin-withdrawals-client";
 import { getAdminWithdrawals } from "@/services/admin";
+export const dynamic = "force-dynamic";
 
 export default async function AdminWithdrawalsPage() {
   const withdrawals = await getAdminWithdrawals("pending");

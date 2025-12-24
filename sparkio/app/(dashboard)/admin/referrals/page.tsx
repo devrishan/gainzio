@@ -1,5 +1,6 @@
 import { AdminReferralsClient } from "@/components/admin/admin-referrals-client";
 import { getAdminReferrals } from "@/services/admin";
+export const dynamic = "force-dynamic";
 
 interface AdminReferralsPageProps {
   searchParams: Record<string, string | string[] | undefined>;

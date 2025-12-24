@@ -1,5 +1,6 @@
 import { MemberDashboardClient } from "@/components/member/member-dashboard-client";
 import { getMemberDashboard, getMemberReferrals } from "@/services/member";
+export const dynamic = "force-dynamic";
 
 export default async function MemberDashboardPage() {
   const [dashboard, referrals] = await Promise.all([getMemberDashboard(), getMemberReferrals()]);

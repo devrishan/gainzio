@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Clock, CheckCircle2, XCircle, Trophy, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -42,11 +42,7 @@ export function MemberSubmissionsDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("pending");
 
-  useEffect(() => {
-    fetchSubmissions();
-  }, []);
-
-  const fetchSubmissions = async () => {
+  const fetchSubmissions = useCallback(async () => {
     try {
       const response = await fetch("/api/member/submissions.php");
       const data: SubmissionsResponse = await response.json();
@@ -63,7 +59,11 @@ export function MemberSubmissionsDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchSubmissions();
+  }, [fetchSubmissions]);
 
   const filterSubmissions = (status: string) => {
     return submissions.filter((sub) => sub.status === status);
