@@ -1,232 +1,162 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/sonner";
-import { GainzioLogo } from "@/components/shared/logo";
-import { PasswordInput } from "./PasswordInput";
-
-const loginSchema = z.object({
-  email: z.string().min(1, "Email is required.").email("Please enter a valid email."),
-  password: z.string().min(1, "Password is required.").min(8, "Use at least 8 characters."),
-  keep_me_signed_in: z.boolean().optional().default(false),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 export function LoginForm() {
-  const router = useRouter();
-  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
-  const redirectPath = searchParams?.get("redirect") ?? "/member/dashboard";
+  const [email, setEmail] = useState("");
+  const [isEmailLoading, setIsEmailLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      keep_me_signed_in: false,
-    },
-  });
+  const redirectUrl = searchParams?.get("redirect") || "/member/dashboard";
 
-  const mutation = useMutation({
-    mutationFn: async (values: LoginFormValues) => {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: values.email,
-          password: values.password,
-          keep_me_signed_in: values.keep_me_signed_in,
-        }),
+  async function handleGoogleLogin() {
+    setIsGoogleLoading(true);
+    try {
+      await signIn("google", { callbackUrl: redirectUrl });
+    } catch (error) {
+      toast.error("Something went wrong with Google Login");
+      setIsGoogleLoading(false);
+    }
+  }
+
+  async function handleEmailLogin(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email) {
+      toast.error("Please enter your email");
+      return;
+    }
+
+    setIsEmailLoading(true);
+    try {
+      const result = await signIn("email", {
+        email,
+        callbackUrl: redirectUrl,
+        redirect: false
       });
 
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ error: "Unable to login." }));
-        throw new Error(error.error || "Unable to login.");
+      if (result?.error) {
+        toast.error("Failed to send login link. Please try again.");
+      } else {
+        toast.success("Login link sent! Check your email.");
       }
-
-      return (await response.json()) as { user: { role: "member" | "admin" } };
-    },
-    onSuccess: ({ user }) => {
-      queryClient.invalidateQueries({ queryKey: ["session"] });
-      toast.success("Welcome back!", { description: "You are now signed in." });
-      const destination = user.role === "admin" ? "/admin/dashboard" : redirectPath;
-      router.replace(destination);
-    },
-    onError: (error: Error) => {
-      toast.error("Login failed", { description: error.message });
-      form.setError("root", { message: error.message });
-    },
-  });
-
-  const onSubmit = (values: LoginFormValues) => {
-    mutation.mutate(values);
-  };
-
-  const isSubmitting = mutation.isPending;
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setIsEmailLoading(false);
+    }
+  }
 
   return (
-    <div className="space-y-8">
-      {/* Logo and Header */}
-      <div className="flex flex-col items-center gap-4 text-center">
-        <GainzioLogo href="/" />
-        <div className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground">Welcome back to Gainzio</h1>
-          <p className="text-base text-muted-foreground">
-            Sign in to see your dashboard, wallet, and tasks.
-          </p>
-        </div>
+    <div className="grid gap-6">
+      <div className="text-center space-y-2">
+        <h1 className="text-2xl font-semibold tracking-tight">Sign in to Continue</h1>
+        <p className="text-sm text-muted-foreground">Welcome back to Gainzio</p>
       </div>
 
-      {/* Form */}
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Server error message */}
-          {form.formState.errors.root && (
-            <div
-              className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive"
-              role="alert"
-              aria-live="polite"
-            >
-              {form.formState.errors.root.message}
-            </div>
-          )}
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field, fieldState }) => (
-              <FormItem>
-                <FormLabel htmlFor="login-email">Email</FormLabel>
-                <FormControl>
-                  <Input
-                    id="login-email"
-                    placeholder="john@example.com"
-                    type="email"
-                    autoComplete="email"
-                    aria-invalid={fieldState.invalid}
-                    aria-describedby={fieldState.error ? "login-email-error" : undefined}
-                    disabled={isSubmitting}
-                    className={cn(
-                      fieldState.invalid && "border-destructive focus-visible:ring-destructive"
-                    )}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage id="login-email-error" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field, fieldState }) => (
-              <FormItem>
-                <div className="flex items-center justify-between">
-                  <FormLabel htmlFor="login-password">Password</FormLabel>
-                  <Link
-                    href="/forgot-password"
-                    className="text-xs font-medium text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
-                    tabIndex={isSubmitting ? -1 : 0}
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-                <FormControl>
-                  <PasswordInput
-                    id="login-password"
-                    placeholder="••••••••"
-                    autoComplete="current-password"
-                    aria-invalid={fieldState.invalid}
-                    aria-describedby={fieldState.error ? "login-password-error" : undefined}
-                    disabled={isSubmitting}
-                    className={cn(
-                      fieldState.invalid && "border-destructive focus-visible:ring-destructive"
-                    )}
-                    {...field}
-                    onKeyDown={(e) => {
-                      // Allow form submission on Enter key (works on both desktop and mobile)
-                      if (e.key === "Enter" && !isSubmitting) {
-                        e.preventDefault();
-                        form.handleSubmit(onSubmit)();
-                      }
-                    }}
-                  />
-                </FormControl>
-                <FormMessage id="login-password-error" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="keep_me_signed_in"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    disabled={isSubmitting}
-                    id="keep_me_signed_in"
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel
-                    htmlFor="keep_me_signed_in"
-                    className="text-sm font-normal cursor-pointer"
-                  >
-                    Keep me signed in
-                  </FormLabel>
-                  <p className="text-xs text-muted-foreground">
-                    Stay logged in for 30 days
-                  </p>
-                </div>
-              </FormItem>
-            )}
-          />
-
-          <Button
-            type="submit"
-            className="w-full rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            disabled={isSubmitting}
-            aria-label={isSubmitting ? "Signing in..." : "Sign in to your account"}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                Signing in...
-              </>
-            ) : (
-              "Sign in"
-            )}
-          </Button>
-        </form>
-      </Form>
-
-      {/* Footer link */}
-      <p className="text-center text-sm text-muted-foreground">
-        New to Gainzio?{" "}
-        <Link
-          href="/register"
-          className="font-semibold text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+      <div className="grid gap-4">
+        {/* Primary CTA: Google */}
+        <Button
+          variant="outline"
+          type="button"
+          className="w-full h-12 text-base font-medium relative overflow-hidden bg-white text-black hover:bg-gray-100 border-gray-200"
+          onClick={handleGoogleLogin}
+          disabled={isGoogleLoading || isEmailLoading}
         >
-          Create an account
-        </Link>
-      </p>
+          {isGoogleLoading ? (
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+          ) : (
+            <svg className="mr-3 h-5 w-5" viewBox="0 0 24 24">
+              <path
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                fill="#4285F4"
+              />
+              <path
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                fill="#34A853"
+              />
+              <path
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                fill="#FBBC05"
+              />
+              <path
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                fill="#EA4335"
+              />
+            </svg>
+          )}
+          Continue with Google
+        </Button>
+
+        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground/80">
+          <span className="flex h-1.5 w-1.5 rounded-full bg-green-500"></span>
+          Secure • No OTP required
+        </div>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              or
+            </span>
+          </div>
+        </div>
+
+        {/* Secondary: Email Magic Link */}
+        <form onSubmit={handleEmailLogin} className="grid gap-3">
+          <div className="grid gap-2">
+            <Label className="sr-only" htmlFor="email">
+              Email
+            </Label>
+            <Input
+              id="email"
+              placeholder="name@example.com"
+              type="email"
+              autoCapitalize="none"
+              autoComplete="email"
+              autoCorrect="off"
+              disabled={isEmailLoading || isGoogleLoading}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="h-11"
+            />
+          </div>
+
+          <Button disabled={isEmailLoading || isGoogleLoading} className="h-11">
+            {isEmailLoading && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Continue with Email
+          </Button>
+          <p className="text-center text-xs text-muted-foreground">
+            We’ll send you a secure login link
+          </p>
+        </form>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-4 text-center">
+        <div className="rounded-lg bg-muted/50 p-4 text-xs text-muted-foreground leading-relaxed">
+          <p className="font-medium text-foreground mb-1">We never send OTPs or charge you for login.</p>
+          Your account is protected using industry-standard security.
+        </div>
+
+        <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest">
+          Phone number login will be available later
+        </p>
+      </div>
     </div>
   );
 }
