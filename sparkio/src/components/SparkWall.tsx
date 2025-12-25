@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, Loader2 } from "lucide-react";
-import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 
 interface SparkEvent {
   id: string;
@@ -95,7 +94,7 @@ export function SparkWall() {
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
           ) : (
-            events.map((event) => (
+            events.map((event: SparkEvent) => (
               <div
                 key={event.id}
                 className="flex items-start gap-3 rounded-lg border border-border bg-muted/30 p-3 transition-all hover:bg-muted/50"

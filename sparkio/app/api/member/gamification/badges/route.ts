@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const cookieStore = cookies();
     const accessToken = cookieStore.get('earniq_access_token')?.value;

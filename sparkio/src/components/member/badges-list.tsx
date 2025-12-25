@@ -59,7 +59,7 @@ export function BadgesList() {
           <Trophy className="h-5 w-5" />
           Your Badges ({badges.length})
         </CardTitle>
-        <CardDescription>All achievements and milestones you've earned</CardDescription>
+        <CardDescription>All achievements and milestones you&apos;ve earned</CardDescription>
       </CardHeader>
       <CardContent>
         {badges.length > 0 ? (

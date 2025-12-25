@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verifyAccessToken } from '@/lib/jwt';
-import { prisma } from '@/lib/prisma';
+
 import { Role } from '@prisma/client';
 import { featureSuggestion } from '@/lib/top-suggestions';
 import { z } from 'zod';

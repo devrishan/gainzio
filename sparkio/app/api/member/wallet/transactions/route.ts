@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     const perPage = parseInt(searchParams.get('per_page') || '20');
     const type = searchParams.get('type');
 
-    const where: any = {
+    const where: Record<string, any> = {
       userId,
     };
 

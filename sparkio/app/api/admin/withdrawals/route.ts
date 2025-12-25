@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get('status') as WithdrawalStatus | null;
 
-    const where: any = {};
+    const where: Record<string, any> = {};
 
     if (status) {
       where.status = status;

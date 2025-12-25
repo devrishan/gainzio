@@ -5,7 +5,6 @@ import { Role } from '@prisma/client';
 import {
   getAllFeatureFlags,
   setFeatureFlag,
-  deleteFeatureFlag,
 } from '@/lib/feature-flags';
 import { z } from 'zod';
 
@@ -17,7 +16,7 @@ const createFlagSchema = z.object({
   targetRoles: z.array(z.string()).optional(),
 });
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const cookieStore = cookies();
     const accessToken = cookieStore.get('earniq_access_token')?.value;

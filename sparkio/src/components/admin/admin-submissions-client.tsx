@@ -91,7 +91,7 @@ export function AdminSubmissionsClient({ submissions: initialSubmissions }: Admi
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, { variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
+    const variants: Record<string, { variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ElementType }> = {
       SUBMITTED: { variant: "secondary", icon: Clock },
       REVIEWING: { variant: "secondary", icon: Clock },
       APPROVED: { variant: "default", icon: CheckCircle },

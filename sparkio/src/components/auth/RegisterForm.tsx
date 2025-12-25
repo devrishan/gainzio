@@ -39,7 +39,6 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 export function RegisterForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [passwordStrength, setPasswordStrength] = React.useState<PasswordStrength>("none");
   const [isRedirecting, setIsRedirecting] = React.useState(false);
 
   const form = useForm<RegisterFormValues>({
@@ -70,7 +69,7 @@ export function RegisterForm() {
 
       return (await response.json()) as { user: { role: "member" | "admin" } };
     },
-    onSuccess: ({ user }) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["session"] });
       setIsRedirecting(true);
       toast.success("Account created", { description: "Welcome to Gainzio!" });
@@ -106,7 +105,7 @@ export function RegisterForm() {
                 Creating your dashboard...
               </h2>
               <p className="text-sm text-muted-foreground">
-                We're setting everything up for you.
+                We&apos;re setting everything up for you.
               </p>
             </div>
           </div>
@@ -217,8 +216,6 @@ export function RegisterForm() {
                           : undefined
                     }
                     disabled={isSubmitting}
-                    showStrengthIndicator={true}
-                    onStrengthChange={setPasswordStrength}
                     className={cn(
                       fieldState.invalid && "border-destructive focus-visible:ring-destructive"
                     )}

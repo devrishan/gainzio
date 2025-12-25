@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
   // Check if PHP API has forgot password endpoint, otherwise return success (security: don't reveal if email exists)
   try {
-    const response = await fetch(`${env.API_BASE_URL}/api/auth/forgot-password.php`, {
+    await fetch(`${env.API_BASE_URL}/api/auth/forgot-password.php`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),

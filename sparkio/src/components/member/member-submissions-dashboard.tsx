@@ -50,7 +50,7 @@ export function MemberSubmissionsDashboard() {
       if (data.success) {
         setSubmissions(data.submissions);
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to load submissions",

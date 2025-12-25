@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const platform = searchParams.get('platform');
 
-    const where: any = {
+    const where: Record<string, any> = {
       userId: userId,
     };
 

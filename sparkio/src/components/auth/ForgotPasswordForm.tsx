@@ -75,7 +75,7 @@ export function ForgotPasswordForm() {
           <div className="space-y-2">
             <h1 className="text-3xl font-semibold tracking-tight text-foreground">Check your email</h1>
             <p className="text-base text-muted-foreground">
-              We've sent password reset instructions to your email address.
+              We&apos;ve sent password reset instructions to your email address.
             </p>
           </div>
         </div>
@@ -83,10 +83,10 @@ export function ForgotPasswordForm() {
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-6 text-center">
           <CheckCircle2 className="mx-auto h-12 w-12 text-primary mb-4" />
           <p className="text-sm text-muted-foreground mb-4">
-            If an account exists with the email you provided, you'll receive password reset instructions shortly.
+            If an account exists with the email you provided, you&apos;ll receive password reset instructions shortly.
           </p>
           <p className="text-xs text-muted-foreground">
-            Didn't receive the email? Check your spam folder or try again.
+            Didn&apos;t receive the email? Check your spam folder or try again.
           </p>
         </div>
 
@@ -120,7 +120,7 @@ export function ForgotPasswordForm() {
         <div className="space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">Reset your password</h1>
           <p className="text-base text-muted-foreground">
-            Enter your email address and we'll send you instructions to reset your password.
+            Enter your email address and we&apos;ll send you instructions to reset your password.
           </p>
         </div>
       </div>

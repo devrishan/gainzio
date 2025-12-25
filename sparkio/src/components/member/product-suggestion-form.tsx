@@ -14,9 +14,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X, Upload } from "lucide-react";
+import { X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const productSuggestionSchema = z.object({
@@ -125,7 +125,7 @@ export function ProductSuggestionForm({ onSuccess, onCancel }: ProductSuggestion
         <DialogHeader>
           <DialogTitle>Suggest a Product</DialogTitle>
           <DialogDescription>
-            Share products you've purchased to help us create tasks for others.
+            Share products you&apos;ve purchased to help us create tasks for others.
           </DialogDescription>
         </DialogHeader>
 

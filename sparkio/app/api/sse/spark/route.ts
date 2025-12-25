@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
       let lastEventId: string | null = null;
       const pollInterval = setInterval(async () => {
         try {
-          const where: any = {};
+          const where: Record<string, any> = {};
 
           if (lastEventId) {
             where.id = { gt: lastEventId };

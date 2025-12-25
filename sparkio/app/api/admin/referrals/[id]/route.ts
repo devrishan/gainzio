@@ -26,11 +26,11 @@ export async function PUT(
       );
     }
 
-    let userId: string;
+
     let userRole: string;
     try {
       const payload = await verifyAccessToken(accessToken);
-      userId = payload.sub;
+
       userRole = payload.role;
 
       // Only admins can approve/reject

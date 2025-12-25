@@ -5,11 +5,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Clock, CheckCircle2, XCircle, Package, Search, Filter, ArrowUpDown } from "lucide-react";
+import { Clock, CheckCircle2, XCircle, Package } from "lucide-react";
 import { ConvertSuggestionDialog } from "./convert-suggestion-dialog";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import { useToast } from "@/hooks/use-toast";
@@ -53,7 +52,7 @@ async function fetchSuggestions(filters: {
   if (filters.status) params.append("status", filters.status);
   if (filters.platform) params.append("platform", filters.platform);
   if (filters.page) params.append("page", filters.page.toString());
-  
+
   const response = await fetch(`/api/admin/products/suggestions?${params.toString()}`, {
     credentials: "include",
   });
@@ -114,7 +113,7 @@ export function AdminProductsClient() {
   });
 
   const convertMutation = useMutation({
-    mutationFn: async ({ suggestionId, taskData }: { suggestionId: string; taskData: any }) => {
+    mutationFn: async ({ suggestionId, taskData }: { suggestionId: string; taskData: Record<string, any> }) => {
       const response = await fetch(`/api/admin/products/suggestions/${suggestionId}/convert`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

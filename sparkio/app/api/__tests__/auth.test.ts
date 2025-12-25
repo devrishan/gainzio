@@ -113,7 +113,7 @@ describe('Auth API Routes', () => {
       vi.mocked(prisma.user.findFirst).mockResolvedValue({
         id: 'existing-user',
         email: 'test@example.com',
-      } as any);
+      } as unknown as any);
 
       const request = new NextRequest('http://localhost/api/auth/register', {
         method: 'POST',

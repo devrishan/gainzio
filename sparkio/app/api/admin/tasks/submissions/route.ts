@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { cookies } from 'next/headers';
 import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
-import { Role, SubmissionStatus } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const perPage = parseInt(searchParams.get('per_page') || '30');
 
-    const where: any = {
+    const where: Record<string, any> = {
       status: {
         not: 'DELETED',
       },

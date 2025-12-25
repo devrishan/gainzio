@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     const skip = (query.page - 1) * query.perPage;
     const take = query.perPage;
 
-    const where: any = { userId: user.id };
+    const where: Record<string, any> = { userId: user.id };
     if (query.status) {
       where.status = query.status;
     }
