@@ -67,13 +67,13 @@ export function Hero() {
 
             {/* Buttons */}
             <motion.div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto" variants={fadeInUp}>
-              <Button asChild size="lg" className="h-14 px-8 text-lg rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all">
+              <Button asChild size="xl" className="rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all">
                 <Link href="/login">
                   Start Earning Now
                   <ArrowUpRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg rounded-full border-2 hover:bg-muted/50 transition-all">
+              <Button asChild variant="outline" size="xl" className="rounded-full border-2 hover:bg-muted/50 transition-all">
                 <Link href="/register">
                   View Success Stories
                 </Link>
