@@ -1,0 +1,7 @@
+﻿src/lib/payouts.ts(73,35): error TS2339: Property 'payouts' does not exist on type 'Razorpay'.
+src/lib/payouts.ts(222,35): error TS2339: Property 'payouts' does not exist on type 'Razorpay'.
+src/lib/spark-events.ts(45,9): error TS2353: Object literal may only specify known properties, and 'isPublic' does not exist in type '(Without<SparkEventCreateInput, SparkEventUncheckedCreateInput> & SparkEventUncheckedCreateInput) | (Without<...> & SparkEventCreateInput)'.
+src/lib/spark-events.ts(65,27): error TS2322: Type '{ isPublic: true; } | undefined' is not assignable to type 'SparkEventWhereInput | undefined'.
+  Object literal may only specify known properties, and 'isPublic' does not exist in type 'SparkEventWhereInput'.
+vitest.config.ts(2,19): error TS2307: Cannot find module '@vitejs/plugin-react' or its corresponding type declarations.
+  There are types at 'E:/sparkio/sparkio/node_modules/@vitejs/plugin-react/dist/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
