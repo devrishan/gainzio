@@ -1,28 +1,30 @@
 "use client";
 
-import { BadgeCheck, Share2, WalletMinimal } from "lucide-react";
+import { BadgeCheck, IndianRupee, Share2, WalletMinimal } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
+import { Button } from "@/components/ui/button";
 import { fadeInUp, stagger, viewport } from "@/components/marketing/animations";
 
 const steps = [
   {
-    title: "Sign up & verify",
-    description: "Create your account with OTP login and add your UPI details securely.",
-    detail: "Takes less than 2 minutes with PAN + selfie verification.",
+    title: "Sign Up",
+    description: "Create free account using Google. No complex forms.",
     icon: BadgeCheck,
+    color: "bg-blue-500",
   },
   {
-    title: "Complete tasks & refer",
-    description: "Finish simple tasks, share apps, post status, and invite friends using your unique referral link.",
-    detail: "Every task includes proof requirements, payout amount, and SLA.",
+    title: "Complete Tasks",
+    description: "Choose from 50+ daily tasks offering verified payouts.",
     icon: Share2,
+    color: "bg-orange-500",
   },
   {
-    title: "Withdraw instantly",
-    description: "Watch your wallet grow and withdraw to UPI once you hit the minimum balance.",
-    detail: "Transfer history + downloadable receipts keep everything compliant.",
-    icon: WalletMinimal,
+    title: "Get Paid",
+    description: "Withdraw instantly to UPI once you reach ₹50.",
+    icon: IndianRupee,
+    color: "bg-green-500",
   },
 ];
 
@@ -30,48 +32,49 @@ export function HowItWorks() {
   return (
     <motion.section
       id="how-it-works"
-      className="px-6 py-20 lg:px-12"
+      className="relative container mx-auto px-6 py-24"
       initial="hidden"
       whileInView="visible"
       viewport={viewport}
       variants={stagger}
     >
-      <div className="mx-auto max-w-6xl space-y-12">
-        <motion.div className="space-y-3 text-center" variants={fadeInUp}>
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary/80">Steps</p>
-          <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">How it works</h2>
-          <p className="text-base text-muted-foreground md:text-lg">
-            Become an earner in minutes, track everything in real time, and cash out without friction.
-          </p>
-        </motion.div>
-
-        <motion.ol className="grid gap-6 md:grid-cols-3" variants={stagger}>
-          {steps.map((step, index) => (
-            <motion.li
-              key={step.title}
-              className="relative flex h-full flex-col rounded-3xl border border-white/10 bg-background/80 p-6 shadow-lg shadow-black/5 ring-1 ring-white/5 transition hover:-translate-y-1 hover:border-primary/40"
-              variants={fadeInUp}
-            >
-              <div className="flex items-center gap-4">
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-lg font-semibold text-primary">
-                  {index + 1}
-                </div>
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-primary/30 bg-primary/5 text-primary">
-                  <step.icon className="h-5 w-5" />
-                </div>
-              </div>
-
-              <div className="mt-6 space-y-3">
-                <h3 className="text-xl font-semibold text-foreground">{step.title}</h3>
-                <p className="text-base text-muted-foreground">{step.description}</p>
-                <p className="rounded-2xl border border-dashed border-white/10 bg-muted/5 p-3 text-sm text-muted-foreground">
-                  {step.detail}
-                </p>
-              </div>
-            </motion.li>
-          ))}
-        </motion.ol>
+      <div className="mb-20 text-center max-w-2xl mx-auto">
+        <motion.p variants={fadeInUp} className="text-sm font-bold uppercase tracking-widest text-primary mb-3">Simple Process</motion.p>
+        <motion.h2 variants={fadeInUp} className="text-3xl font-bold text-foreground md:text-5xl mb-6">Start Earning in Minutes</motion.h2>
+        <motion.p variants={fadeInUp} className="text-lg text-muted-foreground">
+          No experience needed. Just follow these 3 simple steps to get your first payout today.
+        </motion.p>
       </div>
+
+      <div className="relative grid gap-8 md:grid-cols-3 mb-16">
+        {/* Connecting Line (Desktop) */}
+        <div className="absolute top-12 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-primary/20 to-transparent hidden md:block" />
+
+        {steps.map((step, index) => (
+          <motion.div
+            key={step.title}
+            className="relative flex flex-col items-center text-center z-10"
+            variants={fadeInUp}
+          >
+            <div className={`flex h-24 w-24 items-center justify-center rounded-3xl ${step.color} shadow-lg shadow-${step.color}/20 text-white mb-8 transition-transform hover:scale-110 hover:rotate-3`}>
+              <step.icon className="h-10 w-10" />
+            </div>
+
+            <div className="absolute top-8 right-0 text-9xl font-bold text-foreground/5 -z-10 select-none hidden md:block">
+              {index + 1}
+            </div>
+
+            <h3 className="text-xl font-bold mb-3">{step.title}</h3>
+            <p className="text-muted-foreground leading-relaxed max-w-xs mx-auto">{step.description}</p>
+          </motion.div>
+        ))}
+      </div>
+
+      <motion.div className="text-center" variants={fadeInUp}>
+        <Button asChild size="lg" className="rounded-full px-8 h-12 text-base">
+          <Link href="/register">Create Account Now</Link>
+        </Button>
+      </motion.div>
     </motion.section>
   );
 }
