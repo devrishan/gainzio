@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-
-import { env } from "@/lib/env";
-import { getMaintenanceState } from "@/lib/maintenance";
+import { compare } from "bcryptjs";
+import { prisma } from "@/lib/prisma";
+import { signAccessToken, signRefreshToken } from "@/lib/jwt";
 import { setAuthCookies } from "@/lib/auth-cookies";
+import { getMaintenanceState } from "@/lib/maintenance";
 
 export async function POST(request: NextRequest) {
   const maintenanceState = await getMaintenanceState();
@@ -22,42 +23,97 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: "Missing credentials." }, { status: 400 });
   }
 
-  const response = await fetch(`${env.API_BASE_URL}/api/auth/login.php`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email: body.email,
-      password: body.password,
-      keep_me_signed_in: body.keep_me_signed_in ?? false,
-    }),
-  });
+  try {
+    // Find user
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: body.email },
+          { phone: body.email }, // Allow login with phone as well
+        ],
+      },
+      include: {
+        wallet: true, // Include wallet for session data if needed
+      }
+    });
 
-  const result = await response.json().catch(() => null);
+    if (!user || !user.hashedPassword) {
+      return NextResponse.json(
+        { success: false, error: "Invalid credentials." },
+        { status: 401 }
+      );
+    }
 
-  if (!response.ok || !result?.success || !result?.token) {
+    // Verify password
+    const isValid = await compare(body.password, user.hashedPassword);
+
+    if (!isValid) {
+      return NextResponse.json(
+        { success: false, error: "Invalid credentials." },
+        { status: 401 }
+      );
+    }
+
+    // Update last login
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        gamification: {
+          upsert: {
+            create: { lastLoginAt: new Date() },
+            update: { lastLoginAt: new Date() },
+          }
+        }
+      }
+    });
+
+    // Generate tokens
+    const accessTokenPayload = {
+      sub: user.id,
+      role: user.role,
+      username: user.username,
+      email: user.email,
+    };
+
+    const accessToken = await signAccessToken(accessTokenPayload);
+    const refreshToken = await signRefreshToken({
+      sub: user.id,
+      sid: crypto.randomUUID(), // Session ID
+    });
+
+    const keepSignedIn = body.keep_me_signed_in === true;
+    const accessTokenTTL = Number(process.env.JWT_ACCESS_TOKEN_TTL_SECONDS ?? 900);
+    const refreshTokenTTL = Number(process.env.JWT_REFRESH_TOKEN_TTL_SECONDS ?? 2592000);
+
+    const userForResponse = {
+      id: user.id,
+      email: user.email!, // Email is required in schema but potentially null in type
+      username: user.username || `user_${user.id.substring(0, 8)}`,
+      role: user.role,
+      phone: user.phone,
+    };
+
+    const res = NextResponse.json({
+      success: true,
+      user: userForResponse,
+    });
+
+    setAuthCookies(res, {
+      accessToken,
+      refreshToken,
+      user: userForResponse,
+      keepSignedIn,
+      accessTokenTTL,
+      refreshTokenTTL: keepSignedIn ? refreshTokenTTL : 86400,
+    });
+
+    return res;
+
+  } catch (error) {
+    console.error("Login error:", error);
     return NextResponse.json(
-      { success: false, error: result?.error ?? "Failed to login." },
-      { status: response.status || 500 },
+      { success: false, error: "Internal server error." },
+      { status: 500 }
     );
   }
-
-  const expiresIn = typeof result.expires_in === "number" ? result.expires_in : 3600;
-  const keepSignedIn = body.keep_me_signed_in === true;
-
-  const res = NextResponse.json({
-    success: true,
-    user: result.user,
-  });
-
-  // Use the new cookie helper with "keep me signed in" option
-  setAuthCookies(res, {
-    accessToken: result.token,
-    refreshToken: result.token, // PHP API returns single token, we use it for both
-    user: result.user,
-    keepSignedIn,
-    accessTokenTTL: expiresIn,
-    refreshTokenTTL: keepSignedIn ? 2592000 : 86400, // 30 days if keepSignedIn, else 1 day
-  });
-
-  return res;
 }
