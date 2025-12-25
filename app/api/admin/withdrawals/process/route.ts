@@ -91,7 +91,7 @@ export async function PUT(request: NextRequest) {
         userId: withdrawal.userId,
         withdrawalId: withdrawal.id,
         name: withdrawal.user.username || undefined,
-        phone: withdrawal.user.phone,
+        phone: withdrawal.user.phone || undefined,
       });
 
       if (payoutResult.success && payoutResult.payoutId) {
