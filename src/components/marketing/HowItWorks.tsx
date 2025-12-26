@@ -14,16 +14,17 @@ const steps = [
     icon: BadgeCheck,
     color: "bg-blue-500",
   },
-  title: "Complete Tasks",
-  description: "Choose from 50+ daily tasks offering verified payouts.",
-  icon: Share2,
-  color: "bg-amber-500",
+  {
+    title: "Complete Tasks",
+    description: "Choose from 50+ daily tasks offering verified payouts.",
+    icon: Share2,
+    color: "bg-amber-500",
   },
-{
-  title: "Get Paid",
+  {
+    title: "Get Paid",
     description: "Withdraw instantly to UPI once you reach ₹50.",
-      icon: IndianRupee,
-        color: "bg-green-500",
+    icon: IndianRupee,
+    color: "bg-green-500",
   },
 ];
 
