@@ -17,8 +17,8 @@ export function Navbar() {
       <div className="rounded-full border border-white/10 bg-background/60 px-6 py-3 backdrop-blur-xl shadow-lg ring-1 ring-black/5 dark:bg-background/40">
         <nav className="flex items-center justify-between">
           <Link href="/" className="group inline-flex items-center gap-2" aria-label="Gainzio home">
-            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-orange-500 text-white shadow-lg shadow-primary/25 transition-transform group-hover:scale-105">
-              <Sparkles className="h-5 w-5 fill-white/20" />
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-accent text-primary-foreground shadow-lg shadow-primary/25 transition-transform group-hover:scale-105">
+              <Sparkles className="h-5 w-5 fill-current" />
             </div>
             <span className="text-xl font-bold tracking-tight text-foreground/90">Gainzio</span>
           </Link>

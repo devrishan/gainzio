@@ -25,8 +25,8 @@ export function Hero() {
     <section className="relative w-full overflow-hidden bg-background pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-40 lg:pb-32">
       {/* Background Elements */}
       <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-primary/20 blur-[120px] mix-blend-screen opacity-50" />
-        <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-blue-500/10 blur-[120px] mix-blend-screen opacity-50" />
+        <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-primary/10 blur-[120px] mix-blend-screen opacity-50" />
+        <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-accent/10 blur-[120px] mix-blend-screen opacity-50" />
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03]" />
       </div>
 
@@ -43,16 +43,16 @@ export function Hero() {
           >
             {/* Badge */}
             <motion.div variants={fadeInUp}>
-              <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary shadow-[0_0_15px_-3px_rgba(var(--primary),0.3)]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary shadow-sm">
                 New Payouts Weekly
               </span>
             </motion.div>
 
             {/* Heading */}
             <motion.div className="space-y-4 max-w-2xl" variants={fadeInUp}>
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl text-foreground">
                 Earn smarter with <br className="hidden lg:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
                   tasks & referrals
                 </span>
               </h1>
@@ -149,7 +149,7 @@ export function Hero() {
                   </div>
                   <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-orange-500 to-primary"
+                      className="h-full bg-gradient-to-r from-accent to-primary"
                       initial={{ width: 0 }}
                       whileInView={{ width: "92%" }}
                       transition={{ duration: 1, delay: 0.5 }}
