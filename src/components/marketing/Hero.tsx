@@ -44,38 +44,34 @@ export function Hero() {
             {/* Badge */}
             <motion.div variants={fadeInUp}>
               <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary shadow-[0_0_15px_-3px_rgba(var(--primary),0.3)]">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                </span>
-                #1 Earning App in India
+                New Payouts Weekly
               </span>
             </motion.div>
 
             {/* Heading */}
             <motion.div className="space-y-4 max-w-2xl" variants={fadeInUp}>
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-                Turn Your Time Into <br className="hidden lg:block" />
+                Earn smarter with <br className="hidden lg:block" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">
-                  Real Cash
+                  tasks & referrals
                 </span>
               </h1>
               <p className="text-lg text-muted-foreground md:text-xl leading-relaxed max-w-[600px] mx-auto lg:mx-0">
-                Complete simple tasks, refer friends, and watch your wallet grow. Join India's fastest-growing earning community today.
+                Gainzio helps you earn rewards by completing tasks and referring friends. Transparent earnings, fast UPI withdrawals, and a trusted platform.
               </p>
             </motion.div>
 
             {/* Buttons */}
             <motion.div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto" variants={fadeInUp}>
               <Button asChild size="xl" className="rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all">
-                <Link href="/login">
-                  Start Earning Now
+                <Link href="/member/dashboard">
+                  Launch dashboard
                   <ArrowUpRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button asChild variant="outline" size="xl" className="rounded-full border-2 hover:bg-muted/50 transition-all">
                 <Link href="/register">
-                  View Success Stories
+                  Create free account
                 </Link>
               </Button>
             </motion.div>

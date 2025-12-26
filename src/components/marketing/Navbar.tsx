@@ -2,6 +2,7 @@ import type { Route } from "next";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { Sparkles } from "lucide-react";
 
 const navLinks: { label: string; href: Route | `#${string}` }[] = [
   { label: "Features", href: "#features" },
@@ -17,7 +18,7 @@ export function Navbar() {
         <nav className="flex items-center justify-between">
           <Link href="/" className="group inline-flex items-center gap-2" aria-label="Gainzio home">
             <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-orange-500 text-white shadow-lg shadow-primary/25 transition-transform group-hover:scale-105">
-              <span className="text-lg font-bold">G</span>
+              <Sparkles className="h-5 w-5 fill-white/20" />
             </div>
             <span className="text-xl font-bold tracking-tight text-foreground/90">Gainzio</span>
           </Link>
