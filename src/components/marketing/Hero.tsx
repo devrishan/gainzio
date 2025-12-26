@@ -105,61 +105,57 @@ export function Hero() {
                 {/* Header Section of Card */}
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-sm font-medium uppercase tracking-widest text-muted-foreground mb-1">Total Earnings</h3>
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-1">Wallet Snapshot</h3>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl md:text-5xl font-bold tracking-tight">₹12,450</span>
-                      <span className="text-xs text-muted-foreground font-medium">.00</span>
+                      <span className="text-4xl md:text-5xl font-bold tracking-tight">₹1,24,800</span>
                     </div>
                   </div>
                   <div className="px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-bold flex items-center gap-1">
                     <TrendingUp className="h-3 w-3" />
-                    +12%
+                    +₹9,200 today
                   </div>
-                </div>
-
-                {/* Graph Placeholder (Abstract) */}
-                <div className="h-32 w-full flex items-end justify-between gap-1 px-2">
-                  {[40, 65, 45, 80, 55, 90, 70, 85].map((h, i) => (
-                    <motion.div
-                      key={i}
-                      className="w-full bg-primary/20 hover:bg-primary/40 rounded-t-sm transition-colors cursor-pointer"
-                      initial={{ height: 0 }}
-                      whileInView={{ height: `${h}%` }}
-                      transition={{ duration: 0.5, delay: i * 0.1 }}
-                    />
-                  ))}
                 </div>
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {highlights.map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-3 p-3 rounded-xl bg-muted/40 border border-white/5 hover:bg-muted/60 transition-colors">
-                      <div className={cn("p-2 rounded-lg bg-background shadow-sm", item.color)}>
-                        <item.icon className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground font-medium">{item.label}</p>
-                        <p className="text-base font-semibold">{item.value}</p>
-                      </div>
+                  <div className="flex flex-col gap-1 p-3 rounded-xl bg-muted/40 border border-white/5">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                      <Clock3 className="h-3.5 w-3.5 text-orange-400" />
+                      AVG PAYOUT TIME
                     </div>
-                  ))}
+                    <p className="text-xl font-bold">58 min</p>
+                  </div>
+                  <div className="flex flex-col gap-1 p-3 rounded-xl bg-muted/40 border border-white/5">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                      <Coins className="h-3.5 w-3.5 text-green-400" />
+                      12L+ CLEARED
+                    </div>
+                    <p className="text-base font-semibold">UPI withdrawals</p>
+                  </div>
+                  <div className="col-span-1 sm:col-span-2 flex flex-col gap-1 p-3 rounded-xl bg-muted/40 border border-white/5">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                      <Users className="h-3.5 w-3.5 text-blue-400" />
+                      38K+ VERIFIED
+                    </div>
+                    <p className="text-base font-semibold">referral earners</p>
+                  </div>
                 </div>
 
-                {/* Floating Notification */}
-                <motion.div
-                  className="absolute -right-4 top-1/2 bg-background/90 backdrop-blur-md border border-white/10 p-3 rounded-xl shadow-xl flex items-center gap-3 max-w-[200px]"
-                  initial={{ x: 20, opacity: 0 }}
-                  whileInView={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 1 }}
-                >
-                  <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                    <Coins className="h-4 w-4" />
+                {/* Progress Bar (Task approvals) */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Task approvals</span>
+                    <span>92% this week</span>
                   </div>
-                  <div className="text-xs">
-                    <p className="font-semibold">Payment Received</p>
-                    <p className="text-muted-foreground">Just now via UPI</p>
+                  <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                    <motion.div
+                      className="h-full bg-gradient-to-r from-orange-500 to-primary"
+                      initial={{ width: 0 }}
+                      whileInView={{ width: "92%" }}
+                      transition={{ duration: 1, delay: 0.5 }}
+                    />
                   </div>
-                </motion.div>
+                </div>
 
               </div>
             </div>
