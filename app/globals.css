@@ -1,23 +1,28 @@
 @tailwind base;
+/* Force rebuild */
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 222 47% 98%; /* Very light blue-gray tint */
-    --foreground: 222 47% 11%; /* Deep Charcoal */
+    --background: 222 47% 98%;
+    /* Very light blue-gray tint */
+    --foreground: 222 47% 11%;
+    /* Deep Charcoal */
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 222 47% 11%; /* Deep Charcoal Blue */
+    --primary: 222 47% 11%;
+    /* Deep Charcoal Blue */
     --primary-foreground: 210 40% 98%;
     --primary-glow: 222 47% 20%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
-    --accent: 142 70% 45%; /* Soft Green */
+    --accent: 142 70% 45%;
+    /* Soft Green */
     --accent-foreground: 0 0% 100%;
     --success: 142 70% 45%;
     --success-foreground: 0 0% 100%;
@@ -34,17 +39,19 @@
   }
 
   .dark {
-    --background: 222 47% 5%; /* Very dark deep charcoal */
+    --background: 222 47% 5%;
+    /* Very dark deep charcoal */
     --foreground: 210 40% 98%;
     --card: 222 47% 7%;
     --card-foreground: 210 40% 98%;
     --popover: 222 47% 7%;
     --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%; /* Light text on dark bg for primary elements? Or keep brand color? Usually brand color. Let's make primary lighter in dark mode for visibility or keep it "brand" */
+    --primary: 210 40% 98%;
+    /* Light text on dark bg for primary elements? Or keep brand color? Usually brand color. Let's make primary lighter in dark mode for visibility or keep it "brand" */
     /* shadcn usually inverts primary for dark mode to be white/black, but for brand identity we might want a shade of blue. 
        However, "Deep Charcoal" on "Deep Charcoal" is invisible. 
        Let's set Primary in dark mode to a lighter Blue-Gray or White. */
-    --primary: 210 40% 98%; 
+    --primary: 210 40% 98%;
     --primary-foreground: 222 47% 11%;
     --primary-glow: 217 91% 60%;
     --secondary: 217 32% 17%;
@@ -114,10 +121,13 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.8;
     transform: scale(1.05);
@@ -125,10 +135,13 @@
 }
 
 @keyframes sparkle {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     filter: brightness(1);
   }
+
   50% {
     opacity: 0.8;
     filter: brightness(1.3);
@@ -136,9 +149,12 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -148,6 +164,7 @@
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
@@ -166,13 +183,10 @@
 }
 
 .animate-shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    hsl(var(--primary) / 0.2) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent 0%,
+      hsl(var(--primary) / 0.2) 50%,
+      transparent 100%);
   background-size: 2000px 100%;
   animation: shimmer 2s infinite;
 }
-

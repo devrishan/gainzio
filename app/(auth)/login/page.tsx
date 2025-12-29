@@ -52,6 +52,7 @@ export default function AuthPage() {
 
           {/* GOOGLE LOGIN */}
           <button
+            type="button"
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
             className="w-full mb-4 flex items-center justify-center gap-3 rounded-lg bg-white text-black py-3 font-medium hover:bg-zinc-200 transition"
           >
@@ -66,23 +67,30 @@ export default function AuthPage() {
           </div>
 
           {/* EMAIL MAGIC LINK */}
-          <div className="space-y-3">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleEmailLogin();
+            }}
+            className="space-y-3"
+          >
             <input
               type="email"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg bg-black border border-zinc-700 px-4 py-3 text-sm focus:outline-none focus:border-white"
+              className="w-full rounded-lg bg-black border border-zinc-700 px-4 py-3 text-sm focus:outline-none focus:border-white transition-colors"
+              required
             />
 
             <button
-              onClick={handleEmailLogin}
-              disabled={loading}
-              className="w-full rounded-lg bg-zinc-800 py-3 text-sm font-medium hover:bg-zinc-700 transition disabled:opacity-50"
+              type="submit"
+              disabled={loading || !email}
+              className="w-full rounded-lg bg-zinc-800 py-3 text-sm font-medium hover:bg-zinc-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Sending link..." : "Send secure login link"}
             </button>
-          </div>
+          </form>
 
           {/* FOOTER TRUST */}
           <p className="text-xs text-zinc-500 mt-6 text-center">
