@@ -32,7 +32,7 @@ export interface AdminReferral {
 export interface AdminWithdrawal {
   id: number;
   amount: number;
-  status: "pending" | "processed" | "failed";
+  status: "pending" | "processed" | "failed" | "APPROVED" | "REJECTED" | "PROCESSING" | "COMPLETED";
   upi_id: string;
   created_at: string;
   processed_at: string | null;

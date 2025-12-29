@@ -5,7 +5,7 @@ export interface ReferralLevel {
   userId: string;
   referralCode: string;
   username: string | null;
-  phone: string;
+  phone: string | null;
 }
 
 export interface ReferralCommission {
@@ -195,10 +195,10 @@ export async function getReferralChain(userId: string): Promise<{
   return {
     referrer: user.referredBy
       ? {
-          id: user.referredBy.id,
-          referralCode: user.referredBy.referralCode,
-          username: user.referredBy.username,
-        }
+        id: user.referredBy.id,
+        referralCode: user.referredBy.referralCode,
+        username: user.referredBy.username,
+      }
       : null,
     directReferrals: user.referralEvents.map((r) => ({
       id: r.referredUser.id,

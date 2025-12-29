@@ -9,7 +9,7 @@ interface LeaderboardEntry {
   score: number;
   rank: number;
   username?: string | null;
-  phone?: string;
+  phone?: string | null;
 }
 
 /**

@@ -59,10 +59,10 @@ export async function POST(req: NextRequest) {
     const { updateStreak } = await import('@/lib/gamification');
     await updateStreak(user.id);
 
-    const session = await prisma.session.create({
+    const session = await prisma.legacySession.create({
       data: {
         userId: user.id,
-        refreshToken: '',
+        refreshToken: `tmp-${Date.now()}-${Math.random()}`, // Temporary unique value
         expiresAt: new Date(Date.now() + Number(process.env.JWT_REFRESH_TOKEN_TTL_SECONDS ?? 60 * 60 * 24 * 30) * 1000),
       },
     });
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
     const accessToken = await signAccessToken({ sub: user.id, role: user.role });
     const refreshToken = await signRefreshToken({ sub: user.id, sid: session.id });
 
-    await prisma.session.update({
+    await prisma.legacySession.update({
       where: { id: session.id },
       data: { refreshToken },
     });

@@ -12,7 +12,7 @@ export async function POST() {
     if (refreshToken) {
       try {
         const payload = await verifyRefreshToken(refreshToken);
-        await prisma.session.update({
+        await prisma.legacySession.update({
           where: { id: payload.sid },
           data: {
             revokedAt: new Date(),

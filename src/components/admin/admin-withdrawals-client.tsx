@@ -16,6 +16,10 @@ const statusStyles: Record<AdminWithdrawal["status"], string> = {
   pending: "bg-primary/10 text-primary",
   processed: "bg-success/10 text-success",
   failed: "bg-destructive/10 text-destructive",
+  APPROVED: "bg-blue-500/10 text-blue-500",
+  REJECTED: "bg-destructive/10 text-destructive",
+  PROCESSING: "bg-yellow-500/10 text-yellow-500",
+  COMPLETED: "bg-success/10 text-success",
 };
 
 interface AdminWithdrawalsClientProps {
@@ -26,7 +30,7 @@ export function AdminWithdrawalsClient({ withdrawals }: AdminWithdrawalsClientPr
   const router = useRouter();
 
   const mutation = useMutation({
-    mutationFn: async ({ withdrawal_id, new_status }: { withdrawal_id: number; new_status: "processed" | "failed" }) => {
+    mutationFn: async ({ withdrawal_id, new_status }: { withdrawal_id: number; new_status: "APPROVED" | "REJECTED" }) => {
       const response = await fetch("/api/admin/withdrawals/process", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -98,7 +102,7 @@ export function AdminWithdrawalsClient({ withdrawals }: AdminWithdrawalsClientPr
                     variant="ghost"
                     size="icon"
                     disabled={withdrawal.status !== "pending" || mutation.isPending}
-                    onClick={() => mutation.mutate({ withdrawal_id: withdrawal.id, new_status: "processed" })}
+                    onClick={() => mutation.mutate({ withdrawal_id: withdrawal.id, new_status: "APPROVED" })}
                   >
                     <Check className="h-4 w-4 text-success" />
                   </Button>
@@ -106,7 +110,7 @@ export function AdminWithdrawalsClient({ withdrawals }: AdminWithdrawalsClientPr
                     variant="ghost"
                     size="icon"
                     disabled={withdrawal.status !== "pending" || mutation.isPending}
-                    onClick={() => mutation.mutate({ withdrawal_id: withdrawal.id, new_status: "failed" })}
+                    onClick={() => mutation.mutate({ withdrawal_id: withdrawal.id, new_status: "REJECTED" })}
                   >
                     <X className="h-4 w-4 text-destructive" />
                   </Button>
