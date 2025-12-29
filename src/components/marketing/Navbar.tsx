@@ -9,6 +9,7 @@ const navLinks: { label: string; href: Route | `#${string}` }[] = [
   { label: "How it works", href: "#how-it-works" },
   { label: "Dashboard", href: "/member/dashboard" },
   { label: "Support", href: "/support" },
+  { label: "Download App", href: "/download" },
 ];
 
 export function Navbar() {
