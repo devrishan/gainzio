@@ -6,13 +6,24 @@ export function getRedis(): Redis | null {
   if (!redis) {
     const url = process.env.REDIS_URL;
 
+    // Check for invalid Redis URL configurations
     if (!url || (process.env.NODE_ENV === 'production' && (url.includes('localhost') || url.includes('127.0.0.1')))) {
       if (url) {
+        // Case: URL exists but is localhost in production
         console.warn('Redis is configured to use localhost in production. Disabling Redis to prevent connection errors.');
       } else {
-        console.warn('REDIS_URL is not set. Redis features will be disabled.');
+        // Case: URL is empty
+        // During build phase, REDIS_URL might not be set, but we still want to proceed without error.
+        // If it's production and URL is empty, we disable it.
+        // If it's not production and URL is empty, we disable it.
+        if (process.env.NODE_ENV === 'production') {
+          // During build, REDIS_URL might not be set. We still disable Redis features.
+          console.warn('REDIS_URL is not set in production. Redis features will be disabled.');
+        } else {
+          console.warn('REDIS_URL is not set. Redis features will be disabled.');
+        }
       }
-      return null;
+      return null; // Disable Redis features for these cases
     }
 
     try {
