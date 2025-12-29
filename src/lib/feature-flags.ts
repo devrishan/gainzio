@@ -29,7 +29,10 @@ export async function getFeatureFlag(key: string): Promise<FeatureFlag | null> {
       return JSON.parse(cached);
     }
   } catch (error) {
-    console.error(`Error reading feature flag ${key}:`, error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(`[FeatureFlags] Error reading feature flag ${key}:`, error instanceof Error ? error.message : "Unknown error");
+    }
+    // Fallthrough to env check
   }
 
   // Default: check environment variable
