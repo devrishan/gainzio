@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const cookieStore = cookies();
     // Check both new and legacy cookie names
-    const accessToken = cookieStore.get("earniq_access_token")?.value || cookieStore.get("sparkio_token")?.value;
+    const accessToken = cookieStore.get("gainzio_access_token")?.value || cookieStore.get("earniq_access_token")?.value || cookieStore.get("sparkio_token")?.value;
 
     if (!accessToken) {
       // Return 200 with unauthenticated status to avoid console errors

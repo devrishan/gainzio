@@ -26,6 +26,28 @@ export async function POST() {
 
     const response = NextResponse.json({ success: true });
 
+    // Clear Gainzio cookies
+    response.cookies.set("gainzio_access_token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 0,
+      path: "/",
+    });
+
+    response.cookies.set("gainzio_refresh_token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 0,
+      path: "/",
+    });
+
+    response.cookies.set("gainzio_user", "", {
+      maxAge: 0,
+      path: "/",
+    });
+
     // Clear all auth cookies
     response.cookies.set("earniq_access_token", "", {
       httpOnly: true,
