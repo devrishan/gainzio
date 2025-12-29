@@ -167,7 +167,7 @@ export function MemberDashboardClient({ dashboard, referrals }: MemberDashboardC
                       </div>
                     </TableCell>
                     <TableCell className="hidden text-right sm:table-cell">{referrer.verified_referrals}</TableCell>
-                    <TableCell className="text-right">₹{referrer.total_earned.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">{referrer.total_earned.toFixed(0)} Pts</TableCell>
                   </TableRow>
                 ))
               )}

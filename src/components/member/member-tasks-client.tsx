@@ -117,7 +117,7 @@ export function MemberTasksClient() {
               <Badge variant="outline">{task.category.name}</Badge>
               <div className="flex flex-col items-end gap-1">
                 {task.reward_amount > 0 && (
-                  <div className="text-lg font-bold text-primary">₹{task.reward_amount.toFixed(2)}</div>
+                  <div className="text-lg font-bold text-primary">{task.reward_amount.toFixed(0)} Pts</div>
                 )}
                 {task.reward_coins > 0 && (
                   <div className="text-sm font-medium text-muted-foreground">{task.reward_coins} coins</div>

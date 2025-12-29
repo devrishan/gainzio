@@ -12,6 +12,8 @@ import { NavigationItem } from "@/config/navigation";
 import { Sidebar } from "../navigation/sidebar";
 import { UserMenu } from "../navigation/user-menu";
 
+import { BottomNav } from "./bottom-nav";
+
 interface AppShellProps {
   sidebarItems: NavigationItem[];
   children: React.ReactNode;
@@ -34,7 +36,7 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
       </aside>
 
       <div className="flex flex-col">
-        <header className="flex h-16 items-center justify-between border-b border-border px-4 lg:px-8">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:px-8">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden">
@@ -54,7 +56,9 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
           </div>
         </header>
 
-        <main className="flex-1 bg-muted/30 p-4 lg:p-8">{children}</main>
+        <main className="flex-1 bg-muted/30 p-4 pb-20 lg:p-8 lg:pb-8">{children}</main>
+
+        <BottomNav items={sidebarItems} />
       </div>
     </div>
   );

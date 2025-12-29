@@ -70,7 +70,7 @@ export function MemberWithdrawForm({ balance }: MemberWithdrawFormProps) {
       <div>
         <h3 className="text-xl font-semibold text-foreground">Request Withdrawal</h3>
         <p className="text-sm text-muted-foreground">
-          Available balance <span className="font-medium text-foreground">₹{balance.toFixed(2)}</span>
+          Available balance <span className="font-medium text-foreground">{balance.toFixed(0)} Pts</span>
         </p>
       </div>
 
@@ -81,7 +81,7 @@ export function MemberWithdrawForm({ balance }: MemberWithdrawFormProps) {
             name="amount"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Amount (₹)</FormLabel>
+                <FormLabel>Amount (Points)</FormLabel>
                 <FormControl>
                   <Input type="number" step="0.01" min={1} max={balance} placeholder="100.00" {...field} />
                 </FormControl>

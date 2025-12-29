@@ -40,6 +40,16 @@ export interface MemberReferral {
   updated_at: string;
 }
 
+export interface Withdrawal {
+  id: string;
+  amount: number;
+  status: "PENDING" | "APPROVED" | "REJECTED" | "PROCESSING" | "COMPLETED" | "FAILED" | "CANCELLED";
+  upiId: string;
+  requestedAt: string;
+  processedAt: string | null;
+  notes: string | null;
+}
+
 export async function getMemberDashboard(): Promise<MemberDashboardPayload> {
   try {
     const data = await serverFetch<{

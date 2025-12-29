@@ -21,10 +21,12 @@ export default async function MemberWithdrawPage() {
         <Card className="h-fit border-border bg-card p-6 text-sm text-muted-foreground">
           <h3 className="text-lg font-semibold text-foreground">Withdrawal Checklist</h3>
           <ul className="mt-3 list-disc space-y-2 pl-5 marker:text-primary">
-            <li>Minimum withdrawal is ₹100 to maintain fair processing for all members.</li>
+            <li>Minimum withdrawal is 100 Points to maintain fair processing for all members.</li>
             <li>Ensure the UPI ID belongs to you to avoid failed transactions.</li>
             <li>Withdrawals are reviewed within 24 hours on business days.</li>
-            <li>Track the status in your withdrawal history after submitting.</li>
+            <li>
+              Track the status in your <a href="/member/withdraw/history" className="underline hover:text-primary">withdrawal history</a> after submitting.
+            </li>
           </ul>
         </Card>
       </div>

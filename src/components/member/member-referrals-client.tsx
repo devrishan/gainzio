@@ -195,7 +195,7 @@ export function MemberReferralsClient() {
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Commission</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">₹{stats.total_commission.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-primary">{stats.total_commission.toFixed(0)} Pts</div>
           </CardContent>
         </Card>
       </div>
@@ -252,7 +252,7 @@ export function MemberReferralsClient() {
                     <TableCell>{getLevelBadge(referral.level)}</TableCell>
                     <TableCell>{getStatusBadge(referral.status)}</TableCell>
                     <TableCell className="text-right font-semibold">
-                      ₹{referral.commission_amount.toFixed(2)}
+                      {referral.commission_amount.toFixed(0)} Pts
                     </TableCell>
                     <TableCell className="text-right text-muted-foreground text-sm">
                       {new Date(referral.referred_user.created_at).toLocaleDateString()}

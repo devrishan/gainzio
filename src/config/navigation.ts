@@ -7,7 +7,8 @@ export type NavigationIcon =
   | "members"
   | "security"
   | "submissions"
-  | "maintenance";
+  | "maintenance"
+  | "profile";
 
 export type NavigationItem = {
   href: string;
@@ -20,6 +21,7 @@ export const memberNavigation: NavigationItem[] = [
   { href: "/member/tasks", label: "Tasks", icon: "dashboard" },
   { href: "/member/referrals", label: "Referrals", icon: "referrals" },
   { href: "/member/withdraw", label: "Withdraw", icon: "withdraw" },
+  { href: "/settings", label: "Profile", icon: "profile" },
 ];
 
 export const adminNavigation: NavigationItem[] = [
