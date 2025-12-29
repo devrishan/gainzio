@@ -142,6 +142,7 @@ export async function GET() {
       wallet: {
         balance: Number(finalWallet.balance),
         total_earned: Number(finalWallet.totalEarned),
+        coins: Number(finalWallet.coins),
       },
       referrals: {
         total: totalReferrals,

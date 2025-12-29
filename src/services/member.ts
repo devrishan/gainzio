@@ -9,6 +9,7 @@ export interface MemberDashboardPayload {
   wallet: {
     balance: number;
     total_earned: number;
+    coins: number;
   };
   referrals: {
     total: number;
@@ -83,6 +84,22 @@ export async function getMemberDashboard(): Promise<MemberDashboardPayload> {
   }
 }
 
+export interface SquadData {
+  membersCount: number;
+  weeklyGoal: number;
+  currentTotal: number;
+  remaining: number;
+  progressPercent: number;
+  isGoalMet: boolean;
+  topContributors: Array<{
+    userId: string;
+    username: string;
+    amount: number;
+    isSelf: boolean;
+  }>;
+  weekEndsAt: string;
+}
+
 export async function getMemberReferrals(): Promise<MemberReferral[]> {
   try {
     const data = await serverFetch<{ success: boolean; referrals: MemberReferral[] }>("/api/member/referrals");
@@ -92,6 +109,18 @@ export async function getMemberReferrals(): Promise<MemberReferral[]> {
     return data.referrals;
   } catch {
     redirect("/login");
+  }
+}
+
+export async function getMemberSquad(): Promise<SquadData | null> {
+  try {
+    const data = await serverFetch<{ success: boolean; squad: SquadData }>("/api/member/squad");
+    if (!data.success) {
+      return null;
+    }
+    return data.squad;
+  } catch {
+    return null;
   }
 }
 

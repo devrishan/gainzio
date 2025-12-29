@@ -82,6 +82,7 @@ model User {
   // Wallet & gamification
   wallet          Wallet?
   transactions    WalletTransaction[]
+  coinTransactions CoinTransaction[]
   withdrawals     Withdrawal[]
   gamification    GamificationState?
 
@@ -223,6 +224,23 @@ model WalletTransaction {
   @@index([type])
   @@index([createdAt])
   @@index([userId, createdAt])
+}
+
+model CoinTransaction {
+  id             String           @id @default(cuid())
+  userId         String
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount         Int              
+  type           String           @db.VarChar(50) // EARN, SPEND
+  description    String           @db.VarChar(255)
+  source         String?          @db.VarChar(50) // STREAK_FREEZE, TASK_PEEK, TASK_REWARD, etc.
+  metadata       Json?
+  createdAt      DateTime         @default(now())
+
+  @@index([userId])
+  @@index([type])
+  @@index([source])
+  @@index([createdAt])
 }
 
 model Withdrawal {

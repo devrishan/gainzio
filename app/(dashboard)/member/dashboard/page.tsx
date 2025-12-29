@@ -1,9 +1,13 @@
 import { MemberDashboardClient } from "@/components/member/member-dashboard-client";
-import { getMemberDashboard, getMemberReferrals } from "@/services/member";
+import { getMemberDashboard, getMemberReferrals, getMemberSquad } from "@/services/member";
 export const dynamic = "force-dynamic";
 
 export default async function MemberDashboardPage() {
-  const [dashboard, referrals] = await Promise.all([getMemberDashboard(), getMemberReferrals()]);
+  const [dashboard, referrals, squad] = await Promise.all([
+    getMemberDashboard(),
+    getMemberReferrals(),
+    getMemberSquad()
+  ]);
 
   return (
     <section className="space-y-6">
@@ -14,7 +18,7 @@ export default async function MemberDashboardPage() {
         </p>
       </header>
 
-      <MemberDashboardClient dashboard={dashboard} referrals={referrals} />
+      <MemberDashboardClient dashboard={dashboard} referrals={referrals} squad={squad} />
     </section>
   );
 }

@@ -14,12 +14,15 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-import type { MemberDashboardPayload, MemberReferral } from "@/services/member";
+import type { MemberDashboardPayload, MemberReferral, SquadData } from "@/services/member";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { SquadHUD } from "@/components/member/squad-hud";
+import { CoinShopCard } from "@/components/member/coin-shop-card";
 
 interface MemberDashboardClientProps {
   dashboard: MemberDashboardPayload;
   referrals: MemberReferral[];
+  squad: SquadData | null;
 }
 
 const chartConfig = {
@@ -33,7 +36,7 @@ const chartConfig = {
   },
 };
 
-export function MemberDashboardClient({ dashboard, referrals }: MemberDashboardClientProps) {
+export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDashboardClientProps) {
   const router = useRouter();
 
   const referralSummary = useMemo(
@@ -132,12 +135,18 @@ export function MemberDashboardClient({ dashboard, referrals }: MemberDashboardC
           </CardContent>
         </Card>
 
-        <WalletCard
-          balance={dashboard.wallet.balance}
-          totalEarned={dashboard.wallet.total_earned}
-          onWithdraw={() => router.push("/member/withdraw")}
-        />
+        <div className="space-y-6">
+          <WalletCard
+            balance={dashboard.wallet.balance}
+            totalEarned={dashboard.wallet.total_earned}
+            onWithdraw={() => router.push("/member/withdraw")}
+          />
+          <CoinShopCard coins={dashboard.wallet.coins || 0} />
+        </div>
       </div>
+
+      {/* Squad Wars HUD */}
+      <SquadHUD squad={squad} />
 
       {/* Daily Missions */}
       <div>
