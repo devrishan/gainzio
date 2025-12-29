@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/components/providers/session-provider";
 
 export function ReferralTracker() {
     const searchParams = useSearchParams();
