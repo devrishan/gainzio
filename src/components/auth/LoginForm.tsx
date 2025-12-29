@@ -99,7 +99,7 @@ export function LoginForm() {
 
         <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground/80">
           <span className="flex h-1.5 w-1.5 rounded-full bg-green-500"></span>
-          Secure • No OTP required
+          No OTP required • Secure, passwordless login
         </div>
 
         <div className="relative">
