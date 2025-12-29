@@ -104,6 +104,39 @@ export async function GET() {
       currency: 'INR',
     };
 
+    // Get gamification state
+    let gamification = await prisma.gamificationState.findUnique({
+      where: { userId },
+      include: { badges: true },
+    });
+
+    if (!gamification) {
+      gamification = await prisma.gamificationState.create({
+        data: {
+          userId,
+          xp: 0,
+          rank: 'NEWBIE',
+          streakDays: 0,
+        },
+        include: { badges: true },
+      });
+    }
+
+    // Calculate progression
+    const RANKS = {
+      NEWBIE: { min: 0, next: 'PRO', max: 1000 },
+      PRO: { min: 1000, next: 'ELITE', max: 5000 },
+      ELITE: { min: 5000, next: 'MASTER', max: 20000 },
+      MASTER: { min: 20000, next: null, max: null },
+    };
+
+    const currentRankConfig = RANKS[gamification.rank as keyof typeof RANKS] || RANKS.NEWBIE;
+    const nextRank = currentRankConfig.next;
+    const xpToNext = currentRankConfig.max ? currentRankConfig.max - gamification.xp : 0;
+    const progressPercent = currentRankConfig.max
+      ? Math.min(100, Math.max(0, ((gamification.xp - currentRankConfig.min) / (currentRankConfig.max - currentRankConfig.min)) * 100))
+      : 100;
+
     return NextResponse.json({
       success: true,
       wallet: {
@@ -117,6 +150,14 @@ export async function GET() {
         success_rate: Number(successRate.toFixed(2)),
       },
       top_referrers: topReferrersData,
+      gamification: {
+        xp: gamification.xp,
+        rank: gamification.rank,
+        streak: gamification.streakDays,
+        next_rank: nextRank,
+        xp_to_next: xpToNext,
+        progress: progressPercent,
+      }
     });
   } catch (error) {
     console.error('Error fetching dashboard:', error);

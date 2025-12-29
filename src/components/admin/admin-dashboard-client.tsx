@@ -43,6 +43,7 @@ export function AdminDashboardClient({ metrics, pendingWithdrawals }: AdminDashb
 
   return (
     <div className="space-y-6">
+      {/* Stats Overview */}
       <div className="grid gap-4 md:grid-cols-3">
         {summary.map((item) => (
           <StatsCard
@@ -55,6 +56,37 @@ export function AdminDashboardClient({ metrics, pendingWithdrawals }: AdminDashb
         ))}
       </div>
 
+      {/* Control Panel Grid */}
+      <div>
+        <h2 className="mb-4 text-lg font-semibold tracking-tight">System Control</h2>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="cursor-pointer border-l-4 border-l-blue-500 transition-all hover:bg-accent/50" onClick={() => router.push('/admin/tasks/create')}>
+            <div className="p-6">
+              <h3 className="font-semibold text-foreground">Create Task</h3>
+              <p className="text-sm text-muted-foreground">Add new missions & levels</p>
+            </div>
+          </Card>
+          <Card className="cursor-pointer border-l-4 border-l-purple-500 transition-all hover:bg-accent/50" onClick={() => router.push('/admin/users')}>
+            <div className="p-6">
+              <h3 className="font-semibold text-foreground">User Database</h3>
+              <p className="text-sm text-muted-foreground">Manage ranks & accounts</p>
+            </div>
+          </Card>
+          <Card className="cursor-pointer border-l-4 border-l-orange-500 transition-all hover:bg-accent/50" onClick={() => router.push('/admin/config')}>
+            <div className="p-6">
+              <h3 className="font-semibold text-foreground">Engine Tuning</h3>
+              <p className="text-sm text-muted-foreground">Adjust formulas & thresholds</p>
+            </div>
+          </Card>
+          <Card className="cursor-pointer border-l-4 border-l-green-500 transition-all hover:bg-accent/50" onClick={() => router.push('/admin/withdrawals')}>
+            <div className="p-6">
+              <h3 className="font-semibold text-foreground">Payout Gateway</h3>
+              <p className="text-sm text-muted-foreground">{metrics.pending_withdrawals.count} pending requests</p>
+            </div>
+          </Card>
+        </div>
+      </div>
+
       <Card className="border-border bg-card p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -62,8 +94,8 @@ export function AdminDashboardClient({ metrics, pendingWithdrawals }: AdminDashb
             <p className="text-sm text-muted-foreground">
               Approve or reject payouts to keep the community paid on time.
             </p>
-        </div>
-        <Button variant="outline" onClick={() => router.push("/admin/withdrawals")}>
+          </div>
+          <Button variant="outline" onClick={() => router.push("/admin/withdrawals")}>
             Manage Queue
           </Button>
         </div>
@@ -79,8 +111,8 @@ export function AdminDashboardClient({ metrics, pendingWithdrawals }: AdminDashb
           <TableBody>
             {latestWithdrawals.length === 0 ? (
               <TableRow>
-                  <TableCell colSpan={4} className="py-8 text-center text-sm text-muted-foreground">
-                    No pending withdrawals. You&apos;re all caught up!
+                <TableCell colSpan={4} className="py-8 text-center text-sm text-muted-foreground">
+                  No pending withdrawals. You&apos;re all caught up!
                 </TableCell>
               </TableRow>
             ) : (

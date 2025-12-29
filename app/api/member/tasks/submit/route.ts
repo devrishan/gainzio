@@ -116,6 +116,28 @@ export async function POST(request: NextRequest) {
       folder: 'task-proofs',
     });
 
+    // Check Flash Time
+    let flashMetadata = {};
+    const flashConfig = await prisma.systemConfig.findUnique({
+      where: { key: 'flash_time_config' },
+    });
+
+    if (flashConfig && flashConfig.value) {
+      const config = flashConfig.value as any;
+      const now = new Date();
+      const start = new Date(config.flashStartAt);
+      const end = new Date(config.flashEndAt);
+
+      if (config.flashTimeEnabled && now >= start && now <= end) {
+        flashMetadata = {
+          flash_applied: true,
+          flash_multiplier: config.flashMultiplier || 1.5,
+          flash_base_reward: Number(task.rewardAmount),
+          formatted_bonus: `⚡ Flash Time Bonus (${config.flashMultiplier}x)`
+        };
+      }
+    }
+
     // Create submission record
     const submission = await prisma.taskSubmission.create({
       data: {
@@ -129,6 +151,7 @@ export async function POST(request: NextRequest) {
           fileName: proofFile.name,
           fileSize: proofFile.size,
           s3Key: uploadResult.key,
+          ...flashMetadata
         },
       },
       include: {

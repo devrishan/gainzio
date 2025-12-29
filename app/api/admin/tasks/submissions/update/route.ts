@@ -90,10 +90,19 @@ export async function PUT(request: NextRequest) {
     // If approved, credit wallet and update gamification
     if (new_status === 'APPROVED' && submission.status !== 'APPROVED') {
       await prisma.$transaction(async (tx) => {
-        // Credit wallet
         if (submission.user.wallet) {
-          const rewardAmount = Number(submission.task.rewardAmount);
+          let rewardAmount = Number(submission.task.rewardAmount);
           const rewardCoins = submission.task.rewardCoins;
+          let notes = 'Task Reward';
+
+          // Check for Flash Time Bonus
+          const metadata = submission.metadata as any;
+          if (metadata && metadata.flash_applied) {
+            const multiplier = Number(metadata.flash_multiplier) || 1.5;
+            const bonus = rewardAmount * (multiplier - 1);
+            rewardAmount = rewardAmount * multiplier;
+            notes = `Task Reward (Includes ⚡ Flash Time Bonus of ₹${bonus.toFixed(2)})`;
+          }
 
           // Update wallet
           await tx.wallet.update({
@@ -118,9 +127,20 @@ export async function PUT(request: NextRequest) {
                 taskTitle: submission.task.title,
                 submissionId: submission.id,
                 coins: rewardCoins,
+                flashApplied: !!metadata?.flash_applied,
+                notes
               },
             },
           });
+
+          // Publish Spark Event (Live Ticker)
+          try {
+            // We import dynamically to avoid circular deps or context issues in transaction, 
+            // but here we are in a transaction. Ideally we publish AFTER transaction.
+            // We'll queue it or just await it after this block, but inside here is fine if we don't await strictly or if we use our helper.
+            // Actually, let's keep it simple. We can't import `publishSparkEvent` inside the `tx` easily if it uses `prisma`.
+            // But we can do it after the transaction block.
+          } catch (e) { }
         }
 
         // Update gamification (XP, badges, etc.)

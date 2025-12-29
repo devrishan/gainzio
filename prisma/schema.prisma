@@ -267,6 +267,7 @@ model Task {
   rewardAmount   Decimal          @db.Decimal(10, 2)
   rewardCoins    Int              @default(0)
   difficulty     String           @db.VarChar(50)
+  minRank        Rank             @default(NEWBIE) // "Tasks Become Levels"
   isActive       Boolean          @default(true)
   maxSubmissions Int?
   expiresAt      DateTime?
@@ -550,4 +551,15 @@ model Ad {
   updatedAt       DateTime @updatedAt
 
   @@index([isActive])
+}
+
+model SystemConfig {
+  id              String   @id @default(cuid())
+  key             String   @unique @db.VarChar(100) // e.g. "rank_thresholds", "reward_formulas"
+  value           Json     // The config object
+  description     String?  @db.Text
+  updatedBy       String?
+  updatedAt       DateTime @updatedAt
+
+  @@index([key])
 }

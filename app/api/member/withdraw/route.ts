@@ -75,13 +75,32 @@ export async function POST(request: NextRequest) {
         throw new Error('Insufficient balance');
       }
 
+      // Check gamification rank for auto-approval
+      const gamification = await tx.gamificationState.findUnique({
+        where: { userId },
+      });
+
+      let status: 'PENDING' | 'APPROVED' = 'PENDING';
+      let processedAt: Date | null = null;
+      let notes: string | null = null;
+
+      // Auto-approve for ELITE/MASTER if amount <= 500
+      if (gamification && (gamification.rank === 'ELITE' || gamification.rank === 'MASTER') && amount <= 500) {
+        status = 'APPROVED';
+        processedAt = new Date();
+        notes = 'Auto-approved via Gainzio Trust System (Rank Benefit)';
+        // Note: In a production environment, this would trigger the actual payout via Payout Gateway API.
+      }
+
       // Create withdrawal
       const newWithdrawal = await tx.withdrawal.create({
         data: {
           userId,
           amount,
-          status: 'PENDING',
+          status,
           upiId,
+          processedAt,
+          notes,
         },
       });
 

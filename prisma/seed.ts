@@ -213,6 +213,64 @@ async function main() {
 
   console.log('✅ Test users created');
 
+  // Seed System Config
+  await prisma.systemConfig.upsert({
+    where: { key: 'rank_thresholds' },
+    update: {},
+    create: {
+      key: 'rank_thresholds',
+      description: 'XP thresholds for user ranks',
+      updatedBy: 'system',
+      value: {
+        NEWBIE: { min: 0, next: 'PRO', max: 1000 },
+        PRO: { min: 1000, next: 'ELITE', max: 5000 },
+        ELITE: { min: 5000, next: 'MASTER', max: 20000 },
+        MASTER: { min: 20000, next: null, max: null },
+      }
+    }
+  });
+
+  console.log('✅ System Config created');
+
+  // Update tasks with ranks
+  if (shoppingCategory) {
+    // Newbie Task
+    await prisma.task.upsert({
+      where: { slug: 'buy-product-amazon' },
+      update: { minRank: 'NEWBIE' },
+      create: {
+        title: 'Buy a product from Amazon',
+        slug: 'buy-product-amazon',
+        description: 'Purchase any product from Amazon and upload the order confirmation screenshot.',
+        categoryId: shoppingCategory.id,
+        rewardAmount: 50.0,
+        rewardCoins: 100,
+        difficulty: 'Easy',
+        minRank: 'NEWBIE',
+        isActive: true,
+        maxSubmissions: 1,
+      },
+    });
+
+    // Pro Task (Better Pay)
+    await prisma.task.upsert({
+      where: { slug: 'premium-shopping-flipkart' },
+      update: { minRank: 'PRO' },
+      create: {
+        title: 'Premium Flipkart Shopping',
+        slug: 'premium-shopping-flipkart',
+        description: 'Exclusive task for Pro members. Higher rewards.',
+        categoryId: shoppingCategory.id,
+        rewardAmount: 150.0,
+        rewardCoins: 300,
+        difficulty: 'Medium',
+        minRank: 'PRO',
+        isActive: true,
+        maxSubmissions: 1,
+      },
+    });
+  }
+
   console.log('🎉 Seeding completed!');
 }
 

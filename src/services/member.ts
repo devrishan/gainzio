@@ -22,6 +22,14 @@ export interface MemberDashboardPayload {
     verified_referrals: number;
     total_earned: number;
   }>;
+  gamification: {
+    xp: number;
+    rank: string;
+    streak: number;
+    next_rank: string | null;
+    xp_to_next: number;
+    progress: number;
+  };
 }
 
 export interface MemberReferral {
@@ -57,6 +65,7 @@ export async function getMemberDashboard(): Promise<MemberDashboardPayload> {
       wallet: MemberDashboardPayload["wallet"];
       referrals: MemberDashboardPayload["referrals"];
       top_referrers: MemberDashboardPayload["top_referrers"];
+      gamification: MemberDashboardPayload["gamification"];
     }>("/api/member/dashboard");
 
     if (!data.success) {
@@ -67,6 +76,7 @@ export async function getMemberDashboard(): Promise<MemberDashboardPayload> {
       wallet: data.wallet,
       referrals: data.referrals,
       top_referrers: data.top_referrers,
+      gamification: data.gamification,
     };
   } catch {
     redirect("/login");
