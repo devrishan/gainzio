@@ -96,6 +96,8 @@ export async function POST(request: NextRequest) {
     const res = NextResponse.json({
       success: true,
       user: userForResponse,
+      accessToken,
+      refreshToken,
     });
 
     setAuthCookies(res, {

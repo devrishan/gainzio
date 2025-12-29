@@ -4,29 +4,20 @@ import { cookies } from 'next/headers';
 import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
 import { getReferralTree, getReferralChain } from '@/lib/referrals';
+import { getAuthenticatedUser } from '@/lib/api-auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('earniq_access_token')?.value;
+    const authUser = await getAuthenticatedUser(request);
 
-    if (!accessToken) {
+    if (!authUser) {
       return NextResponse.json(
         { success: false, error: 'Unauthenticated' },
         { status: 401 },
       );
     }
 
-    let userId: string;
-    try {
-      const payload = await verifyAccessToken(accessToken);
-      userId = payload.sub;
-    } catch {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 },
-      );
-    }
+    const userId = authUser.userId;
 
     const searchParams = request.nextUrl.searchParams;
     const includeTree = searchParams.get('include_tree') === 'true';
