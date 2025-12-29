@@ -81,35 +81,45 @@ export const authOptions: NextAuthOptions = {
     events: {
         createUser: async ({ user }) => {
             // ---------------------------------------------------------
-            // Referral-Aware Login Logic
+            // 1. Auto-generate username if missing (e.g. Google Login)
+            // ---------------------------------------------------------
+            if (!user.username) {
+                const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+                const username = `gainzio_${randomSuffix}`;
+
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: { username },
+                });
+            }
+
+            // ---------------------------------------------------------
+            // 2. Referral-Aware Login Logic
             // ---------------------------------------------------------
             // Why here? This event runs ONLY when a new user is created in the DB.
             // Perfect for "First-time attribution only".
-
             try {
                 const cookieStore = cookies();
                 const referralCode = cookieStore.get("referral_code")?.value;
 
                 if (referralCode) {
-                    // 1. Find the referrer
+                    // Find the referrer
                     const referrer = await prisma.user.findUnique({
                         where: { referralCode: referralCode },
                     });
 
                     if (referrer && referrer.id !== user.id) {
-                        // 2. Assign referrer to the new user
-                        // We use update because the user is already created by the adapter
+                        // Assign referrer to the new user
                         await prisma.user.update({
                             where: { id: user.id },
                             data: {
                                 referredById: referrer.id,
-                                // Also create a Referral Event record for tracking/rewards
                                 referredUserEvents: {
                                     create: {
                                         referrerId: referrer.id,
                                         level: 1,
                                         status: "pending",
-                                        commissionAmount: 0 // Will be calculated later based on rules
+                                        commissionAmount: 0
                                     }
                                 }
                             }
@@ -119,7 +129,6 @@ export const authOptions: NextAuthOptions = {
                 }
             } catch (error) {
                 console.error("[Referral Error] Failed to process referral:", error);
-                // Swallow error to not fail the login
             }
         },
     },

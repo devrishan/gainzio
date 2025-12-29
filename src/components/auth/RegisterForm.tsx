@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/sonner";
 import { GainzioLogo } from "@/components/shared/logo";
 import { PasswordInput } from "./PasswordInput";
+import { GoogleLoginButton } from "./GoogleLoginButton";
 
 const registerSchema = z.object({
   username: z
@@ -124,6 +125,20 @@ export function RegisterForm() {
           <p className="text-base text-muted-foreground">
             Track tasks, referrals, and withdrawals in one place.
           </p>
+        </div>
+      </div>
+
+      {/* Google Login */}
+      <div className="w-full space-y-4">
+        <GoogleLoginButton />
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+          </div>
         </div>
       </div>
 
