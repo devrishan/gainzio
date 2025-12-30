@@ -56,7 +56,7 @@ export function NotificationBell() {
     useEffect(() => {
         if (isOpen && data?.unreadCount && data.unreadCount > 0) {
             // Small delay to ensure user sees "unread" state briefly or just mark all
-            markAsRead.mutate();
+            markAsRead.mutate(undefined);
         }
     }, [isOpen, data?.unreadCount, markAsRead]);
 

@@ -13,6 +13,8 @@ import {
   Users2,
   Wallet,
   Wrench,
+  Shield,
+  User,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -29,6 +31,7 @@ const iconMap: Record<NavigationIcon, LucideIcon> = {
   security: ShieldCheck,
   submissions: ClipboardCheck,
   maintenance: Wrench,
+  profile: User,
 };
 
 export function Sidebar({ items }: { items: NavigationItem[] }) {

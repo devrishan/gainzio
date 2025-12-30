@@ -18,6 +18,7 @@ import type { MemberDashboardPayload, MemberReferral, SquadData } from "@/servic
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { SquadHUD } from "@/components/member/squad-hud";
 import { CoinShopCard } from "@/components/member/coin-shop-card";
+import { UnifiedProgress } from "@/components/member/unified-progress";
 
 interface MemberDashboardClientProps {
   dashboard: MemberDashboardPayload;
@@ -91,49 +92,7 @@ export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDas
     <div className="space-y-6">
       {/* Hero Section: Gamification & Wallet */}
       <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-        <Card className="relative overflow-hidden border-none text-white shadow-xl">
-          <div className={`absolute inset-0 bg-gradient-to-br ${rankColor} opacity-90`} />
-          <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay" />
-          <CardContent className="relative flex h-full flex-col justify-between p-6 sm:p-8">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-white/20 text-white backdrop-blur-md">
-                    <Crown className="mr-1 h-3.5 w-3.5" />
-                    {gamification?.rank} RANK
-                  </Badge>
-                  <Badge variant="secondary" className="bg-white/20 text-white backdrop-blur-md">
-                    <Zap className="mr-1 h-3.5 w-3.5 text-yellow-300" />
-                    {gamification?.streak} Day Streak
-                  </Badge>
-                </div>
-                <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
-                  Hello, {dashboard.top_referrers.find(u => u.total_earned === dashboard.wallet.total_earned)?.username || "Earner"}!
-                </h2>
-                <p className="mt-2 text-blue-50">
-                  {gamification?.next_rank
-                    ? `You are ${gamification.xp_to_next} XP away from ${gamification.next_rank} status.`
-                    : "You are at the top of the food chain!"}
-                </p>
-              </div>
-              <div className="rounded-full bg-white/20 p-3 backdrop-blur-md">
-                <Trophy className="h-8 w-8 text-yellow-200" />
-              </div>
-            </div>
-
-            <div className="mt-8 space-y-2">
-              <div className="flex justify-between text-sm font-medium">
-                <span>{gamification?.xp} XP</span>
-                <span>{gamification?.next_rank ? "Next: " + gamification.next_rank : "Max Level"}</span>
-              </div>
-              <Progress value={gamification?.progress} className="h-3 bg-white/20" />
-              <p className="text-xs text-blue-100">
-                Tip: Reach {gamification?.next_rank || "ELITE"} to unlock{" "}
-                <span className="font-bold underline">Instant Withdrawals</span>.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <UnifiedProgress />
 
         <div className="space-y-6">
           <WalletCard
@@ -179,7 +138,7 @@ export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDas
               <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" />
             </CardContent>
           </Card>
-          <Card className="cursor-pointer border-l-4 border-l-purple-500 transition-all hover:bg-accent/50" onClick={() => router.push('/member/gamification')}>
+          <Card className="cursor-pointer border-l-4 border-l-purple-500 transition-all hover:bg-accent/50" onClick={() => router.push('/member/leaderboard')}>
             <CardContent className="flex items-center gap-4 p-4">
               <div className="rounded-lg bg-purple-100 p-2 text-purple-600 dark:bg-purple-900/40 dark:text-purple-400">
                 <Star className="h-5 w-5" />

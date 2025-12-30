@@ -4,6 +4,7 @@ import { Menu } from "lucide-react";
 import * as React from "react";
 
 import { GainzioLogo } from "@/components/shared/logo";
+import { NotificationBell } from "@/components/shared/NotificationBell";
 import { useSession } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -52,6 +53,7 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
           </Sheet>
 
           <div className="flex items-center gap-3">
+            <NotificationBell />
             <UserMenu role={role} username={username} onLogout={signOut} />
           </div>
         </header>
