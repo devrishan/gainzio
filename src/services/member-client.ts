@@ -20,6 +20,8 @@ export interface Task {
   user_submission_count: number;
   can_submit: boolean;
   is_expired: boolean;
+  is_locked?: boolean;
+  min_rank?: string;
 }
 
 // Client-side fetch function

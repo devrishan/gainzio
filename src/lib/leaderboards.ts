@@ -2,7 +2,7 @@ import { getRedis } from './redis';
 import { prisma } from './prisma';
 
 export type LeaderboardPeriod = 'daily' | 'weekly' | 'monthly' | 'alltime';
-export type LeaderboardMetric = 'xp' | 'coins' | 'earnings' | 'referrals';
+export type LeaderboardMetric = 'xp' | 'coins' | 'earnings' | 'referrals' | 'smart_score';
 
 interface LeaderboardEntry {
   userId: string;
@@ -268,6 +268,43 @@ async function getLeaderboardFromDB(
       username: item.user.username,
       phone: item.user.phone,
     }));
+  } else if (metric === 'smart_score') {
+    // Smart Score = TotalEarned + (StreakDays * 10) + (ReferralCount * 50)
+    // Use getLeaderboard (Redis) whenever possible for this, as DB calculation is expensive
+    // This DB fallback is an approximation or requires fetching everything
+
+    const users = await prisma.user.findMany({
+      include: {
+        wallet: true,
+        gamification: true,
+        referralEvents: {
+          where: { status: 'verified' }
+        }
+      },
+      // Optimization: Limit to top 500 by earnings first to reduce set size
+      orderBy: {
+        wallet: { totalEarned: 'desc' }
+      },
+      take: 500
+    });
+
+    const scoredUsers = users.map(user => {
+      const totalEarned = Number(user.wallet?.totalEarned || 0);
+      const streakDays = user.gamification?.streakDays || 0;
+      const referrals = user.referralEvents.length;
+      const score = totalEarned + (streakDays * 10) + (referrals * 50);
+      return { user, score: Math.floor(score) };
+    });
+
+    const sorted = scoredUsers.sort((a, b) => b.score - a.score).slice(0, limit);
+
+    return sorted.map((item, index) => ({
+      userId: item.user.id,
+      score: item.score,
+      rank: index + 1,
+      username: item.user.username,
+      phone: item.user.phone,
+    }));
   }
 
   return [];
@@ -282,7 +319,7 @@ export async function syncLeaderboardsToRedis(): Promise<void> {
     return;
   }
 
-  const metrics: LeaderboardMetric[] = ['xp', 'coins', 'earnings', 'referrals'];
+  const metrics: LeaderboardMetric[] = ['xp', 'coins', 'earnings', 'referrals', 'smart_score'];
   const periods: LeaderboardPeriod[] = ['daily', 'weekly', 'monthly', 'alltime'];
 
   for (const metric of metrics) {

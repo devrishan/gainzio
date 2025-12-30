@@ -21,7 +21,10 @@ export function Navbar() {
             <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-accent text-primary-foreground shadow-lg shadow-primary/25 transition-transform group-hover:scale-105">
               <Sparkles className="h-5 w-5 fill-current" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-foreground/90">Gainzio</span>
+            <div className="flex flex-col leading-none">
+              <span className="text-xl font-bold tracking-tight text-foreground/90">Gainzio</span>
+              <span className="text-[10px] font-medium text-muted-foreground hidden sm:block">India’s task & referral rewards platform</span>
+            </div>
           </Link>
 
           <div className="hidden items-center gap-8 text-sm font-medium text-muted-foreground md:flex">

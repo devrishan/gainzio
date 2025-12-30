@@ -87,6 +87,14 @@ export async function addXP(
     console.error('Failed to update leaderboard score', err);
   }
 
+  // Update Smart Score
+  try {
+    const smartScore = await calculateSmartScore(userId);
+    await updateLeaderboardScore(userId, 'smart_score', smartScore);
+  } catch (err) {
+    console.warn('Failed to update smart score', err);
+  }
+
   // Create XP event log if metadata provided
   if (metadata) {
     try {
@@ -448,16 +456,43 @@ export async function getUserGamificationStats(userId: string) {
     gamification.rank === Rank.MASTER
       ? 100
       : Math.min(
-          100,
-          Math.max(
-            0,
-            ((gamification.xp - prevRankXP) / (nextRankXP - prevRankXP)) * 100
-          )
-        );
+        100,
+        Math.max(
+          0,
+          ((gamification.xp - prevRankXP) / (nextRankXP - prevRankXP)) * 100
+        )
+      );
 
   return {
     ...gamification,
     nextRankXP,
     progress,
   };
+}
+
+/**
+ * Calculate "Smart Score" for leaderboard
+ * Score = TotalEarned + (StreakDays * 10) + (ReferralCount * 50)
+ */
+export async function calculateSmartScore(userId: string): Promise<number> {
+  const [wallet, gamification, referralCount] = await Promise.all([
+    prisma.wallet.findUnique({
+      where: { userId },
+      select: { totalEarned: true },
+    }),
+    prisma.gamificationState.findUnique({
+      where: { userId },
+      select: { streakDays: true },
+    }),
+    prisma.referral.count({
+      where: { referrerId: userId, status: 'verified' },
+    }),
+  ]);
+
+  const totalEarned = Number(wallet?.totalEarned || 0);
+  const streakDays = gamification?.streakDays || 0;
+
+  // Weights can be adjusted here
+  const score = totalEarned + (streakDays * 10) + (referralCount * 50);
+  return Math.floor(score);
 }

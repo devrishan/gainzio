@@ -42,11 +42,11 @@ export async function GET(request: NextRequest) {
     const RANK_VALUES = { NEWBIE: 0, PRO: 1, ELITE: 2, MASTER: 3 };
     const userRankValue = RANK_VALUES[userRank as keyof typeof RANK_VALUES] || 0;
 
-    // We only show tasks that are at or below the user's rank level
-    // Prisma enum filtering is a bit strict, so we'll use an array of allowed ranks
-    const allowedRanks = Object.keys(RANK_VALUES).filter(r => RANK_VALUES[r as keyof typeof RANK_VALUES] <= userRankValue);
+    // We want to show ALL tasks so users see what they can unlock
+    // const allowedRanks = Object.keys(RANK_VALUES).filter(r => RANK_VALUES[r as keyof typeof RANK_VALUES] <= userRankValue);
+    // where.minRank = { in: allowedRanks };
 
-    where.minRank = { in: allowedRanks };
+    // ... (rest of filtering)
 
     if (categoryId) {
       where.categoryId = categoryId;
@@ -90,25 +90,38 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      tasks: tasks.map((task) => ({
-        id: task.id,
-        title: task.title,
-        slug: task.slug,
-        description: task.description,
-        reward_amount: Number(task.rewardAmount),
-        reward_coins: task.rewardCoins,
-        difficulty: task.difficulty,
-        min_rank: task.minRank,
-        is_active: task.isActive,
-        max_submissions: task.maxSubmissions,
-        expires_at: task.expiresAt?.toISOString() || null,
-        created_at: task.createdAt.toISOString(),
-        category: {
-          id: task.category.id,
-          name: task.category.name,
-          slug: task.category.slug,
-        },
-      })),
+      tasks: tasks.map((task) => {
+        // Derive minRank from difficulty
+        let minRank = 'NEWBIE';
+        if (task.difficulty === 'MEDIUM') minRank = 'PRO';
+        if (task.difficulty === 'HARD') minRank = 'ELITE';
+        if (task.difficulty === 'EXPERT') minRank = 'MASTER';
+
+        const taskRankValue = RANK_VALUES[minRank as keyof typeof RANK_VALUES] || 0;
+        const isLocked = taskRankValue > userRankValue;
+
+        return {
+          id: task.id,
+          title: task.title,
+          slug: task.slug,
+          description: task.description,
+          reward_amount: Number(task.rewardAmount),
+          reward_coins: task.rewardCoins,
+          difficulty: task.difficulty,
+          min_rank: minRank,
+          min_rank_value: taskRankValue, // helpful for frontend
+          is_locked: isLocked,
+          is_active: task.isActive,
+          max_submissions: task.maxSubmissions,
+          expires_at: task.expiresAt?.toISOString() || null,
+          created_at: task.createdAt.toISOString(),
+          category: {
+            id: task.category.id,
+            name: task.category.name,
+            slug: task.category.slug,
+          },
+        };
+      }),
       pagination: {
         total,
         limit,

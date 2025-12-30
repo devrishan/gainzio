@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { fadeInUp, stagger, viewport } from "@/components/marketing/animations";
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
 
 const highlights = [
   { label: "Avg payout time", value: "58 min", icon: Clock3, color: "text-blue-400" },
@@ -21,6 +22,8 @@ const checklist = [
 ];
 
 export function Hero() {
+  const { data: session } = useSession();
+
   return (
     <section className="relative w-full overflow-hidden bg-background pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-40 lg:pb-32">
       {/* Background Elements */}
@@ -49,6 +52,7 @@ export function Hero() {
             </motion.div>
 
             {/* Heading */}
+            {/* Benefits Bullets (Replaces Description) */}
             <motion.div className="space-y-4 max-w-2xl" variants={fadeInUp}>
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl text-foreground">
                 Earn smarter with <br className="hidden lg:block" />
@@ -56,32 +60,74 @@ export function Hero() {
                   tasks & referrals
                 </span>
               </h1>
-              <p className="text-lg text-muted-foreground md:text-xl leading-relaxed max-w-[600px] mx-auto lg:mx-0">
-                Gainzio helps you earn rewards by completing tasks and referring friends. Transparent earnings, fast UPI withdrawals, and a trusted platform.
-              </p>
+
+              {/* New Bullet Points */}
+              <ul className="space-y-2 mt-4 text-lg text-muted-foreground md:text-xl max-w-[600px] mx-auto lg:mx-0">
+                <li className="flex items-center gap-3 justify-center lg:justify-start">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
+                  Earn by completing simple tasks
+                </li>
+                <li className="flex items-center gap-3 justify-center lg:justify-start">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
+                  Get rewards for referrals
+                </li>
+                <li className="flex items-center gap-3 justify-center lg:justify-start">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
+                  Fast UPI withdrawals you can trust
+                </li>
+              </ul>
             </motion.div>
 
             {/* Buttons */}
-            <motion.div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto" variants={fadeInUp}>
+            <motion.div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-6" variants={fadeInUp}>
               <Button asChild size="xl" className="rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all">
-                <Link href="/member/dashboard">
-                  Launch dashboard
+                <Link href={session ? "/member/dashboard" : "/register"}>
+                  {session ? "Launch dashboard" : "Start Earning"}
                   <ArrowUpRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="xl" className="rounded-full border-2 hover:bg-muted/50 transition-all">
-                <Link href="/register">
-                  Create free account
+              <div className="flex items-center justify-center">
+                <Link href="/login" className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline">
+                  Already a member? Login
                 </Link>
-              </Button>
+              </div>
             </motion.div>
 
-            {/* Checklist */}
-            <motion.div className="flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-3 pt-4" variants={fadeInUp}>
-              {checklist.map((item) => (
-                <div key={item} className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
-                  {item}
+            {/* Trust Badges & Social Proof */}
+            <motion.div className="flex flex-col gap-4 pt-2" variants={fadeInUp}>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-3">
+                {checklist.map((item) => (
+                  <div key={item} className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <ShieldCheck className="h-4 w-4 text-primary flex-shrink-0" />
+                    {item}
+                  </div>
+                ))}
+              </div>
+
+              {/* Social Proof */}
+              <div className="flex items-center gap-2 justify-center lg:justify-start text-sm text-muted-foreground">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-6 w-6 rounded-full bg-muted border-2 border-background" />
+                  ))}
+                </div>
+                <span>Trusted by <span className="font-bold text-foreground">10,000+ users</span></span>
+              </div>
+            </motion.div>
+
+            {/* Micro How It Works */}
+            <motion.div
+              className="grid grid-cols-3 gap-2 mt-6 pt-6 border-t border-border/50 w-full max-w-[500px] lg:max-w-full"
+              variants={fadeInUp}
+            >
+              {[
+                { step: "1", text: "Complete tasks" },
+                { step: "2", text: "Refer friends" },
+                { step: "3", text: "Withdraw via UPI" },
+              ].map((item) => (
+                <div key={item.step} className="flex flex-col items-center lg:items-start text-center lg:text-left gap-1">
+                  <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">Step {item.step}</span>
+                  <span className="text-sm font-medium leading-tight">{item.text}</span>
                 </div>
               ))}
             </motion.div>

@@ -138,9 +138,24 @@ export function MemberTasksClient() {
             </div>
           </CardHeader>
           <CardContent className="flex-1">
-            {getStatusBadge(task.user_submission_count, task.can_submit, task.is_expired)}
+            {task.is_locked ? (
+              <div className="flex items-center gap-2 text-sm text-destructive font-medium">
+                <AlertCircle className="h-4 w-4" />
+                Locked (Requires {task.min_rank})
+              </div>
+            ) : (
+              getStatusBadge(task.user_submission_count, task.can_submit, task.is_expired)
+            )}
           </CardContent>
-          <CardFooter>{getStatusButton(task)}</CardFooter>
+          <CardFooter>
+            {task.is_locked ? (
+              <Button variant="outline" className="w-full opacity-50" disabled>
+                Locked
+              </Button>
+            ) : (
+              getStatusButton(task)
+            )}
+          </CardFooter>
         </Card>
       ))}
     </div>
