@@ -59,6 +59,18 @@ export interface Withdrawal {
   notes: string | null;
 }
 
+export async function getWithdrawalHistory(): Promise<Withdrawal[]> {
+  try {
+    const data = await serverFetch<{ success: boolean; withdrawals: Withdrawal[] }>("/api/member/withdraw/history");
+    if (!data.success) {
+      redirect("/login");
+    }
+    return data.withdrawals;
+  } catch {
+    redirect("/login");
+  }
+}
+
 export async function getMemberDashboard(): Promise<MemberDashboardPayload> {
   try {
     const data = await serverFetch<{

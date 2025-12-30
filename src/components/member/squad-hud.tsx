@@ -13,15 +13,16 @@ interface SquadHUDProps {
 }
 
 export function SquadHUD({ squad }: SquadHUDProps) {
-    if (!squad) return null;
-
     const timeLeft = useMemo(() => {
+        if (!squad) return "";
         const end = new Date(squad.weekEndsAt);
         const now = new Date();
         const diff = end.getTime() - now.getTime();
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         return days > 0 ? `${days} days left` : "Ending soon";
-    }, [squad.weekEndsAt]);
+    }, [squad]);
+
+    if (!squad) return null;
 
     const handleShare = () => {
         const text = `Hey! Join my Gainzio Squad. We need to hit our goal of ₹${squad.weeklyGoal} to unlock bonuses!`;
