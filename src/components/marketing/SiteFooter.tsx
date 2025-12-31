@@ -41,27 +41,34 @@ export function SiteFooter() {
       viewport={viewport}
       variants={fadeInUp}
     >
-      <div className="mx-auto flex max-w-6xl flex-col gap-10 lg:flex-row lg:justify-between">
-        <div className="space-y-4 lg:max-w-sm">
+      <div className="mx-auto flex max-w-6xl flex-col gap-12 md:gap-8 lg:flex-row lg:justify-between">
+        {/* Brand Section */}
+        <div className="flex flex-col items-center gap-6 text-center md:items-start md:text-left lg:max-w-sm">
           <div className="inline-flex items-center gap-3">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/20 text-lg font-semibold text-primary">
               ✦
             </span>
             <span className="text-xl font-semibold tracking-tight">Gainzio</span>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="space-y-4 text-sm leading-relaxed text-muted-foreground md:pr-4">
             Earn rewards by completing tasks and referring friends. Fast payouts, transparent tracking, and a trusted earning experience.
           </p>
         </div>
 
-        <div className="grid flex-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Links Section */}
+        <div className="grid flex-1 grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
           {columns.map((column) => (
-            <div key={column.title} className="space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{column.title}</p>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+            <div key={column.title} className="flex flex-col items-center space-y-4 md:items-start md:space-y-3">
+              <p className="text-sm font-semibold uppercase tracking-wide text-foreground md:text-muted-foreground">
+                {column.title}
+              </p>
+              <ul className="flex w-full flex-col items-center space-y-1 md:items-start md:space-y-2">
                 {column.links.map((link) => (
-                  <li key={link.label}>
-                    <Link href={link.href} className="transition hover:text-foreground">
+                  <li key={link.label} className="w-full text-center md:text-left">
+                    <Link
+                      href={link.href}
+                      className="block w-full py-3 text-base text-muted-foreground transition-colors hover:text-foreground focus:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 md:py-0 md:text-sm"
+                    >
                       {link.label}
                     </Link>
                   </li>
@@ -72,8 +79,9 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <p className="mx-auto mt-10 max-w-6xl text-xs text-muted-foreground">© {new Date().getFullYear()} Gainzio. All rights reserved.</p>
+      <p className="mx-auto mt-12 max-w-6xl text-center text-xs text-muted-foreground md:mt-10 md:text-left">
+        © {new Date().getFullYear()} Gainzio. All rights reserved.
+      </p>
     </motion.footer>
   );
 }
-
