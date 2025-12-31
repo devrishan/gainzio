@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
+import { SessionProvider as NextAuthSessionProvider } from "next-auth/react";
 
 type UserSession = {
   id: number;
@@ -68,7 +69,11 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     };
   }, [data, status, refetch, mutation, queryClient]);
 
-  return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
+  return (
+    <NextAuthSessionProvider>
+      <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
+    </NextAuthSessionProvider>
+  );
 }
 
 export function useSession() {
