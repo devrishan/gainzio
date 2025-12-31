@@ -50,9 +50,14 @@ export function SiteFooter() {
             </span>
             <span className="text-xl font-semibold tracking-tight">Gainzio</span>
           </div>
-          <p className="space-y-4 text-sm leading-relaxed text-muted-foreground md:pr-4">
-            Earn rewards by completing tasks and referring friends. Fast payouts, transparent tracking, and a trusted earning experience.
-          </p>
+          <div className="flex flex-col gap-4">
+            <p className="text-sm leading-relaxed text-muted-foreground md:pr-4">
+              Earn rewards by completing tasks and referring friends. Fast payouts, transparent tracking, and a trusted earning experience.
+            </p>
+            <p className="text-xs font-medium text-muted-foreground/60">
+              UPI-based payouts • Secure verification • Fraud-protected
+            </p>
+          </div>
         </div>
 
         {/* Links Section */}
