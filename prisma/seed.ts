@@ -19,7 +19,7 @@ async function main() {
       username: 'admin',
       role: Role.ADMIN,
       referralCode: adminReferralCode,
-      hashedPassword: adminPassword,
+      password_hash: adminPassword,
       wallet: {
         create: {
           balance: 0,
@@ -55,7 +55,7 @@ async function main() {
   const demoUser = await prisma.user.upsert({
     where: { email: 'demo@gainzio.com' },
     update: {
-      hashedPassword: demoPassword, // Update password if it changed
+      password_hash: demoPassword, // Update password if it changed
     },
     create: {
       email: 'demo@gainzio.com',
@@ -63,7 +63,7 @@ async function main() {
       name: 'Demo User',
       role: Role.USER,
       referralCode: 'DEMO001',
-      hashedPassword: demoPassword,
+      password_hash: demoPassword,
       wallet: {
         create: {
           balance: 1000, // Give some starting balance for testing

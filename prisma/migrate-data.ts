@@ -100,7 +100,7 @@ async function migrateUsers(mysqlConn: mysql.Connection) {
           phone,
           email: user.email,
           username: user.username,
-          hashedPassword: user.password_hash, // Keep existing hash
+          password_hash: user.password_hash, // Keep existing hash
           role,
           referralCode: user.referral_code,
           referredById: user.referred_by ? String(user.referred_by) : null,
