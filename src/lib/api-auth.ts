@@ -7,10 +7,22 @@ export interface AuthenticatedUser {
     role?: string;
 }
 
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
+
 export async function getAuthenticatedUser(request?: NextRequest): Promise<AuthenticatedUser | null> {
+    // 1. Try NextAuth Session (Preferred for Google/Email Login)
+    const session = await getServerSession(authOptions);
+    if (session?.user?.email) {
+        return {
+            userId: session.user.id,
+            role: "USER" // Default to USER, can be enhanced if role is in session
+        };
+    }
+
     let accessToken: string | undefined;
 
-    // 1. Try Bearer Token from Header (Priority for API/App)
+    // 2. Try Bearer Token from Header (Priority for API/App)
     if (request) {
         const authHeader = request.headers.get('Authorization');
         if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -18,14 +30,14 @@ export async function getAuthenticatedUser(request?: NextRequest): Promise<Authe
         }
     }
 
-    // 2. Fallback to Cookies (For Web)
+    // 3. Fallback to Cookies (For Web - Legacy or Custom)
     if (!accessToken) {
         const cookieStore = cookies();
         accessToken = cookieStore.get('gainzio_access_token')?.value ||
             cookieStore.get('earniq_access_token')?.value; // Legacy fallback
     }
 
-    // 3. Verify Token
+    // 4. Verify Custom Token
     if (!accessToken) {
         return null;
     }

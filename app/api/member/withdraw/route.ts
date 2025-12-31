@@ -1,81 +1,55 @@
-﻿import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { getAuthenticatedUser } from '@/lib/api-auth';
 
 const withdrawSchema = z.object({
-  amount: z.number().positive().min(100, 'Minimum withdrawal amount is â‚¹100'),
+  amount: z.number().positive().min(100, 'Minimum withdrawal amount is ₹100'),
   upiId: z.string().min(1, 'UPI ID is required').max(255),
 });
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('earniq_access_token')?.value;
+    // 1. Standardized Auth Check
+    const authUser = await getAuthenticatedUser(request);
 
-    if (!accessToken) {
+    if (!authUser) {
       return NextResponse.json(
         { success: false, error: 'Unauthenticated' },
         { status: 401 },
       );
     }
-
-    let userId: string;
-    try {
-      const payload = await verifyAccessToken(accessToken);
-      userId = payload.sub;
-    } catch {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 },
-      );
-    }
+    const userId = authUser.userId;
 
     const body = await request.json();
     const validation = withdrawSchema.parse(body);
     const { amount, upiId } = validation;
 
-    // Get wallet
-    const wallet = await prisma.wallet.findUnique({
-      where: { userId },
-    });
-
-    if (!wallet) {
-      return NextResponse.json(
-        { success: false, error: 'Wallet not found' },
-        { status: 404 },
-      );
-    }
-
-    // Check if user has enough withdrawable balance
-    if (Number(wallet.withdrawable) < amount) {
-      return NextResponse.json(
-        { success: false, error: 'Insufficient withdrawable balance' },
-        { status: 400 },
-      );
-    }
-
-    // Check minimum withdrawal amount
-    if (amount < 100) {
-      return NextResponse.json(
-        { success: false, error: 'Minimum withdrawal amount is â‚¹100' },
-        { status: 400 },
-      );
-    }
-
-    // Create withdrawal request
+    // 2. Atomic Transaction to Prevent Race Conditions
     const withdrawal = await prisma.$transaction(async (tx) => {
-      // Lock wallet for update
-      const lockedWallet = await tx.wallet.findUnique({
-        where: { userId },
+      // A. Attempt to deduct balance ATOMICALLY
+      // This ensures that even if 2 requests come in parallel, only one will successfully find
+      // a wallet with enough balance in this specific query snapshot.
+      const updateResult = await tx.wallet.updateMany({
+        where: {
+          userId: userId,
+          withdrawable: { gte: amount } // CRITICAL: Only update if balance is sufficient
+        },
+        data: {
+          withdrawable: { decrement: amount },
+          pendingAmount: { increment: amount },
+        },
       });
 
-      if (!lockedWallet || Number(lockedWallet.withdrawable) < amount) {
-        throw new Error('Insufficient balance');
+      if (updateResult.count === 0) {
+        throw new Error('Insufficient withdrawable balance or wallet not found');
       }
 
-      // Check gamification rank for auto-approval
+      // Re-fetch wallet to get ID for transaction record (since updateMany doesn't return it)
+      const wallet = await tx.wallet.findUniqueOrThrow({ where: { userId } });
+
+      // B. Check gamification rank for auto-approval
       const gamification = await tx.gamificationState.findUnique({
         where: { userId },
       });
@@ -89,10 +63,9 @@ export async function POST(request: NextRequest) {
         status = 'APPROVED';
         processedAt = new Date();
         notes = 'Auto-approved via Gainzio Trust System (Rank Benefit)';
-        // Note: In a production environment, this would trigger the actual payout via Payout Gateway API.
       }
 
-      // Create withdrawal
+      // C. Create withdrawal record
       const newWithdrawal = await tx.withdrawal.create({
         data: {
           userId,
@@ -104,20 +77,11 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Update wallet (move from withdrawable to pending)
-      await tx.wallet.update({
-        where: { userId },
-        data: {
-          withdrawable: { decrement: amount },
-          pendingAmount: { increment: amount },
-        },
-      });
-
-      // Create transaction record
+      // D. Create transaction record
       await tx.walletTransaction.create({
         data: {
           userId,
-          walletId: lockedWallet.id,
+          walletId: wallet.id,
           amount: -amount, // Negative for withdrawal
           type: 'WITHDRAWAL_REQUEST',
           metadata: {
@@ -149,10 +113,19 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+
+    // Handle specific insufficient funds error from our localized check
+    if (error instanceof Error && error.message.includes('Insufficient')) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to create withdrawal',
+        error: 'Failed to create withdrawal',
       },
       { status: 500 },
     );

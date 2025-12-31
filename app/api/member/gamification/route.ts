@@ -1,32 +1,19 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
-import { cookies } from 'next/headers';
-import { verifyAccessToken } from '@/lib/jwt';
-
 import { getUserGamificationStats } from '@/lib/gamification';
+import { getAuthenticatedUser } from '@/lib/api-auth';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('earniq_access_token')?.value;
+    const authUser = await getAuthenticatedUser(request);
 
-    if (!accessToken) {
+    if (!authUser) {
       return NextResponse.json(
         { success: false, error: 'Unauthenticated' },
         { status: 401 },
       );
     }
-
-    let userId: string;
-    try {
-      const payload = await verifyAccessToken(accessToken);
-      userId = payload.sub;
-    } catch {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 },
-      );
-    }
+    const userId = authUser.userId;
 
     const stats = await getUserGamificationStats(userId);
 

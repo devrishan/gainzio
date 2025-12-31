@@ -22,7 +22,11 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const includeTree = searchParams.get('include_tree') === 'true';
 
-    // Get user's referrals
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
+    const skip = (page - 1) * limit;
+
+    // Get user's referrals (Paginated)
     const referrals = await prisma.referral.findMany({
       where: {
         referrerId: userId,
@@ -41,7 +45,27 @@ export async function GET(request: NextRequest) {
       orderBy: {
         createdAt: 'desc',
       },
+      skip,
+      take: limit,
     });
+
+    // Get total count for pagination metadata
+    const totalReferrals = await prisma.referral.count({
+      where: { referrerId: userId }
+    });
+
+    const verifiedCount = await prisma.referral.count({
+      where: { referrerId: userId, status: 'verified' }
+    });
+
+    // Calculate commission (Aggregate instead of JS loop over partial set)
+    const commissionResult = await prisma.referral.aggregate({
+      where: { referrerId: userId, status: 'verified' },
+      _sum: { commissionAmount: true }
+    });
+    const totalCommission = Number(commissionResult._sum.commissionAmount || 0);
+
+    const pendingCount = totalReferrals - verifiedCount; // Approximation or separate query
 
     // Get referral chain (who referred me, who I referred)
     const chain = await getReferralChain(userId);
@@ -53,12 +77,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate stats
-    const totalReferrals = referrals.length;
-    const verifiedCount = referrals.filter((r) => r.status === 'verified').length;
-    const pendingCount = referrals.filter((r) => r.status === 'pending').length;
-    const totalCommission = referrals
-      .filter((r) => r.status === 'verified')
-      .reduce((sum, r) => sum + Number(r.commissionAmount), 0);
+    // Stats are now calculated via optimized DB queries above
 
     return NextResponse.json({
       success: true,
@@ -82,6 +101,11 @@ export async function GET(request: NextRequest) {
         verified: verifiedCount,
         pending: pendingCount,
         total_commission: totalCommission,
+      },
+      pagination: {
+        page,
+        limit,
+        total_pages: Math.ceil(totalReferrals / limit),
       },
       chain: {
         referrer: chain.referrer,
