@@ -8,6 +8,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
-    <color name="gainzio_bg">#09090b</color>
-    <color name="gainzio_primary">#FF6200EE</color>
+    <!-- Gainzio Brand Colors -->
+    <color name="gainzio_background">#09090b</color>
+    <color name="gainzio_primary">#eab308</color>
+    <color name="gainzio_primary_dark">#ca8a04</color>
 </resources>
