@@ -74,27 +74,90 @@ export const authOptions: NextAuthOptions = {
         CredentialsProvider({
             name: "Credentials",
             credentials: {
-                email: { label: "Email", type: "text" },
+                connectType: { label: "Connect Type", type: "text" },
+                identifier: { label: "Identifier", type: "text" },
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
-                if (!credentials?.email || !credentials?.password) {
+                if (!credentials?.identifier || !credentials?.password || !credentials?.connectType) {
+                    throw new Error("Missing credentials");
+                }
+
+                const { identifier, password, connectType } = credentials;
+                let user = null;
+
+                // 1. Resolve User by Connect Type (Strict)
+                if (connectType === "CONNECTEMAIL") {
+                    user = await prisma.user.findUnique({ where: { email: identifier } });
+                } else if (connectType === "CONNECTPHONENUMBER") {
+                    user = await prisma.user.findUnique({ where: { phone: identifier } });
+                } else if (connectType === "CONNECTUSERNAME") {
+                    user = await prisma.user.findUnique({ where: { username: identifier } });
+                } else {
+                    throw new Error("Invalid connection type");
+                }
+
+                // 2. TIMING ATTACK PROTECTION: Always hash compare even if user not found
+                if (!user || !user.password_hash) {
+                    // Fake comparison with a VALID hash to ensure time taken is similar to real comparison
+                    // $2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4hZ1a8F9.C is 'password' hash with cost 12
+                    await bcrypt.compare(password, "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4hZ1a8F9.C");
                     throw new Error("Invalid credentials");
                 }
 
-                const user = await prisma.user.findUnique({
-                    where: { email: credentials.email }
-                });
-
-                if (!user || !user.hashedPassword) {
-                    throw new Error("User not found");
+                // 3. CHECK LOCK STATUS
+                if (user.is_locked) {
+                    if (user.lock_until && user.lock_until > new Date()) {
+                        throw new Error("Account is locked. try again later.");
+                    }
+                    // Unlock if time passed
+                    await prisma.user.update({
+                        where: { id: user.id },
+                        data: { is_locked: false, failed_attempts: 0, lock_until: null }
+                    });
                 }
 
-                const isValid = await bcrypt.compare(credentials.password, user.hashedPassword);
+                // 4. VERIFY PASSWORD
+                const storedHash = user.password_hash;
+                if (!storedHash) throw new Error("Invalid credentials");
+
+                const isValid = await bcrypt.compare(password, storedHash);
 
                 if (!isValid) {
-                    throw new Error("Invalid password");
+                    // Increment failed attempts
+                    const attempts = (user.failed_attempts || 0) + 1;
+                    let updateData: any = { failed_attempts: attempts };
+
+                    // Lock Policy:
+                    // ADMIN: 3 attempts -> 30 mins lock
+                    // USER: 5 attempts -> 15 mins lock
+                    const isSystemRole = user.role === "ADMIN" || user.role === "VERIFIER";
+                    const limit = isSystemRole ? 3 : 5;
+                    const lockTime = isSystemRole ? 30 : 15;
+
+                    if (attempts >= limit) {
+                        updateData.is_locked = true;
+                        updateData.lock_until = new Date(Date.now() + lockTime * 60 * 1000);
+                    }
+
+                    await prisma.user.update({
+                        where: { id: user.id },
+                        data: updateData
+                    });
+
+                    throw new Error("Invalid credentials");
                 }
+
+                // 5. SUCCESS: Reset lock & Update stats
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: {
+                        failed_attempts: 0,
+                        is_locked: false,
+                        lock_until: null,
+                        last_login_at: new Date(),
+                    }
+                });
 
                 return user;
             }

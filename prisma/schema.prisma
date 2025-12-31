@@ -63,7 +63,22 @@ model User {
   emailVerified   DateTime? // NextAuth standard
   role            Role      @default(USER)
   // Auth-related
-  hashedPassword  String?   @db.VarChar(255) 
+  // Auth-related
+  // hashedPassword removed in favor of password_hash
+  password_hash   String?   @db.VarChar(255) // Unified field
+  
+  phone_verified  Boolean   @default(false)
+  
+  // Security Locking
+  failed_attempts Int       @default(0)
+  lock_until      DateTime?
+  is_locked       Boolean   @default(false)
+
+  // Tracking & Privacy
+  last_login_at      DateTime?
+  last_login_ip_hash String?   @db.VarChar(255)
+  last_device_hash   String?   @db.VarChar(255)
+
   emailVerifiedAt DateTime?
   emailVerificationToken String? @unique @db.VarChar(255)
   createdAt       DateTime  @default(now())
@@ -92,6 +107,7 @@ model User {
   // Notifications & sessions
   notifications   Notification[]
   legacySessions  LegacySession[] // Renamed from sessions
+  passwordHistory PasswordHistory[]
   
   // NextAuth
   accounts        Account[]
@@ -119,6 +135,17 @@ model User {
   @@index([phone])
   @@index([email])
   @@index([isDeleted, deletedAt])
+}
+
+model PasswordHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hash      String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 // Renamed from Session to avoid conflict with NextAuth

@@ -1,11 +1,6 @@
-import { AuthLayout } from "@/components/auth/AuthLayout";
-import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
+import { redirect } from "next/navigation";
 
 export default function ForgotPasswordPage() {
-  return (
-    <AuthLayout>
-      <ForgotPasswordForm />
-    </AuthLayout>
-  );
+  redirect("/login");
 }
 
