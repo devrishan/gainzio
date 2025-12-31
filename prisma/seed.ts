@@ -50,6 +50,49 @@ async function main() {
 
   console.log('✅ Admin user created:', admin.id);
 
+  // Create demo user
+  const demoPassword = await bcrypt.hash('Demo@123', 10);
+  const demoUser = await prisma.user.upsert({
+    where: { email: 'demo@gainzio.com' },
+    update: {
+      hashedPassword: demoPassword, // Update password if it changed
+    },
+    create: {
+      email: 'demo@gainzio.com',
+      username: 'demouser',
+      name: 'Demo User',
+      role: Role.USER,
+      referralCode: 'DEMO001',
+      hashedPassword: demoPassword,
+      wallet: {
+        create: {
+          balance: 1000, // Give some starting balance for testing
+          pendingAmount: 0,
+          withdrawable: 1000,
+          lockedAmount: 0,
+          coins: 500,
+          totalEarned: 1000,
+          currency: 'INR',
+        },
+      },
+      gamification: {
+        create: {
+          xp: 100,
+          rank: Rank.NEWBIE,
+          streakDays: 5,
+        },
+      },
+      preferences: {
+        create: {
+          language: 'en',
+          timezone: 'Asia/Kolkata',
+          theme: 'light',
+        },
+      },
+    },
+  });
+  console.log('✅ Demo user created:', demoUser.id);
+
   // Create sample task categories
   const categories = [
     { name: 'Shopping', slug: 'shopping' },

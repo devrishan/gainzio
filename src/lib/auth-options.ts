@@ -1,6 +1,8 @@
 import { NextAuthOptions, Theme } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/email";
+import CredentialsProvider from "next-auth/providers/credentials";
+import * as bcrypt from "bcryptjs";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
@@ -68,6 +70,34 @@ export const authOptions: NextAuthOptions = {
                     throw new Error(`Email(s) (${failed.join(", ")}) could not be sent`);
                 }
             },
+        }),
+        CredentialsProvider({
+            name: "Credentials",
+            credentials: {
+                email: { label: "Email", type: "text" },
+                password: { label: "Password", type: "password" }
+            },
+            async authorize(credentials) {
+                if (!credentials?.email || !credentials?.password) {
+                    throw new Error("Invalid credentials");
+                }
+
+                const user = await prisma.user.findUnique({
+                    where: { email: credentials.email }
+                });
+
+                if (!user || !user.hashedPassword) {
+                    throw new Error("User not found");
+                }
+
+                const isValid = await bcrypt.compare(credentials.password, user.hashedPassword);
+
+                if (!isValid) {
+                    throw new Error("Invalid password");
+                }
+
+                return user;
+            }
         }),
     ],
     session: {

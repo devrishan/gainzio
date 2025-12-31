@@ -103,6 +103,23 @@ export function LoginForm() {
             We’ll send you a secure login link
           </p>
         </form>
+
+        {/* Demo Login - Development Only */}
+        {process.env.NODE_ENV === "development" && (
+          <div className="mt-2">
+            <Button
+              variant="outline"
+              className="w-full h-11 border-dashed border-yellow-500/50 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50/50"
+              onClick={() => signIn("credentials", {
+                email: "demo@gainzio.com",
+                password: "Demo@123",
+                callbackUrl: redirectUrl,
+              })}
+            >
+              ⚡ Demo Login (Dev Only)
+            </Button>
+          </div>
+        )}
       </div>
 
       <Separator />
