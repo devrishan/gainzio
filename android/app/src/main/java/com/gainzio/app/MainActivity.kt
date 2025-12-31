@@ -2,126 +2,132 @@ package com.gainzio.app
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Message
-import android.view.View
 import android.webkit.CookieManager
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
-    private val TARGET_URL = "https://gainzio.vercel.app"
+    // Primary URL - production
+    private val BASE_URL = "https://gainzio.vercel.app"
+    // Allowed hosts for internal navigation
+    private val ALLOWED_HOSTS = listOf("gainzio.vercel.app", "accounts.google.com")
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_Gainzio) // Switch from Splash theme
+        // Install Splash Screen (Must be before super.onCreate)
+        installSplashScreen()
+        
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         webView = findViewById(R.id.webview)
-
+        
         setupWebView()
-        setupBackPress()
-
-        // Load the URL
-        webView.loadUrl(TARGET_URL)
+        handleIntent(intent)
+        setupBackNavigation()
+        
+        if (savedInstanceState == null) {
+            webView.loadUrl(BASE_URL)
+        }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView() {
-        val settings = webView.settings
-        settings.javaScriptEnabled = true
-        settings.domStorageEnabled = true
-        settings.databaseEnabled = true
-        settings.javaScriptCanOpenWindowsAutomatically = true
-        settings.setSupportMultipleWindows(true)
-        settings.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
-        settings.userAgentString = settings.userAgentString + " GainzioApp/1.0"
+        webView.settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            javaScriptCanOpenWindowsAutomatically = true
+            supportMultipleWindows() // Support for OAuth popups if needed
+            userAgentString = userAgentString.replace("; wv", "") // Identify as standard browser if needed
+            mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW // Enforce HTTPS
+            
+            // Zoom controls
+            builtInZoomControls = false
+            displayZoomControls = false
+        }
 
-        // Cookie Manager
-        val cookieManager = CookieManager.getInstance()
-        cookieManager.setAcceptCookie(true)
-        cookieManager.setAcceptThirdPartyCookies(webView, true)
+        // Cookie Manager for persistent sessions
+        CookieManager.getInstance().setAcceptCookie(true)
+        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
 
-        // Web Client - Handles Navigation
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                val url = request?.url?.toString() ?: return false
-                
-                // Allow gainzio and auth providers (google) to load in WebView
-                // Simple check: if it's our domain or an auth flow, keep it.
-                // External links (e.g. ads, unknown domains) open in browser.
-                if (url.contains("gainzio.vercel.app") || 
-                    url.contains("accounts.google.com") || 
-                    url.contains("googleapis.com")) {
-                    return false // Load in WebView
+                val url = request?.url.toString()
+                val host = request?.url?.host
+
+                if (host != null && (host == "gainzio.vercel.app" || host.endsWith(".gainzio.vercel.app") || host.contains("google.com"))) {
+                    // Internal navigation
+                    return false 
                 }
 
+                // External links (Discord, Twitter, etc.) open in system browser
                 try {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     startActivity(intent)
-                    return true // Handled by OS
                 } catch (e: Exception) {
-                    return false
+                    e.printStackTrace()
                 }
+                return true
             }
         }
 
-        // Chrome Client - Handles Popups (Google Auth)
         webView.webChromeClient = object : WebChromeClient() {
-            override fun onCreateWindow(
-                view: WebView?,
-                isDialog: Boolean,
-                isUserGesture: Boolean,
-                resultMsg: Message?
-            ): Boolean {
+            // Handle new windows (typically for OAuth popups)
+            override fun onCreateWindow(view: WebView?, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message?): Boolean {
                 val newWebView = WebView(this@MainActivity)
                 newWebView.settings.javaScriptEnabled = true
-                newWebView.settings.domStorageEnabled = true
-                newWebView.settings.setSupportMultipleWindows(true)
-                newWebView.settings.javaScriptCanOpenWindowsAutomatically = true
-
-                // Add simple layout params
-                newWebView.layoutParams = FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT,
-                    FrameLayout.LayoutParams.MATCH_PARENT
-                )
-
-                // Add to view hierarchy (full screen overlay)
-                val rootView = findViewById<FrameLayout>(android.R.id.content)
-                rootView.addView(newWebView)
-
-                newWebView.webChromeClient = object : WebChromeClient() {
-                    override fun onCloseWindow(window: WebView?) {
-                        rootView.removeView(window)
+                newWebView.webChromeClient = this
+                newWebView.webViewClient = object : WebViewClient() {
+                    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                         val url = request?.url.toString()
+                         // If popup redirects back to our app, close popup and load in main WebView
+                         if (url.startsWith(BASE_URL)) {
+                             webView.loadUrl(url)
+                             newWebView.destroy()
+                             return true
+                         }
+                         return false
                     }
                 }
                 
-                newWebView.webViewClient = object : WebViewClient() {
-                     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                        return false // Allow navigation within popup
-                    }
-                }
-
-                val transport = resultMsg?.obj as WebView.WebViewTransport
-                transport.webView = newWebView
-                resultMsg.sendToTarget()
-                return true
+                // Dialog handling logic would go here if specialized popup UI is desired
+                // For simplicity, we might just load in the main view or system browser if complex
+                
+                // Ideally for robust OAuth with popups inside WebView, a dialog or a new Activity is best
+                // For this simple implementation, let's allow the transport to handle it or open in system browser if complex
+                
+                // Changing strategy: Open OAuth directly in WebView usually works if userAgent is correct
+                // If a popup is strictly required, more complex logic is needed.
+                // For now, let's return false so it loads in current webview or is handled by shouldOverrideUrlLoading
+                return false
             }
         }
     }
 
-    private fun setupBackPress() {
+    private fun handleIntent(intent: Intent?) {
+        val data: Uri? = intent?.data
+        if (data != null) {
+            // Deep linking handling
+            webView.loadUrl(data.toString())
+        }
+    }
+    
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun setupBackNavigation() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (webView.canGoBack()) {
