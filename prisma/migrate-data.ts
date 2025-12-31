@@ -12,6 +12,7 @@
 import { PrismaClient, Role, Rank, SubmissionStatus, WithdrawalStatus } from '@prisma/client';
 import mysql from 'mysql2/promise';
 import * as bcrypt from 'bcryptjs';
+// Forced update for deployment tracking
 
 const prisma = new PrismaClient();
 

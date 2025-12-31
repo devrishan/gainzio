@@ -1,5 +1,6 @@
 import { PrismaClient, Role, Rank } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+// Forced update for deployment tracking
 
 const prisma = new PrismaClient();
 
