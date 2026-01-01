@@ -98,7 +98,7 @@ export function RegisterForm() {
     return (
       <div className="space-y-8">
         <div className="flex flex-col items-center gap-4 text-center">
-          <GainzioLogo href="/" />
+          <GainzioLogo href="/" size="xl" showText={false} />
           <div className="space-y-4">
             <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" aria-hidden="true" />
             <div className="space-y-2">

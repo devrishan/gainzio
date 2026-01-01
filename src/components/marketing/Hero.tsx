@@ -72,7 +72,7 @@ export function Hero() {
                   Get rewards for referrals
                 </li>
                 <li className="flex items-center gap-3 justify-center lg:justify-start">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
+                  <ShieldCheck className="h-5 w-5 text-green-500 shrink-0" />
                   Fast UPI withdrawals you can trust
                 </li>
               </ul>
@@ -82,7 +82,7 @@ export function Hero() {
             <motion.div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-6" variants={fadeInUp}>
               <Button asChild size="xl" className="rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all">
                 <Link href={session ? "/member/dashboard" : "/register"}>
-                  {session ? "Launch dashboard" : "Start Earning"}
+                  {session ? "Get Started" : "Start Earning"}
                   <ArrowUpRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -204,6 +204,12 @@ export function Hero() {
                 </div>
 
               </div>
+            </div>
+            {/* Disclaimer Line */}
+            <div className="mt-4 text-center">
+              <span className="text-[10px] text-muted-foreground font-medium opacity-60">
+                Example earnings shown
+              </span>
             </div>
           </motion.div>
 

@@ -28,6 +28,11 @@ export const metadata: Metadata = {
   title: "Gainzio – Smart Earning & Referral Platform",
   description:
     "Gainzio helps you earn rewards by completing tasks and referring friends. Transparent earnings, fast UPI withdrawals, and a trusted platform.",
+  icons: {
+    icon: "/brand/gainzio-symbol.svg",
+    shortcut: "/brand/gainzio-symbol.svg",
+    apple: "/brand/gainzio-symbol.svg",
+  },
 
   keywords: [
     "Gainzio",

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { GainzioLogo } from "@/components/shared/logo";
 import { cn } from "@/lib/utils";
 
 const navLinks: { label: string; href: Route | `#${string}` }[] = [
@@ -24,15 +24,7 @@ export function Navbar() {
     <header className="fixed top-4 left-0 right-0 z-50 mx-auto max-w-7xl px-4">
       <div className="rounded-full border border-white/10 bg-background/60 px-6 py-3 backdrop-blur-xl shadow-lg ring-1 ring-black/5 dark:bg-background/40">
         <nav className="flex items-center justify-between">
-          <Link href="/" className="group inline-flex items-center gap-2" aria-label="Gainzio home">
-            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-accent text-primary-foreground shadow-lg shadow-primary/25 transition-transform group-hover:scale-105">
-              <Sparkles className="h-5 w-5 fill-current" />
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="text-xl font-bold tracking-tight text-foreground/90">Gainzio</span>
-              <span className="text-[10px] font-medium text-muted-foreground hidden sm:block">India’s task & referral rewards platform</span>
-            </div>
-          </Link>
+          <GainzioLogo href="/" className="transition-transform hover:scale-105" />
 
           <div className="hidden items-center gap-8 text-sm font-medium text-muted-foreground md:flex">
             {navLinks.map((link) =>
