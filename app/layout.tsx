@@ -29,9 +29,9 @@ export const metadata: Metadata = {
   description:
     "Gainzio helps you earn rewards by completing tasks and referring friends. Transparent earnings, fast UPI withdrawals, and a trusted platform.",
   icons: {
-    icon: "/brand/gainzio-symbol.svg",
-    shortcut: "/brand/gainzio-symbol.svg",
-    apple: "/brand/gainzio-symbol.svg",
+    icon: "/brand/gainzio-symbol.png",
+    shortcut: "/brand/gainzio-symbol.png",
+    apple: "/brand/gainzio-symbol.png",
   },
 
   keywords: [
