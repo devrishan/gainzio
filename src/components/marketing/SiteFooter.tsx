@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { fadeInUp, viewport } from "@/components/marketing/animations";
+import { GainzioLogo } from "../shared/logo";
 
 const columns = [
   {
@@ -44,12 +45,7 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col gap-12 md:gap-8 lg:flex-row lg:justify-between">
         {/* Brand Section */}
         <div className="flex flex-col items-center gap-6 text-center md:items-start md:text-left lg:max-w-sm">
-          <div className="inline-flex items-center gap-3">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/20 text-lg font-semibold text-primary">
-              ✦
-            </span>
-            <span className="text-xl font-semibold tracking-tight">Gainzio</span>
-          </div>
+          <GainzioLogo size="sm" />
           <div className="flex flex-col gap-4">
             <p className="text-sm leading-relaxed text-muted-foreground md:pr-4">
               Earn rewards by completing tasks and referring friends. Fast payouts, transparent tracking, and a trusted earning experience.

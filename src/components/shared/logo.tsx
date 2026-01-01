@@ -26,7 +26,7 @@ export function GainzioLogo({
   return (
     <Link href={href} className={`flex items-center gap-2 font-semibold ${className || ""}`}>
       <Image
-        src="/brand/gainzio-symbol.png"
+        src="/brand/gainzio-symbol.svg"
         alt="Gainzio"
         width={dimension}
         height={dimension}
