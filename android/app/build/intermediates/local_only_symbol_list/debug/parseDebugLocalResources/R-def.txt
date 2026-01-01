@@ -2,6 +2,7 @@ R_DEF: Internal format may change without notice
 local
 color black
 color gainzio_background
+color gainzio_dark_navy
 color gainzio_primary
 color gainzio_primary_dark
 color ic_launcher_background
@@ -11,6 +12,8 @@ color purple_700
 color teal_200
 color teal_700
 color white
+drawable app_icon_dark
+drawable app_logo
 drawable ic_launcher_foreground
 drawable launch_background
 id webview

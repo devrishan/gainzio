@@ -1421,6 +1421,7 @@ int color error_color_material_light 0x7f05005b
 int color foreground_material_dark 0x7f05005c
 int color foreground_material_light 0x7f05005d
 int color gainzio_background 0x7f05005e
+int color gainzio_dark_navy 0x7f05030d
 int color gainzio_primary 0x7f05005f
 int color gainzio_primary_dark 0x7f050060
 int color highlighted_text_material_dark 0x7f050061
@@ -2989,6 +2990,8 @@ int drawable abc_textfield_search_activated_mtrl_alpha 0x7f070073
 int drawable abc_textfield_search_default_mtrl_alpha 0x7f070074
 int drawable abc_textfield_search_material 0x7f070075
 int drawable abc_vector_test 0x7f070076
+int drawable app_icon_dark 0x7f0700e8
+int drawable app_logo 0x7f0700e9
 int drawable avd_hide_password 0x7f070077
 int drawable avd_show_password 0x7f070078
 int drawable btn_checkbox_checked_mtrl 0x7f070079

@@ -1422,6 +1422,7 @@ color error_color_material_light
 color foreground_material_dark
 color foreground_material_light
 color gainzio_background
+color gainzio_dark_navy
 color gainzio_primary
 color gainzio_primary_dark
 color highlighted_text_material_dark
@@ -2990,6 +2991,8 @@ drawable abc_textfield_search_activated_mtrl_alpha
 drawable abc_textfield_search_default_mtrl_alpha
 drawable abc_textfield_search_material
 drawable abc_vector_test
+drawable app_icon_dark
+drawable app_logo
 drawable avd_hide_password
 drawable avd_show_password
 drawable btn_checkbox_checked_mtrl

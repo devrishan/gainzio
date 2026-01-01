@@ -4,6 +4,10 @@
         "source": "C:\\Users\\Rishan Kp\\.gradle\\daemon\\9.0-milestone-1\\com.gainzio.app-main-35:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
     },
     {
+        "merged": "com.gainzio.app-debug-33:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.gainzio.app-main-35:/drawable/ic_launcher_foreground.xml"
+    },
+    {
         "merged": "C:\\Users\\Rishan Kp\\.gradle\\daemon\\9.0-milestone-1\\com.gainzio.app-debug-33:\\drawable_launch_background.xml.flat",
         "source": "C:\\Users\\Rishan Kp\\.gradle\\daemon\\9.0-milestone-1\\com.gainzio.app-main-35:\\drawable\\launch_background.xml"
     },
@@ -12,12 +16,20 @@
         "source": "com.gainzio.app-main-35:/drawable/launch_background.xml"
     },
     {
+        "merged": "com.gainzio.app-debug-33:/drawable_app_icon_dark.png.flat",
+        "source": "com.gainzio.app-main-35:/drawable/app_icon_dark.png"
+    },
+    {
         "merged": "C:\\Users\\Rishan Kp\\.gradle\\daemon\\9.0-milestone-1\\com.gainzio.app-debug-33:\\drawable_ic_launcher_foreground.xml.flat",
         "source": "C:\\Users\\Rishan Kp\\.gradle\\daemon\\9.0-milestone-1\\com.gainzio.app-main-35:\\drawable\\ic_launcher_foreground.xml"
     },
     {
         "merged": "C:\\Users\\Rishan Kp\\.gradle\\daemon\\9.0-milestone-1\\com.gainzio.app-debug-33:\\xml_data_extraction_rules.xml.flat",
         "source": "C:\\Users\\Rishan Kp\\.gradle\\daemon\\9.0-milestone-1\\com.gainzio.app-main-35:\\xml\\data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.gainzio.app-debug-33:/drawable_app_logo.png.flat",
+        "source": "com.gainzio.app-main-35:/drawable/app_logo.png"
     },
     {
         "merged": "C:\\Users\\Rishan Kp\\.gradle\\daemon\\9.0-milestone-1\\com.gainzio.app-debug-33:\\xml_backup_rules.xml.flat",
