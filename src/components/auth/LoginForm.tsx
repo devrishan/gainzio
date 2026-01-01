@@ -1,19 +1,40 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Link } from "next-view-transitions";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { GainzioLogo } from "@/components/shared/logo";
+import { GoogleLoginButton } from "./GoogleLoginButton";
+import { PasswordInput } from "./PasswordInput";
 
 type AuthState = "LOGIN" | "FORGOT_VERIFY" | "RESET_PASSWORD";
+
+// Zod Schemas
+const loginSchema = z.object({
+  identifier: z.string().min(1, "This field is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+const resetSchema = z.object({
+  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string(),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
 
 export function LoginForm() {
   const searchParams = useSearchParams();
@@ -23,34 +44,19 @@ export function LoginForm() {
   const [authState, setAuthState] = useState<AuthState>("LOGIN");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // Login Form Data
   const [loginTab, setLoginTab] = useState("username");
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
 
-  // Forgot Password Data
-  const [verifyIds, setVerifyIds] = useState([
-    { type: "username", value: "" },
-    { type: "email", value: "" } // Default to most common pair, user can switch type ideally but UI simpler to just ask for 2
-  ]);
-  // Simplified for UX: Just ask for Any 2.
-  // We will dynamic form this: 3 inputs (Username, Email, Phone), user must fill 2.
-  const [forgotInput, setForgotInput] = useState({
-    username: "",
-    email: "",
-    phone: ""
+  // Forgot Password State
+  const [resetUserId, setResetUserId] = useState<string | null>(null);
+  const [verifyInputs, setVerifyInputs] = useState({ username: "", email: "", phone: "" });
+
+  // --- LOGIN FORM ---
+  const loginForm = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { identifier: "", password: "" },
   });
 
-  // Reset Password Data
-  const [resetUserId, setResetUserId] = useState<string | null>(null);
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  // --- HANDLERS ---
-
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
+  async function onLoginSubmit(values: z.infer<typeof loginSchema>) {
     setError("");
     setLoading(true);
 
@@ -62,46 +68,45 @@ export function LoginForm() {
       const res = await signIn("credentials", {
         redirect: false,
         connectType,
-        identifier,
-        password
+        identifier: values.identifier,
+        password: values.password,
       });
 
       if (res?.error) {
-        setError(res.error === "CredentialsSignin" ? "Invalid login credentials" : res.error);
+        setError(res.error === "CredentialsSignin" ? "Invalid login credentials." : res.error);
+        toast.error("Login failed", { description: "Please checks your details." });
       } else {
-        toast.success("Welcome back!");
+        toast.success("Welcome back!", { description: "Redirecting to dashboard..." });
         router.push(redirectUrl);
       }
     } catch (err) {
-      setError("Something went wrong");
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleVerify(e: React.FormEvent) {
+  // --- FORGOT PASSWORD VERIFY ---
+  const filledCount = Object.values(verifyInputs).filter(v => v.trim().length > 0).length;
+  const isVerifyReady = filledCount === 2;
+
+  async function onVerifySubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    if (!isVerifyReady) return;
+
     setLoading(true);
-
-    // Filter filled inputs
-    const filled = [
-      { type: "username", value: forgotInput.username },
-      { type: "email", value: forgotInput.email },
-      { type: "phone", value: forgotInput.phone }
+    const identifiers = [
+      { type: "username", value: verifyInputs.username },
+      { type: "email", value: verifyInputs.email },
+      { type: "phone", value: verifyInputs.phone }
     ].filter(i => i.value.trim().length > 0);
-
-    if (filled.length !== 2) {
-      setError("Please provide exactly two details to verify your identity.");
-      setLoading(false);
-      return;
-    }
 
     try {
       const res = await fetch("/api/auth/forgot-password/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifiers: filled })
+        body: JSON.stringify({ identifiers }),
       });
       const data = await res.json();
 
@@ -109,42 +114,37 @@ export function LoginForm() {
 
       setResetUserId(data.userId);
       setAuthState("RESET_PASSWORD");
-      toast.success("Identity verified. Please reset your password.");
+      toast.success("Identity verified", { description: "Please create a new password." });
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Could not verify details. Please try again.");
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleReset(e: React.FormEvent) {
-    e.preventDefault();
+  // --- RESET PASSWORD FORM ---
+  const resetForm = useForm<z.infer<typeof resetSchema>>({
+    resolver: zodResolver(resetSchema),
+    defaultValues: { newPassword: "", confirmPassword: "" },
+  });
+
+  async function onResetSubmit(values: z.infer<typeof resetSchema>) {
     setError("");
-
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-    if (newPassword.length < 8) {
-      setError("Password must be at least 8 characters");
-      return;
-    }
-
     setLoading(true);
+
     try {
       const res = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: resetUserId, newPassword })
+        body: JSON.stringify({ userId: resetUserId, newPassword: values.newPassword }),
       });
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error || "Reset failed");
 
-      toast.success("Password updated successfully. Please log in.");
+      toast.success("Password reset successful", { description: "You can now log in with your new password." });
       setAuthState("LOGIN");
-      setIdentifier("");
-      setPassword("");
+      loginForm.reset();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -152,117 +152,161 @@ export function LoginForm() {
     }
   }
 
-  // --- RENDER ---
-
   return (
-    <div className="grid gap-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {authState === "LOGIN" && "Sign in to Gainzio"}
-          {authState === "FORGOT_VERIFY" && "Verify Identity"}
-          {authState === "RESET_PASSWORD" && "Reset Password"}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {authState === "LOGIN" && "Enter your details to access your account"}
-          {authState === "FORGOT_VERIFY" && "Enter ANY TWO details linked to your account"}
-          {authState === "RESET_PASSWORD" && "Choose a strong password"}
-        </p>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col items-center gap-4 text-center">
+        <GainzioLogo href="/" />
+        <div className="space-y-2">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+            {authState === "LOGIN" && "Sign in to Gainzio"}
+            {authState === "FORGOT_VERIFY" && "Verify Identity"}
+            {authState === "RESET_PASSWORD" && "Reset Password"}
+          </h1>
+          <p className="text-base text-muted-foreground">
+            {authState === "LOGIN" && "Track tasks, referrals, and withdrawals in one place."}
+            {authState === "FORGOT_VERIFY" && "Fill exactly two fields to continue."}
+            {authState === "RESET_PASSWORD" && "Choose a strong password."}
+          </p>
+        </div>
       </div>
 
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
+      {/* LOGIN VIEW */}
       {authState === "LOGIN" && (
-        <div className="grid gap-4">
+        <div className="w-full space-y-4">
+          <GoogleLoginButton />
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+            </div>
+          </div>
+
           <Tabs defaultValue="username" onValueChange={setLoginTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-3 mb-4">
               <TabsTrigger value="username">Username</TabsTrigger>
               <TabsTrigger value="email">Email</TabsTrigger>
               <TabsTrigger value="phone">Phone</TabsTrigger>
             </TabsList>
           </Tabs>
 
-          <form onSubmit={handleLogin} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="identifier">
-                {loginTab === "username" ? "Username" : loginTab === "email" ? "Email Address" : "Phone Number"}
-              </Label>
-              <Input
-                id="identifier"
-                placeholder={
-                  loginTab === "username" ? "Enter username" :
-                    loginTab === "email" ? "name@example.com" :
-                      "+91 9876543210"
-                }
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                disabled={loading}
+          <Form {...loginForm}>
+            <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <FormField
+                control={loginForm.control}
+                name="identifier"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {loginTab === "username" ? "Username" : loginTab === "email" ? "Email Address" : "Phone Number"}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={
+                          loginTab === "username" ? "Enter username" :
+                            loginTab === "email" ? "name@example.com" :
+                              "+91 9876543210"
+                        }
+                        disabled={loading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <button type="button" onClick={() => setAuthState("FORGOT_VERIFY")} className="text-xs text-primary hover:underline">
-                  Forgot password?
-                </button>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
+
+              <FormField
+                control={loginForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Password</FormLabel>
+                      <button
+                        type="button"
+                        onClick={() => { setAuthState("FORGOT_VERIFY"); setError(""); }}
+                        className="text-xs text-primary hover:underline font-medium"
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
+                    <FormControl>
+                      <PasswordInput placeholder="••••••••" disabled={loading} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <Button disabled={loading} className="w-full">
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Sign In
-            </Button>
-          </form>
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Sign In
+              </Button>
+            </form>
+          </Form>
+
+          <p className="text-center text-sm text-muted-foreground pt-2">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="font-semibold text-primary hover:underline">
+              Sign up
+            </Link>
+          </p>
         </div>
       )}
 
+      {/* FORGOT PASSWORD: VERIFY VIEW */}
       {authState === "FORGOT_VERIFY" && (
-        <form onSubmit={handleVerify} className="grid gap-4">
-          <div className="grid gap-3">
-            <div className="grid gap-1">
-              <Label htmlFor="v-username">Username</Label>
-              <Input
-                id="v-username"
-                value={forgotInput.username}
-                onChange={(e) => setForgotInput({ ...forgotInput, username: e.target.value })}
-                disabled={loading}
-              />
-            </div>
-            <div className="grid gap-1">
-              <Label htmlFor="v-email">Email</Label>
-              <Input
-                id="v-email"
-                value={forgotInput.email}
-                onChange={(e) => setForgotInput({ ...forgotInput, email: e.target.value })}
-                disabled={loading}
-              />
-            </div>
-            <div className="grid gap-1">
-              <Label htmlFor="v-phone">Phone</Label>
-              <Input
-                id="v-phone"
-                value={forgotInput.phone}
-                onChange={(e) => setForgotInput({ ...forgotInput, phone: e.target.value })}
-                disabled={loading}
-              />
-            </div>
-            <p className="text-xs text-muted-foreground">Fill exactly two fields to verify.</p>
+        <form onSubmit={onVerifySubmit} className="space-y-4">
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          <div className="space-y-3">
+            {["username", "email", "phone"].map((type) => {
+              const key = type as keyof typeof verifyInputs;
+              const isFilled = verifyInputs[key].length > 0;
+              // Disable if this field is empty AND we already have 2 filled fields
+              const isDisabled = !isFilled && filledCount >= 2;
+
+              return (
+                <div key={key} className="space-y-1">
+                  <Label htmlFor={`v-${key}`} className="capitalize">{type}</Label>
+                  <Input
+                    id={`v-${key}`}
+                    value={verifyInputs[key]}
+                    onChange={(e) => setVerifyInputs(prev => ({ ...prev, [key]: e.target.value }))}
+                    disabled={loading || isDisabled}
+                    placeholder={isDisabled ? "Only 2 details needed" : `Enter your ${type}`}
+                    className={isDisabled ? "opacity-50 cursor-not-allowed bg-muted" : ""}
+                  />
+                </div>
+              );
+            })}
           </div>
-          <div className="flex gap-2">
-            <Button type="button" variant="outline" className="w-full" onClick={() => setAuthState("LOGIN")}>
+
+          <div className="text-[11px] text-muted-foreground text-center px-4">
+            For your safety, we don&apos;t confirm which details are correct.
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <Button type="button" variant="outline" className="flex-1" onClick={() => setAuthState("LOGIN")}>
               Back
             </Button>
-            <Button disabled={loading} className="w-full" type="submit">
+            <Button type="submit" className="flex-1" disabled={loading || !isVerifyReady}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Verify
             </Button>
@@ -270,36 +314,52 @@ export function LoginForm() {
         </form>
       )}
 
+      {/* RESET PASSWORD VIEW */}
       {authState === "RESET_PASSWORD" && (
-        <form onSubmit={handleReset} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="new-password">New Password</Label>
-            <Input
-              id="new-password"
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              disabled={loading}
+        <Form {...resetForm}>
+          <form onSubmit={resetForm.handleSubmit(onResetSubmit)} className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            <FormField
+              control={resetForm.control}
+              name="newPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>New Password</FormLabel>
+                  <FormControl>
+                    <PasswordInput placeholder="New password" disabled={loading} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="confirm-password">Confirm Password</Label>
-            <Input
-              id="confirm-password"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={loading}
+
+            <FormField
+              control={resetForm.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <PasswordInput placeholder="Confirm new password" disabled={loading} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <Button disabled={loading} className="w-full" type="submit">
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Reset Password
-          </Button>
-        </form>
+
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Reset Password
+            </Button>
+          </form>
+        </Form>
       )}
-
-
     </div>
   );
 }
