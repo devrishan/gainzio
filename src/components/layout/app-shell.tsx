@@ -31,7 +31,7 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
     <div className="grid min-h-screen w-full grid-cols-1 lg:grid-cols-[280px_1fr]">
       <aside className="hidden border-r border-border bg-muted/20 p-6 lg:block">
         <div className="flex flex-col gap-8">
-          <GainzioLogo href={role === "admin" ? "/admin/dashboard" : "/member/dashboard"} />
+          <GainzioLogo href={role === "admin" ? "/admin/dashboard" : "/member/dashboard"} size="sm" />
           <Sidebar items={sidebarItems} />
         </div>
       </aside>
@@ -46,7 +46,7 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
             </SheetTrigger>
             <SheetContent side="left" className="w-72 p-6">
               <div className="flex flex-col gap-8">
-                <GainzioLogo href={role === "admin" ? "/admin/dashboard" : "/member/dashboard"} />
+                <GainzioLogo href={role === "admin" ? "/admin/dashboard" : "/member/dashboard"} size="sm" />
                 <Sidebar items={sidebarItems} />
               </div>
             </SheetContent>

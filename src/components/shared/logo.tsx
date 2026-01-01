@@ -15,10 +15,10 @@ export function GainzioLogo({
   size?: "sm" | "md" | "lg" | "xl";
 }) {
   const sizeMap = {
-    sm: 20,
-    md: 28,
-    lg: 48,
-    xl: 96
+    sm: 24, // Sidebar
+    md: 28, // Mobile / Default
+    lg: 32, // Web Header
+    xl: 96  // Splash
   };
 
   const dimension = sizeMap[size];

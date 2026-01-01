@@ -24,7 +24,7 @@ export function Navbar() {
     <header className="fixed top-4 left-0 right-0 z-50 mx-auto max-w-7xl px-4">
       <div className="rounded-full border border-white/10 bg-background/60 px-6 py-3 backdrop-blur-xl shadow-lg ring-1 ring-black/5 dark:bg-background/40">
         <nav className="flex items-center justify-between">
-          <GainzioLogo href="/" className="transition-transform hover:scale-105" />
+          <GainzioLogo href="/" size="lg" className="transition-transform hover:scale-105" />
 
           <div className="hidden items-center gap-8 text-sm font-medium text-muted-foreground md:flex">
             {navLinks.map((link) =>
