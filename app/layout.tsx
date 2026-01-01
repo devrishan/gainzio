@@ -60,25 +60,29 @@ export const metadata: Metadata = {
   }
 };
 
+import { ViewTransitions } from "next-view-transitions";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen bg-background antialiased`}>
-        <ThemeProvider>
-          <QueryProvider>
-            <SessionProvider>
-              <Suspense>
-                <ReferralTracker />
-              </Suspense>
-              {children}
-              <Toaster position="top-right" />
-            </SessionProvider>
-          </QueryProvider>
-        </ThemeProvider>
-        <Analytics />
-        <SpeedInsights />
-      </body>
-    </html >
+    <ViewTransitions>
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${inter.className} min-h-screen bg-background antialiased`}>
+          <ThemeProvider>
+            <QueryProvider>
+              <SessionProvider>
+                <Suspense>
+                  <ReferralTracker />
+                </Suspense>
+                {children}
+                <Toaster position="top-right" />
+              </SessionProvider>
+            </QueryProvider>
+          </ThemeProvider>
+          <Analytics />
+          <SpeedInsights />
+        </body>
+      </html >
+    </ViewTransitions>
   );
 }
 
