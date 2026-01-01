@@ -229,11 +229,25 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token }) {
             if (session.user && token.sub) {
                 session.user.id = token.sub;
-                // Add role if needed
+                // @ts-ignore
+                session.user.username = token.username;
+                // @ts-ignore
+                session.user.role = token.role;
             }
             return session;
         },
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger, session }) {
+            if (user) {
+                token.id = user.id;
+                // @ts-ignore
+                token.username = user.username;
+                // @ts-ignore
+                token.role = user.role;
+            }
+            // Update token if session is updated (e.g. username change)
+            if (trigger === "update" && session?.username) {
+                token.username = session.username;
+            }
             return token;
         }
     }

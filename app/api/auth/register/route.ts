@@ -6,15 +6,22 @@ import { setAuthCookies } from "@/lib/auth-cookies";
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
 
-  if (!body?.username || !body?.email || !body?.password) {
+  if (!body?.email || !body?.password) {
     return NextResponse.json({ success: false, error: "Missing registration fields." }, { status: 400 });
+  }
+
+  // Auto-generate username if not provided (Gainzio Premium Flow)
+  let username = body.username;
+  if (!username) {
+    const randomSuffix = Math.floor(100000 + Math.random() * 900000); // 6 digit random
+    username = `gainzio_${randomSuffix}`;
   }
 
   const registerResponse = await fetch(`${env.API_BASE_URL}/api/auth/register.php`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      username: body.username,
+      username: username,
       email: body.email,
       password: body.password,
       referral_code: body.referral_code,

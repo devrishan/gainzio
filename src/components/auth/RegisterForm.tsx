@@ -20,12 +20,7 @@ import { PasswordInput } from "./PasswordInput";
 import { GoogleLoginButton } from "./GoogleLoginButton";
 
 const registerSchema = z.object({
-  username: z
-    .string()
-    .min(1, "Username is required.")
-    .min(3, "Choose a username with at least 3 characters.")
-    .trim()
-    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores."),
+
   email: z.string().min(1, "Email is required.").email("Please enter a valid email."),
   password: z.string().min(1, "Password is required.").min(8, "Use at least 8 characters."),
   referral_code: z
@@ -45,7 +40,7 @@ export function RegisterForm() {
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      username: "",
+
       email: "",
       password: "",
       referral_code: "",
@@ -156,34 +151,7 @@ export function RegisterForm() {
             </div>
           )}
 
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field, fieldState }) => (
-              <FormItem>
-                <FormLabel htmlFor="register-username">Username</FormLabel>
-                <FormControl>
-                  <Input
-                    id="register-username"
-                    placeholder="john_doe"
-                    autoComplete="username"
-                    aria-invalid={fieldState.invalid}
-                    aria-describedby={fieldState.error ? "register-username-error" : undefined}
-                    disabled={isSubmitting}
-                    className={cn(
-                      fieldState.invalid && "border-destructive focus-visible:ring-destructive"
-                    )}
-                    {...field}
-                    onChange={(e) => {
-                      const value = e.target.value.trim();
-                      field.onChange(value);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage id="register-username-error" />
-              </FormItem>
-            )}
-          />
+
 
           <FormField
             control={form.control}
