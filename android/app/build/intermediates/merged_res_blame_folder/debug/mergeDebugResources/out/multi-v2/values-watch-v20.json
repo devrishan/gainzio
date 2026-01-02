@@ -4,7 +4,7 @@
             "outputFile": "com.gainzio.app-mergeDebugResources-31:/values-watch-v20/values-watch-v20.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Rishan Kp\\.gradle\\caches\\9.0-milestone-1\\transforms\\4574c9cddc9ff3abf2ff3fc198aa34bb\\transformed\\appcompat-1.6.1\\res\\values-watch-v20\\values-watch-v20.xml",
+                    "source": "C:\\Users\\Rishan Kp\\.gradle\\caches\\8.13\\transforms\\ad38d573a7045bc947b5759d16a7b323\\transformed\\appcompat-1.6.1\\res\\values-watch-v20\\values-watch-v20.xml",
                     "from": {
                         "startLines": "2,5,8",
                         "startColumns": "4,4,4",
@@ -23,7 +23,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Rishan Kp\\.gradle\\caches\\9.0-milestone-1\\transforms\\3182371aadc01ec6e49744793393952c\\transformed\\core-splashscreen-1.0.1\\res\\values-watch-v20\\values-watch-v20.xml",
+                    "source": "C:\\Users\\Rishan Kp\\.gradle\\caches\\8.13\\transforms\\f834b78040bbf65bda4c5b7c56c6fedb\\transformed\\core-splashscreen-1.0.1\\res\\values-watch-v20\\values-watch-v20.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",

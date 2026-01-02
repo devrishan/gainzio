@@ -18,6 +18,7 @@ drawable ic_launcher_foreground
 drawable launch_background
 id webview
 layout activity_main
+layout activity_splash
 mipmap ic_launcher
 mipmap ic_launcher_round
 string app_name

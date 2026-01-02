@@ -4,17 +4,7 @@
             "outputFile": "com.gainzio.app-mergeDebugResources-31:/values-v16/values-v16.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Rishan Kp\\.gradle\\caches\\9.0-milestone-1\\transforms\\727d828c1086f269fe135177589b2814\\transformed\\core-1.12.0\\res\\values-v16\\values-v16.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endColumns": "65",
-                        "endOffsets": "116"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\Rishan Kp\\.gradle\\caches\\9.0-milestone-1\\transforms\\4574c9cddc9ff3abf2ff3fc198aa34bb\\transformed\\appcompat-1.6.1\\res\\values-v16\\values-v16.xml",
+                    "source": "C:\\Users\\Rishan Kp\\.gradle\\caches\\8.13\\transforms\\ad38d573a7045bc947b5759d16a7b323\\transformed\\appcompat-1.6.1\\res\\values-v16\\values-v16.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -30,6 +20,16 @@
                         "endLines": "6",
                         "endColumns": "12",
                         "endOffsets": "289"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Rishan Kp\\.gradle\\caches\\8.13\\transforms\\5cc6710990bf60a897dc41bba412ba21\\transformed\\core-1.12.0\\res\\values-v16\\values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "65",
+                        "endOffsets": "116"
                     }
                 }
             ]
