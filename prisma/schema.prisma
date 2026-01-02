@@ -1,5 +1,5 @@
 // Prisma schema for Gainzio platform
-// Database: PostgreSQL
+// Database: MySQL
 
 generator client {
   provider = "prisma-client-js"
