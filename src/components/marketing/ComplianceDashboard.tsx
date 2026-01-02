@@ -5,14 +5,14 @@ import { motion } from "framer-motion";
 import { fadeInUp, viewport } from "@/components/marketing/animations";
 
 const metrics = [
-  { label: "Dispute resolution", value: "97% within 12h" },
-  { label: "Dashboard uptime", value: "99.98%" },
-  { label: "Fraud blocked", value: "11,420+ fake installs" },
+  { label: "Dispute resolution", value: "97% resolved within 12 hours" },
+  { label: "Dashboard uptime", value: "99.98% monitored availability" },
+  { label: "Fraud blocked", value: "11,420+ fake and duplicate installs prevented" },
 ];
 
 const reviewers = [
-  { label: "Reviewer pods", value: "6 live" },
-  { label: "Peak load SLA", value: "5 min" },
+  { label: "Reviewer pods", value: "6 active review teams" },
+  { label: "Peak load SLA", value: "Under 5 minutes" },
 ];
 
 export function ComplianceDashboard() {
@@ -30,7 +30,8 @@ export function ComplianceDashboard() {
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary/80">Operational trust</p>
             <p className="text-3xl font-semibold text-foreground">Compliance-first dashboard</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              Every payout is tied to proof, audit logs, GST-ready invoices, and OTP-only logins. No grey area.
+              Every payout on Gainzio is backed by proof, audit logs, GST-ready invoices, and OTP-secured access.
+              All activity is logged, traceable, and reviewable—built for transparency from day one.
             </p>
           </div>
 
@@ -52,7 +53,7 @@ export function ComplianceDashboard() {
                 </div>
               ))}
               <p className="text-sm text-muted-foreground">
-                Dedicated human reviewers work in shifts so your dispute queue never sleeps—even on festival weekends.
+                Dedicated human reviewers work in shifts so dispute queues are actively monitored, including weekends and holidays.
               </p>
             </div>
           </div>

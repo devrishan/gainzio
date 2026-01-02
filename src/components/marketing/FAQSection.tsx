@@ -23,28 +23,28 @@ const faqs: readonly FAQ[] = [
   {
     question: "Is this safe and legal?",
     answer:
-      "Yes. Gainzio partners with verified apps and pays out via compliant UPI transfers with full KYC and audit trails.",
+      "Yes. Gainzio works only with verified apps and brands and processes payouts via compliant UPI transfers. All transactions are logged with audit trails and follow Indian digital payment and GST-aligned standards.",
   },
   {
     question: "Do I need to invest money to start?",
-    answer: "No joining fee, deposits, or hidden charges. Just sign up, complete your profile, and start earning.",
+    answer: "No. Gainzio does not require any upfront payment, deposits, or joining fees. You earn only by completing verified tasks or referrals.",
   },
   {
     question: "How do withdrawals work?",
-    answer: "Request a withdrawal once you hit the minimum balance. Funds land in your UPI-linked bank account instantly.",
+    answer: "Once you reach the minimum withdrawal amount of ₹50, you can request a payout from your wallet. Funds are transferred directly to your UPI-linked bank account after OTP verification. Most withdrawals are processed within the stated SLA.",
   },
   {
     question: "What if my task gets rejected?",
     answer:
-      "You'll see the exact rejection reason inside the app with tips to resubmit. Our support team can also review it manually.",
+      "If a task is rejected, the exact reason is shown in your dashboard. You can raise a dispute for manual review, and our human review team re-checks the submission within the defined SLA.",
   },
 ] as const;
 
 const SUPPORT_SIDEBAR = {
   heading: "Need a human?",
-  title: "Support team replies in under 15 minutes.",
-  description: "Chat with us inside the dashboard or raise a ticket if a task needs manual review.",
-  buttonText: "Login & open support",
+  title: "Support team replies in under 15 minutes",
+  description: "Chat with us directly inside the dashboard or raise a support ticket if a task requires manual review.",
+  buttonText: "Open support (login required)",
   buttonHref: "/login" as Route,
   emailText: "Prefer email? Write to hello@gainzio.com",
 } as const;

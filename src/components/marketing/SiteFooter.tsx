@@ -29,6 +29,9 @@ const columns = [
     links: [
       { label: "Terms", href: "/terms" },
       { label: "Privacy", href: "/privacy" },
+      { label: "Payout & Dispute Policy", href: "/payout-policy" },
+      { label: "Content Guidelines", href: "/guidelines" },
+      { label: "Grievance Officer", href: "/grievance" },
     ],
   },
 ];
@@ -48,7 +51,9 @@ export function SiteFooter() {
           <GainzioLogo size="sm" />
           <div className="flex flex-col gap-4">
             <p className="text-sm leading-relaxed text-muted-foreground md:pr-4">
-              Earn rewards by completing tasks and referring friends. Fast payouts, transparent tracking, and a trusted earning experience.
+              Gainzio<br />
+              Earn rewards by completing verified tasks and referring friends.
+              Fast payouts, transparent tracking, and a compliance-first earning experience.
             </p>
             <p className="text-xs font-medium text-muted-foreground/60">
               UPI-based payouts • Secure verification • Fraud-protected
@@ -81,7 +86,7 @@ export function SiteFooter() {
       </div>
 
       <p className="mx-auto mt-12 max-w-6xl text-center text-xs text-muted-foreground md:mt-10 md:text-left">
-        © {new Date().getFullYear()} Gainzio. All rights reserved.
+        © {new Date().getFullYear()} Gainzio. All rights reserved. Made for India 🇮🇳.
       </p>
     </motion.footer>
   );

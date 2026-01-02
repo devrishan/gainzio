@@ -10,7 +10,7 @@ const badges = [
   "📊 Transparent wallet history",
   "🚫 No joining fee",
   "🧾 GST-ready invoices",
-  "🛡️ Fraud & duplicate filters",
+  "🛡️ Fraud and duplicate filters",
 ];
 
 export function TrustStrip() {
