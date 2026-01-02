@@ -239,7 +239,6 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id;
-                // @ts-expect-error - username property exists on user object from Prisma
                 token.username = user.username;
                 // @ts-expect-error - role property exists on user object from Prisma
                 token.role = user.role;
