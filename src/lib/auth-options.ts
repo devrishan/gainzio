@@ -10,6 +10,7 @@ import { cookies } from "next/headers";
 import { createTransport } from "nodemailer";
 
 export const authOptions: NextAuthOptions = {
+    debug: process.env.NODE_ENV === "development",
     adapter: PrismaAdapter(prisma),
     providers: [
         GoogleProvider({
@@ -226,6 +227,9 @@ export const authOptions: NextAuthOptions = {
         },
     },
     callbacks: {
+        async signIn({ user, account, profile }) {
+            return true;
+        },
         async redirect({ url, baseUrl }) {
             // Allows relative callback URLs
             if (url.startsWith("/")) return `${baseUrl}${url}`;
