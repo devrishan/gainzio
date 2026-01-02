@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -55,9 +55,9 @@ enum Rank {
 
 model User {
   id              String    @id @default(cuid())
-  phone           String?   @unique @db.VarChar(20) // Made optional for Google Auth users (who might only have email initially)
-  email           String?   @unique @db.VarChar(255)
-  username        String?   @unique @db.VarChar(100)
+  phone           String?   @unique  // Made optional for Google Auth users (who might only have email initially)
+  email           String?   @unique 
+  username        String?   @unique 
   name            String?   // NextAuth standard
   image           String?   // NextAuth standard
   emailVerified   DateTime? // NextAuth standard
@@ -65,7 +65,7 @@ model User {
   // Auth-related
   // Auth-related
   // hashedPassword removed in favor of password_hash
-  password_hash   String?   @db.VarChar(255) // Unified field
+  password_hash   String?    // Unified field
   
   phone_verified  Boolean   @default(false)
   
@@ -76,11 +76,11 @@ model User {
 
   // Tracking & Privacy
   last_login_at      DateTime?
-  last_login_ip_hash String?   @db.VarChar(255)
-  last_device_hash   String?   @db.VarChar(255)
+  last_login_ip_hash String?   
+  last_device_hash   String?   
 
   emailVerifiedAt DateTime?
-  emailVerificationToken String? @unique @db.VarChar(255)
+  emailVerificationToken String? @unique 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   
@@ -141,7 +141,7 @@ model PasswordHistory {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  hash      String   @db.VarChar(255)
+  hash      String   
   createdAt DateTime @default(now())
 
   @@index([userId])
@@ -153,14 +153,14 @@ model LegacySession {
   id                 String   @id @default(cuid())
   userId             String
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  refreshToken       String   @unique @db.VarChar(255)
+  refreshToken       String   @unique 
   createdAt          DateTime @default(now())
   expiresAt          DateTime
   lastActivityAt     DateTime?
-  userAgent          String?  @db.VarChar(500)
-  ipAddress          String?  @db.VarChar(45)
+  userAgent          String?  
+  ipAddress          String?  
   revokedAt          DateTime?
-  revokedReason      String?  @db.VarChar(255)
+  revokedReason      String?  
 
   @@index([userId])
   @@index([expiresAt])
@@ -205,14 +205,14 @@ model VerificationToken {
 
 model OtpRequest {
   id          String   @id @default(cuid())
-  phone       String   @db.VarChar(20)
-  codeHash    String   @db.VarChar(255)
+  phone       String   
+  codeHash    String   
   expiresAt   DateTime
   createdAt   DateTime @default(now())
   verifiedAt  DateTime?
   consumedAt  DateTime?
   attempts    Int      @default(0)
-  ipAddress   String?  @db.VarChar(45)
+  ipAddress   String?  
   isBlocked   Boolean  @default(false)
 
   @@index([phone])
@@ -242,7 +242,7 @@ model WalletTransaction {
   walletId       String
   wallet         Wallet           @relation(fields: [walletId], references: [id], onDelete: Cascade)
   amount         Decimal          @db.Decimal(10, 2)
-  type           String           @db.VarChar(50)
+  type           String           
   metadata       Json?
   createdAt      DateTime         @default(now())
 
@@ -258,9 +258,9 @@ model CoinTransaction {
   userId         String
   user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   amount         Int              
-  type           String           @db.VarChar(50) // EARN, SPEND
-  description    String           @db.VarChar(255)
-  source         String?          @db.VarChar(50) // STREAK_FREEZE, TASK_PEEK, TASK_REWARD, etc.
+  type           String            // EARN, SPEND
+  description    String           
+  source         String?           // STREAK_FREEZE, TASK_PEEK, TASK_REWARD, etc.
   metadata       Json?
   createdAt      DateTime         @default(now())
 
@@ -276,12 +276,12 @@ model Withdrawal {
   user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   amount         Decimal           @db.Decimal(10, 2)
   status         WithdrawalStatus  @default(PENDING)
-  upiId          String            @db.VarChar(255)
-  upiQrUrl       String?           @db.VarChar(500)
+  upiId          String            
+  upiQrUrl       String?           
   requestedAt    DateTime          @default(now())
   processedAt    DateTime?
-  txId           String?           @db.VarChar(255)
-  receiptUrl     String?           @db.VarChar(500)
+  txId           String?           
+  receiptUrl     String?           
   notes          String?           @db.Text
 
   @@index([userId])
@@ -292,8 +292,8 @@ model Withdrawal {
 
 model TaskCategory {
   id        String   @id @default(cuid())
-  name      String   @unique @db.VarChar(100)
-  slug      String   @unique @db.VarChar(100)
+  name      String   @unique 
+  slug      String   @unique 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
@@ -304,14 +304,14 @@ model TaskCategory {
 
 model Task {
   id             String           @id @default(cuid())
-  title          String           @db.VarChar(255)
-  slug           String           @unique @db.VarChar(255)
+  title          String           
+  slug           String           @unique 
   description    String           @db.Text
   categoryId     String
   category       TaskCategory     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   rewardAmount   Decimal          @db.Decimal(10, 2)
   rewardCoins    Int              @default(0)
-  difficulty     String           @db.VarChar(50)
+  difficulty     String           
   minRank        Rank             @default(NEWBIE) // "Tasks Become Levels"
   isActive       Boolean          @default(true)
   maxSubmissions Int?
@@ -338,8 +338,8 @@ model TaskSubmission {
   userId         String
   user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   status         SubmissionStatus  @default(SUBMITTED)
-  proofUrl       String            @db.VarChar(500)
-  proofType      String?           @db.VarChar(50)
+  proofUrl       String            
+  proofType      String?           
   notes          String?           @db.Text
   reviewedById   String?
   reviewedBy     User?             @relation("SubmissionReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
@@ -364,7 +364,7 @@ model Referral {
   referredUser     User     @relation("ReferredUser", fields: [referredUserId], references: [id], onDelete: Cascade)
   level            Int
   commissionAmount Decimal  @default(0.0) @db.Decimal(10, 2)
-  status           String   @default("pending") @db.VarChar(50)
+  status           String   @default("pending") 
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -380,7 +380,7 @@ model Notification {
   userId       String
   user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   type         NotificationType
-  title        String           @db.VarChar(255)
+  title        String           
   body         String           @db.Text
   data         Json?
   isRead       Boolean          @default(false)
@@ -408,10 +408,10 @@ model GamificationState {
 
 model Badge {
   id          String        @id @default(cuid())
-  code        String        @unique @db.VarChar(50)
-  name        String        @db.VarChar(100)
+  code        String        @unique 
+  name        String        
   description String        @db.Text
-  icon        String?       @db.VarChar(255)
+  icon        String?       
   createdAt   DateTime      @default(now())
   users       BadgeOnUser[]
 }
@@ -428,7 +428,7 @@ model BadgeOnUser {
 // Spark Wall events (for real-time feed)
 model SparkEvent {
   id          String   @id @default(cuid())
-  type        String   @db.VarChar(50)
+  type        String   
   message     String   @db.Text
   data        Json?
   isPublic    Boolean  @default(true)
@@ -443,9 +443,9 @@ model AuditLog {
   id          String   @id @default(cuid())
   actorId     String?
   actor       User?    @relation("AuditLogActor", fields: [actorId], references: [id], onDelete: SetNull)
-  action      String   @db.VarChar(100)
-  entityId    String?  @db.VarChar(255)
-  entityType  String?  @db.VarChar(50)
+  action      String   
+  entityId    String?  
+  entityType  String?  
   metadata    Json?
   createdAt   DateTime @default(now())
 
@@ -459,8 +459,8 @@ model AuditLog {
 // Rate limiting for API and auth
 model RateLimit {
   id          String   @id @default(cuid())
-  identifier  String   @db.VarChar(255) // phone, email, IP, userId
-  type        String   @db.VarChar(50) // "otp", "login", "api"
+  identifier  String    // phone, email, IP, userId
+  type        String    // "otp", "login", "api"
   count       Int      @default(1)
   windowStart DateTime
   expiresAt   DateTime
@@ -476,9 +476,9 @@ model UserPreference {
   userId        String   @unique
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   language      String   @default("en") @db.VarChar(10)
-  timezone      String   @default("UTC") @db.VarChar(50)
+  timezone      String   @default("UTC") 
   notifications Json?    // notification preferences
-  theme         String   @default("light") @db.VarChar(20)
+  theme         String   @default("light") 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -488,8 +488,8 @@ model PaymentMethod {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type        String   @db.VarChar(20) // "UPI", "BANK", "WALLET"
-  upiId       String?  @db.VarChar(255)
+  type        String    // "UPI", "BANK", "WALLET"
+  upiId       String?  
   bankAccount Json?
   isDefault   Boolean  @default(false)
   isVerified  Boolean  @default(false)
@@ -502,13 +502,13 @@ model PaymentMethod {
 // Task templates
 model TaskTemplate {
   id          String        @id @default(cuid())
-  name        String        @db.VarChar(255)
+  name        String        
   description String        @db.Text
   categoryId  String
   category    TaskCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   rewardAmount Decimal       @db.Decimal(10, 2)
   rewardCoins Int           @default(0)
-  difficulty  String        @db.VarChar(50)
+  difficulty  String        
   isActive    Boolean       @default(true)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -521,12 +521,12 @@ model ActivityLog {
   id          String   @id @default(cuid())
   userId      String?
   user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  action      String   @db.VarChar(100)
-  entityType  String?  @db.VarChar(50)
-  entityId    String?  @db.VarChar(255)
+  action      String   
+  entityType  String?  
+  entityId    String?  
   metadata    Json?
-  ipAddress   String?  @db.VarChar(45)
-  userAgent   String?  @db.VarChar(500)
+  ipAddress   String?  
+  userAgent   String?  
   createdAt   DateTime @default(now())
   
   @@index([userId, createdAt])
@@ -536,7 +536,7 @@ model ActivityLog {
 // Leaderboard
 model Leaderboard {
   id          String   @id @default(cuid())
-  period      String   @db.VarChar(20) // "daily", "weekly", "monthly", "alltime"
+  period      String    // "daily", "weekly", "monthly", "alltime"
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   rank        Int
@@ -555,7 +555,7 @@ model TaskCompletionRule {
   id          String   @id @default(cuid())
   taskId      String
   task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  ruleType    String   @db.VarChar(50) // "daily_limit", "cooldown", "prerequisite"
+  ruleType    String    // "daily_limit", "cooldown", "prerequisite"
   value       Json
   createdAt   DateTime @default(now())
   
@@ -567,13 +567,13 @@ model ProductSuggestion {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  productName String   @db.VarChar(255)
-  platform    String   @db.VarChar(100) // "amazon", "flipkart", etc.
-  category    String?  @db.VarChar(100)
+  productName String   
+  platform    String    // "amazon", "flipkart", etc.
+  category    String?  
   amount      Decimal? @db.Decimal(10, 2)
-  orderId     String?  @db.VarChar(255)
+  orderId     String?  
   files       Json?    // S3 URLs array
-  status      String   @default("pending") @db.VarChar(50) // pending, approved, rejected, converted
+  status      String   @default("pending")  // pending, approved, rejected, converted
   metadata    Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -600,7 +600,7 @@ model Ad {
 
 model SystemConfig {
   id              String   @id @default(cuid())
-  key             String   @unique @db.VarChar(100) // e.g. "rank_thresholds", "reward_formulas"
+  key             String   @unique  // e.g. "rank_thresholds", "reward_formulas"
   value           Json     // The config object
   description     String?  @db.Text
   updatedBy       String?
