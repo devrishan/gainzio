@@ -52,7 +52,7 @@ export default function SettingsPage() {
 
     const onSubmit = async (values: FormValues) => {
         // Don't submit if unchanged
-        // @ts-expect-error
+        // @ts-expect-error - session.user definitions are extended in types/next-auth.d.ts but not picked up here
         if (values.username === session?.user?.username) {
             toast.info("No changes made.");
             return;
