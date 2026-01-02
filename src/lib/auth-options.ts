@@ -229,9 +229,9 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token }) {
             if (session.user && token.sub) {
                 session.user.id = token.sub;
-                // @ts-ignore
+                // @ts-expect-error
                 session.user.username = token.username;
-                // @ts-ignore
+                // @ts-expect-error
                 session.user.role = token.role;
             }
             return session;
@@ -239,9 +239,9 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id;
-                // @ts-ignore
+                // @ts-expect-error
                 token.username = user.username;
-                // @ts-ignore
+                // @ts-expect-error
                 token.role = user.role;
             }
             // Update token if session is updated (e.g. username change)

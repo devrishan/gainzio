@@ -45,14 +45,14 @@ export default function SettingsPage() {
     // Set initial value once session is loaded
     useEffect(() => {
         if (session?.user?.username) {
-            // @ts-ignore - username is added to session in NextAuth config but typescript definition might be missing it in client type
+            // @ts-expect-error - username is added to session in NextAuth config but typescript definition might be missing it in client type
             form.setValue("username", session.user.username);
         }
     }, [session, form]);
 
     const onSubmit = async (values: FormValues) => {
         // Don't submit if unchanged
-        // @ts-ignore
+        // @ts-expect-error
         if (values.username === session?.user?.username) {
             toast.info("No changes made.");
             return;
