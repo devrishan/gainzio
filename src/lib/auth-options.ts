@@ -226,6 +226,13 @@ export const authOptions: NextAuthOptions = {
         },
     },
     callbacks: {
+        async redirect({ url, baseUrl }) {
+            // Allows relative callback URLs
+            if (url.startsWith("/")) return `${baseUrl}${url}`;
+            // Allows callback URLs on the same origin
+            if (new URL(url).origin === baseUrl) return url;
+            return `${baseUrl}/member/dashboard`;
+        },
         async session({ session, token }) {
             if (session.user && token.sub) {
                 session.user.id = token.sub;

@@ -15,7 +15,12 @@ export async function serverFetch<T = unknown>(
   const token = cookieStore.get("gainzio_access_token")?.value;
 
   const isNextApiRoute = path.startsWith("/api/") && !path.includes(".php");
-  const baseUrl = isNextApiRoute ? "" : env.API_BASE_URL;
+
+  // Internal APIs need absolute URL on server
+  let baseUrl = isNextApiRoute ? process.env.NEXTAUTH_URL : env.API_BASE_URL;
+  if (isNextApiRoute && !baseUrl) {
+    baseUrl = "http://localhost:3000"; // Fallback
+  }
 
   const requestHeaders = new Headers({
     "Content-Type": "application/json",
