@@ -31,7 +31,7 @@ export default function TermsPage() {
                     <ul className="list-disc pl-5">
                         <li><strong>No Guarantee of Income:</strong> Earnings are variable and depend entirely on the availability and successful completion of tasks. We do not guarantee any minimum daily or monthly income.</li>
                         <li><strong>Wallet Balance:</strong> Credits in your Gainzio wallet represent a contingent liability and formally become yours only upon successful withdrawal to your bank account.</li>
-                        <li><strong>Withdrawals:</strong> Payouts are processed via UPI. You must provide a valid UPI ID linked to your own bank account. The minimum withdrawal threshold is ₹50.</li>
+                        <li><strong>Withdrawals:</strong> Payouts are processed via UPI. You must provide a valid UPI ID linked to your own bank account. The minimum withdrawal threshold is ₹50 for the first payout and ₹150 for all subsequent payouts.</li>
                         <li><strong>Verification:</strong> All withdrawals are subject to a manual security review (up to 24 hours) to check for fraud or task automation.</li>
                     </ul>
                 </section>

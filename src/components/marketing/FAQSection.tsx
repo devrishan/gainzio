@@ -31,7 +31,7 @@ const faqs: readonly FAQ[] = [
   },
   {
     question: "How do withdrawals work?",
-    answer: "Once you reach the minimum withdrawal amount of ₹50, you can request a payout from your wallet. Funds are transferred directly to your UPI-linked bank account after OTP verification. Most withdrawals are processed within the stated SLA.",
+    answer: "Once your confirmed wallet balance reaches ₹50 (for your first withdrawal) or ₹150 (for subsequent withdrawals), you can request a payout directly to your personal UPI ID. Funds are transferred after OTP verification. Most withdrawals are processed within the stated SLA.",
   },
   {
     question: "What if my task gets rejected?",

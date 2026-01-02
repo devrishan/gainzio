@@ -5,12 +5,12 @@ import { motion } from "framer-motion";
 import { fadeInUp, viewport } from "@/components/marketing/animations";
 
 const badges = [
-  "🔒 Secure UPI payouts",
-  "📱 OTP-based login",
-  "📊 Transparent wallet history",
-  "🚫 No joining fee",
-  "🧾 GST-ready invoices",
-  "🛡️ Fraud and duplicate filters",
+  "₹0 Joining Fee",
+  "100% Verified Payouts",
+  "24h Processing",
+  "₹50 First Payout",
+  "GST-ready invoices",
+  "Fraud protected",
 ];
 
 export function TrustStrip() {
