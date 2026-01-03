@@ -1,31 +1,22 @@
 ﻿import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@/lib/jwt';
+import { getAuthenticatedUser } from '@/lib/api-auth';
 import { prisma } from '@/lib/prisma';
 import { uploadToS3, validateFile } from '@/lib/s3';
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('earniq_access_token')?.value;
+    const authUser = await getAuthenticatedUser(request);
 
-    if (!accessToken) {
+    if (!authUser) {
       return NextResponse.json(
         { success: false, error: 'Unauthenticated' },
         { status: 401 },
       );
     }
 
-    let userId: string;
-    try {
-      const payload = await verifyAccessToken(accessToken);
-      userId = payload.sub;
-    } catch {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 },
-      );
-    }
+    // Use the ID from the helper
+    const userId = authUser.userId;
 
     const formData = await request.formData();
     const taskId = formData.get('task_id') as string;

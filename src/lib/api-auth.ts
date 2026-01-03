@@ -16,7 +16,8 @@ export async function getAuthenticatedUser(request?: NextRequest): Promise<Authe
     if (session?.user?.email) {
         return {
             userId: session.user.id,
-            role: "USER" // Default to USER, can be enhanced if role is in session
+            // @ts-ignore
+            role: session.user.role || "USER"
         };
     }
 

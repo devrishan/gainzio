@@ -1,38 +1,26 @@
-﻿import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@/lib/jwt';
+﻿import { NextRequest, NextResponse } from 'next/server';
+import { getAuthenticatedUser } from '@/lib/api-auth';
 import { prisma } from '@/lib/prisma';
 import { Role, WithdrawalStatus, NotificationType } from '@prisma/client';
 import { processPayout } from '@/lib/payouts';
 
 export async function PUT(request: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('earniq_access_token')?.value;
+    const authUser = await getAuthenticatedUser(request);
 
-    if (!accessToken) {
+    if (!authUser) {
       return NextResponse.json(
         { success: false, error: 'Unauthenticated' },
         { status: 401 },
       );
     }
 
-    let userRole: string;
-    try {
-      const payload = await verifyAccessToken(accessToken);
-      userRole = payload.role;
-
-      // Only admins and payout managers can process
-      if (userRole !== Role.ADMIN && userRole !== Role.PAYOUT_MANAGER) {
-        return NextResponse.json(
-          { success: false, error: 'Forbidden' },
-          { status: 403 },
-        );
-      }
-    } catch {
+    // @ts-ignore
+    const userRole = authUser.role;
+    if (userRole !== Role.ADMIN && userRole !== Role.PAYOUT_MANAGER) {
       return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 },
+        { success: false, error: 'Forbidden' },
+        { status: 403 },
       );
     }
 

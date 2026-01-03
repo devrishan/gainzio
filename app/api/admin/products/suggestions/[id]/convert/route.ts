@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { verifyAccessToken } from '@/lib/jwt';
+import { getAuthenticatedUser } from '@/lib/api-auth';
 import { prisma } from '@/lib/prisma';
 import { Role } from '@prisma/client';
 import { z } from 'zod';
@@ -21,34 +20,24 @@ export async function POST(
   { params }: { params: { id: string } },
 ) {
   try {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('earniq_access_token')?.value;
+    const authUser = await getAuthenticatedUser(request);
 
-    if (!accessToken) {
+    if (!authUser) {
       return NextResponse.json(
         { success: false, error: 'Unauthenticated' },
         { status: 401 },
       );
     }
 
-    let userId: string;
-    let userRole: string;
-    try {
-      const payload = await verifyAccessToken(accessToken);
-      userId = payload.sub;
-      userRole = payload.role;
+    // @ts-ignore
+    const userRole = authUser.role;
+    // @ts-ignore
+    const userId = authUser.userId;
 
-      // Only admins can convert
-      if (userRole !== Role.ADMIN) {
-        return NextResponse.json(
-          { success: false, error: 'Forbidden' },
-          { status: 403 },
-        );
-      }
-    } catch {
+    if (userRole !== Role.ADMIN) {
       return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 },
+        { success: false, error: 'Forbidden' },
+        { status: 403 },
       );
     }
 

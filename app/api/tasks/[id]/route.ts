@@ -9,17 +9,12 @@ export async function GET(
 ) {
   try {
     const taskId = params.id;
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('earniq_access_token')?.value;
+    const { getAuthenticatedUser } = await import("@/lib/api-auth");
+    const authUser = await getAuthenticatedUser(request);
 
     let userId: string | null = null;
-    if (accessToken) {
-      try {
-        const payload = await verifyAccessToken(accessToken);
-        userId = payload.sub;
-      } catch {
-        // Token invalid, continue without user context
-      }
+    if (authUser) {
+      userId = authUser.userId;
     }
 
     const task = await prisma.task.findUnique({

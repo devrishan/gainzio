@@ -1,42 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { verifyAccessToken } from '@/lib/jwt';
-import { prisma } from '@/lib/prisma';
-import { Role } from '@prisma/client';
-
+import { getAuthenticatedUser } from '@/lib/api-auth';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+import { prisma } from '@/lib/prisma';
+import { Role } from '@prisma/client';
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } },
 ) {
   try {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('earniq_access_token')?.value;
+    const authUser = await getAuthenticatedUser(request);
 
-    if (!accessToken) {
+    if (!authUser) {
       return NextResponse.json(
         { success: false, error: 'Unauthenticated' },
         { status: 401 },
       );
     }
 
-    let userRole: string;
-    try {
-      const payload = await verifyAccessToken(accessToken);
-      userRole = payload.role;
-
-      if (userRole !== Role.ADMIN) {
-        return NextResponse.json(
-          { success: false, error: 'Forbidden' },
-          { status: 403 },
-        );
-      }
-    } catch {
+    // @ts-ignore
+    const userRole = authUser.role;
+    if (userRole !== Role.ADMIN) {
       return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 },
+        { success: false, error: 'Forbidden' },
+        { status: 403 },
       );
     }
 
@@ -79,31 +67,21 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   try {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('earniq_access_token')?.value;
+    const authUser = await getAuthenticatedUser(request);
 
-    if (!accessToken) {
+    if (!authUser) {
       return NextResponse.json(
         { success: false, error: 'Unauthenticated' },
         { status: 401 },
       );
     }
 
-    let userRole: string;
-    try {
-      const payload = await verifyAccessToken(accessToken);
-      userRole = payload.role;
-
-      if (userRole !== Role.ADMIN) {
-        return NextResponse.json(
-          { success: false, error: 'Forbidden' },
-          { status: 403 },
-        );
-      }
-    } catch {
+    // @ts-ignore
+    const userRole = authUser.role;
+    if (userRole !== Role.ADMIN) {
       return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 },
+        { success: false, error: 'Forbidden' },
+        { status: 403 },
       );
     }
 

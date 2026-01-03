@@ -12,25 +12,22 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // Get user rank (optional but recommended for personalized tasks)
-    const accessToken = request.cookies.get("earniq_access_token")?.value;
+    // Get user rank (optional but recommended for personalized tasks)
+    const { getAuthenticatedUser } = await import("@/lib/api-auth");
+    const authUser = await getAuthenticatedUser(request);
     let userRank = 'NEWBIE';
 
-    if (accessToken) {
+    if (authUser) {
       try {
-        // We can decode without verifying for speed, or verify. Let's do a quick DB check.
-        // Actually, for tasks listing, strictly verifying every time might be slow.
-        // But let's assume secure context.
-        const { verifyAccessToken } = await import("@/lib/jwt");
-        const payload = await verifyAccessToken(accessToken);
         const gamification = await prisma.gamificationState.findUnique({
-          where: { userId: payload.sub },
+          where: { userId: authUser.userId },
           select: { rank: true }
         });
         if (gamification) {
           userRank = gamification.rank;
         }
       } catch (e) {
-        // Ignore token errors, treat as NEWBIE
+        // Ignore errors, treat as NEWBIE
       }
     }
 

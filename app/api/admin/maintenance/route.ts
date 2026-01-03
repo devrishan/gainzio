@@ -1,9 +1,8 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { getAuthenticatedUser } from '@/lib/api-auth';
 import { Role } from "@prisma/client";
 import { z } from "zod";
 
-import { verifyAccessToken } from "@/lib/jwt";
 import { getMaintenanceState, setMaintenanceState, disableMaintenance } from "@/lib/maintenance";
 
 const maintenanceSchema = z.object({
@@ -12,27 +11,27 @@ const maintenanceSchema = z.object({
   durationMinutes: z.number().int().positive().max(24 * 60).optional(),
 });
 
-async function ensureAdmin() {
-  const cookieStore = cookies();
-  const accessToken = cookieStore.get("earniq_access_token")?.value;
+// Since this is inside route.ts, we need to pass the request object
+// But getAuthenticatedUser needs a NextRequest.
+// The helper was calling cookies(), which works in server components/actions but in route handlers passing Request is better.
+// However, ensureAdmin was called without args.
+// We should just inline the check in GET/POST or pass request.
+// Let's modify GET/POST to call getAuthenticatedUser directly.
 
-  if (!accessToken) {
+async function checkAdmin(request: NextRequest) {
+  const authUser = await getAuthenticatedUser(request);
+  if (!authUser) {
     return NextResponse.json({ success: false, error: "Unauthenticated" }, { status: 401 });
   }
-
-  try {
-    const payload = await verifyAccessToken(accessToken);
-    if (payload.role !== Role.ADMIN) {
-      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
-    }
-    return null;
-  } catch {
-    return NextResponse.json({ success: false, error: "Invalid token" }, { status: 401 });
+  // @ts-ignore
+  if (authUser.role !== Role.ADMIN) {
+    return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
   }
+  return null;
 }
 
-export async function GET() {
-  const authError = await ensureAdmin();
+export async function GET(request: NextRequest) {
+  const authError = await checkAdmin(request);
   if (authError) {
     return authError;
   }
@@ -51,7 +50,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const authError = await ensureAdmin();
+  const authError = await checkAdmin(request);
   if (authError) {
     return authError;
   }
@@ -69,10 +68,10 @@ export async function POST(request: NextRequest) {
 
     const state = payload.enabled
       ? await setMaintenanceState({
-          enabled: true,
-          message: payload.message,
-          durationMinutes: payload.durationMinutes,
-        })
+        enabled: true,
+        message: payload.message,
+        durationMinutes: payload.durationMinutes,
+      })
       : await disableMaintenance();
 
     return NextResponse.json({
