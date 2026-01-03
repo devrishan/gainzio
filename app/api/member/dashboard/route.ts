@@ -1,31 +1,21 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
+import { getAuthenticatedUser } from '@/lib/api-auth';
 export const dynamic = 'force-dynamic';
-import { cookies } from 'next/headers';
-import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('earniq_access_token')?.value;
+    const authUser = await getAuthenticatedUser(request);
 
-    if (!accessToken) {
+    if (!authUser) {
       return NextResponse.json(
         { success: false, error: 'Unauthenticated' },
         { status: 401 },
       );
     }
 
-    let userId: string;
-    try {
-      const payload = await verifyAccessToken(accessToken);
-      userId = payload.sub;
-    } catch {
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 },
-      );
-    }
+    // Use the ID from the helper
+    const userId = authUser.userId;
 
     // Get wallet
     const wallet = await prisma.wallet.findUnique({
