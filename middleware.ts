@@ -1,65 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-
-import { verifyAccessToken } from "@/lib/jwt";
-
-type LegacyUserCookie = {
-  role?: string;
-};
-
-function parseLegacyUserCookie(cookie?: string): LegacyUserCookie | null {
-  if (!cookie) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(cookie);
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Check if a token looks valid (has JWT structure: 3 parts separated by dots)
- * This is a lightweight check before attempting full verification
- */
-function isTokenStructureValid(token: string): boolean {
-  const parts = token.split(".");
-  return parts.length === 3 && parts.every((part) => part.length > 0);
-}
-
-/**
- * Try to extract role from token payload without full verification
- * This helps handle PHP-generated tokens that may not verify with Next.js JWT library
- */
-
-function tryExtractRoleFromToken(token: string): string | null {
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) return null;
-
-    // Decode the payload (second part)
-    const base64Url = parts[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-
-    const payload = JSON.parse(jsonPayload);
-
-    // Check if token is expired
-    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
-      return null;
-    }
-
-    return payload.role?.toUpperCase() ?? null;
-  } catch {
-    return null;
-  }
-}
+import { getToken } from "next-auth/jwt";
 
 export const config = {
-  // Update matcher to include api/admin and api/member, while still excluding other static assets
   matcher: [
     "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
@@ -78,7 +21,7 @@ export async function middleware(request: NextRequest) {
     response.cookies.set("referral_code", referralCode, {
       path: "/",
       maxAge: 60 * 60 * 24 * 30, // 30 days
-      httpOnly: true, // Secure, not accessible by JS
+      httpOnly: true,
       sameSite: "lax",
     });
   }
@@ -87,28 +30,33 @@ export async function middleware(request: NextRequest) {
   // 2. Auth Protection Logic
   // ---------------------------------------------------------
 
-  // Check for Legacy Tokens
-  const accessToken = request.cookies.get("earniq_access_token")?.value;
-  const legacyToken = request.cookies.get("sparkio_token")?.value;
-
-  // Check for NextAuth Tokens (Standard & Secure)
-  const nextAuthToken = request.cookies.get("next-auth.session-token")?.value ||
-    request.cookies.get("__Secure-next-auth.session-token")?.value;
-
-  const hasAnyToken = !!(accessToken || legacyToken || nextAuthToken);
+  // Decrypt the session token
+  const token = await getToken({ req: request });
+  const isAuth = !!token;
 
   const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/register");
   const isMemberRoute = pathname.startsWith("/member");
   const isAdminRoute = pathname.startsWith("/admin");
-
-  // Specific API Protection
   const isApiMemberRoute = pathname.startsWith("/api/member");
   const isApiAdminRoute = pathname.startsWith("/api/admin");
-  const isProtectedApiRoute = isApiMemberRoute || isApiAdminRoute;
 
-  if (isMemberRoute || isAdminRoute || isProtectedApiRoute) {
-    if (!hasAnyToken) {
-      if (isProtectedApiRoute) {
+  // Redirect authenticated users away from auth pages
+  if (isAuthRoute) {
+    if (isAuth) {
+      if (token.role === "ADMIN") {
+        return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+      }
+      return NextResponse.redirect(new URL("/member/dashboard", request.url));
+    }
+    return response;
+  }
+
+  // Define protected paths
+  if (isMemberRoute || isAdminRoute || isApiMemberRoute || isApiAdminRoute) {
+
+    // 1. Unauthenticated Check
+    if (!isAuth) {
+      if (isApiMemberRoute || isApiAdminRoute) {
         return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
       }
       const redirectUrl = request.nextUrl.clone();
@@ -116,12 +64,18 @@ export async function middleware(request: NextRequest) {
       redirectUrl.searchParams.set("redirect", `${pathname}${request.nextUrl.search}`);
       return NextResponse.redirect(redirectUrl);
     }
-  }
 
-  if (isAuthRoute && hasAnyToken) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/member/dashboard";
-    return NextResponse.redirect(redirectUrl);
+    // 2. Role-Based Access Control (RBAC)
+    // Only ADMIN can access /admin and /api/admin
+    if (isAdminRoute || isApiAdminRoute) {
+      if (token.role !== "ADMIN") {
+        if (isApiAdminRoute) {
+          return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+        }
+        // Redirect unauthorized access to member dashboard
+        return NextResponse.redirect(new URL("/member/dashboard", request.url));
+      }
+    }
   }
 
   // Preserve the referral cookie if we set it
