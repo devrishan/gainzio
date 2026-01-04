@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
                         }
                     },
                     createdAt: true,
-                    lastLoginAt: true,
+                    last_login_at: true,
                 },
                 orderBy: {
                     createdAt: 'desc',
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
                 status: user.isDeleted ? 'Deleted' : (user.is_locked ? 'Locked' : 'Active'),
                 walletBalance: user.wallet ? Number(user.wallet.balance) : 0,
                 createdAt: user.createdAt.toISOString(),
-                lastLoginAt: user.lastLoginAt?.toISOString() || null,
+                lastLoginAt: user.last_login_at?.toISOString() || null,
             })),
             pagination: {
                 page,
