@@ -29,9 +29,9 @@ export async function POST(
       );
     }
 
-    // @ts-ignore
+
     const userRole = authUser.role;
-    // @ts-ignore
+
     const userId = authUser.userId;
 
     if (userRole !== Role.ADMIN) {

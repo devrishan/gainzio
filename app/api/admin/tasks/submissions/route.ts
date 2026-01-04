@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // @ts-ignore
+
     const userRole = authUser.role;
     if (userRole !== Role.ADMIN && userRole !== Role.VERIFIER) {
       return NextResponse.json(

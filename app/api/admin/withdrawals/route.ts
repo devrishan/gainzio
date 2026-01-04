@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Authorization Check
-    // @ts-ignore
+
     const userRole = authUser.role;
     if (userRole !== Role.ADMIN && userRole !== Role.PAYOUT_MANAGER) {
       return NextResponse.json(

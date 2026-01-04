@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // @ts-ignore
+
     const userRole = authUser.role;
     if (userRole !== Role.ADMIN) {
       return NextResponse.json(
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // @ts-ignore
+
     const userRole = authUser.role;
     if (userRole !== Role.ADMIN) {
       return NextResponse.json(

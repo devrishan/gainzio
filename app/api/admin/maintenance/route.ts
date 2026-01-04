@@ -23,7 +23,7 @@ async function checkAdmin(request: NextRequest) {
   if (!authUser) {
     return NextResponse.json({ success: false, error: "Unauthenticated" }, { status: 401 });
   }
-  // @ts-ignore
+
   if (authUser.role !== Role.ADMIN) {
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
   }

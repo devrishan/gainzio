@@ -9,8 +9,8 @@
 9        android:targetSdkVersion="34" />
 10
 11    <uses-permission android:name="android.permission.INTERNET" />
-11-->E:\sparkio\android\app\src\main\AndroidManifest.xml:4:5-66
-11-->E:\sparkio\android\app\src\main\AndroidManifest.xml:4:22-64
+11-->E:\sparkio\android\app\src\main\AndroidManifest.xml:3:5-66
+11-->E:\sparkio\android\app\src\main\AndroidManifest.xml:3:22-64
 12
 13    <permission
 13-->[androidx.core:core:1.12.0] C:\Users\Rishan Kp\.gradle\caches\8.13\transforms\5cc6710990bf60a897dc41bba412ba21\transformed\core-1.12.0\AndroidManifest.xml:22:5-24:47
@@ -24,39 +24,39 @@
 17-->[androidx.core:core:1.12.0] C:\Users\Rishan Kp\.gradle\caches\8.13\transforms\5cc6710990bf60a897dc41bba412ba21\transformed\core-1.12.0\AndroidManifest.xml:26:22-94
 18
 19    <application
-19-->E:\sparkio\android\app\src\main\AndroidManifest.xml:6:5-22:19
+19-->E:\sparkio\android\app\src\main\AndroidManifest.xml:5:5-21:19
 20        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 20-->[androidx.core:core:1.12.0] C:\Users\Rishan Kp\.gradle\caches\8.13\transforms\5cc6710990bf60a897dc41bba412ba21\transformed\core-1.12.0\AndroidManifest.xml:28:18-86
 21        android:debuggable="true"
 22        android:extractNativeLibs="false"
 23        android:icon="@mipmap/ic_launcher"
-23-->E:\sparkio\android\app\src\main\AndroidManifest.xml:7:9-43
+23-->E:\sparkio\android\app\src\main\AndroidManifest.xml:6:9-43
 24        android:roundIcon="@mipmap/ic_launcher_round"
-24-->E:\sparkio\android\app\src\main\AndroidManifest.xml:8:9-54
+24-->E:\sparkio\android\app\src\main\AndroidManifest.xml:7:9-54
 25        android:theme="@style/Theme.Gainzio"
-25-->E:\sparkio\android\app\src\main\AndroidManifest.xml:9:9-45
+25-->E:\sparkio\android\app\src\main\AndroidManifest.xml:8:9-45
 26        android:usesCleartextTraffic="false" >
-26-->E:\sparkio\android\app\src\main\AndroidManifest.xml:10:9-45
+26-->E:\sparkio\android\app\src\main\AndroidManifest.xml:9:9-45
 27        <activity
-27-->E:\sparkio\android\app\src\main\AndroidManifest.xml:12:9-19:20
+27-->E:\sparkio\android\app\src\main\AndroidManifest.xml:11:9-18:20
 28            android:name="com.gainzio.app.SplashActivity"
-28-->E:\sparkio\android\app\src\main\AndroidManifest.xml:13:13-43
+28-->E:\sparkio\android\app\src\main\AndroidManifest.xml:12:13-43
 29            android:exported="true" >
-29-->E:\sparkio\android\app\src\main\AndroidManifest.xml:14:13-36
+29-->E:\sparkio\android\app\src\main\AndroidManifest.xml:13:13-36
 30            <intent-filter>
-30-->E:\sparkio\android\app\src\main\AndroidManifest.xml:15:13-18:29
+30-->E:\sparkio\android\app\src\main\AndroidManifest.xml:14:13-17:29
 31                <action android:name="android.intent.action.MAIN" />
-31-->E:\sparkio\android\app\src\main\AndroidManifest.xml:16:17-68
-31-->E:\sparkio\android\app\src\main\AndroidManifest.xml:16:25-66
+31-->E:\sparkio\android\app\src\main\AndroidManifest.xml:15:17-68
+31-->E:\sparkio\android\app\src\main\AndroidManifest.xml:15:25-66
 32
 33                <category android:name="android.intent.category.LAUNCHER" />
-33-->E:\sparkio\android\app\src\main\AndroidManifest.xml:17:17-76
-33-->E:\sparkio\android\app\src\main\AndroidManifest.xml:17:27-74
+33-->E:\sparkio\android\app\src\main\AndroidManifest.xml:16:17-76
+33-->E:\sparkio\android\app\src\main\AndroidManifest.xml:16:27-74
 34            </intent-filter>
 35        </activity>
 36        <activity android:name="com.gainzio.app.MainActivity" />
-36-->E:\sparkio\android\app\src\main\AndroidManifest.xml:21:9-49
-36-->E:\sparkio\android\app\src\main\AndroidManifest.xml:21:19-47
+36-->E:\sparkio\android\app\src\main\AndroidManifest.xml:20:9-49
+36-->E:\sparkio\android\app\src\main\AndroidManifest.xml:20:19-47
 37
 38        <provider
 38-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Rishan Kp\.gradle\caches\8.13\transforms\84d2de27ad0284ee0df02c136d3f06f6\transformed\emoji2-1.2.0\AndroidManifest.xml:24:9-32:20

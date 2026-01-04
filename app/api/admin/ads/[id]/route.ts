@@ -19,7 +19,7 @@ export async function PUT(
       );
     }
 
-    // @ts-ignore
+
     const userRole = authUser.role;
     if (userRole !== Role.ADMIN) {
       return NextResponse.json(
@@ -76,7 +76,7 @@ export async function DELETE(
       );
     }
 
-    // @ts-ignore
+
     const userRole = authUser.role;
     if (userRole !== Role.ADMIN) {
       return NextResponse.json(

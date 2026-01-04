@@ -15,7 +15,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // @ts-ignore
+
     const userRole = authUser.role;
     if (userRole !== Role.ADMIN && userRole !== Role.PAYOUT_MANAGER) {
       return NextResponse.json(

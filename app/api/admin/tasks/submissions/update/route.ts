@@ -14,9 +14,9 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // @ts-ignore
+
     const userRole = authUser.role;
-    // @ts-ignore
+
     const reviewerId = authUser.userId;
 
     if (userRole !== Role.ADMIN && userRole !== Role.VERIFIER) {
