@@ -48,8 +48,13 @@ export async function GET(request: NextRequest) {
                     email: true,
                     phone: true,
                     role: true,
-                    status: true,
-                    walletBalance: true,
+                    is_locked: true,
+                    isDeleted: true,
+                    wallet: {
+                        select: {
+                            balance: true,
+                        }
+                    },
                     createdAt: true,
                     lastLoginAt: true,
                 },
@@ -65,10 +70,15 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
             success: true,
             users: users.map(user => ({
-                ...user,
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                phone: user.phone,
+                role: user.role,
+                status: user.isDeleted ? 'Deleted' : (user.is_locked ? 'Locked' : 'Active'),
+                walletBalance: user.wallet ? Number(user.wallet.balance) : 0,
                 createdAt: user.createdAt.toISOString(),
                 lastLoginAt: user.lastLoginAt?.toISOString() || null,
-                walletBalance: Number(user.walletBalance)
             })),
             pagination: {
                 page,
