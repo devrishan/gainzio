@@ -101,7 +101,7 @@ async function deleteFeatureFlag(key: string): Promise<void> {
   }
 }
 
-export function FeatureFlagsManager() {
+export function FeatureFlagsManager({ initialFlags }: { initialFlags: FeatureFlag[] }) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -109,6 +109,7 @@ export function FeatureFlagsManager() {
   const { data: flags, isLoading, error } = useQuery<FeatureFlag[]>({
     queryKey: ["featureFlags"],
     queryFn: getFeatureFlags,
+    initialData: initialFlags,
   });
 
   const createMutation = useMutation({

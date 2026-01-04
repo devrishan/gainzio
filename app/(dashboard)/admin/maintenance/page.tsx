@@ -1,6 +1,11 @@
 import { MaintenanceScheduler } from "@/components/admin/maintenance-scheduler";
+import { getAdminMaintenanceState } from "@/services/admin";
 
-export default function AdminMaintenancePage() {
+export const dynamic = "force-dynamic";
+
+export default async function AdminMaintenancePage() {
+  const initialState = await getAdminMaintenanceState();
+
   return (
     <section className="space-y-6">
       <header className="space-y-1">
@@ -10,9 +15,7 @@ export default function AdminMaintenancePage() {
         </p>
       </header>
 
-      <MaintenanceScheduler />
+      <MaintenanceScheduler initialState={initialState} />
     </section>
   );
 }
-
-

@@ -61,6 +61,17 @@ export function Hero() {
                 </span>
               </h1>
 
+              <p className="mt-4 text-lg text-muted-foreground md:text-xl max-w-[600px] mx-auto lg:mx-0">
+                Gainzio is a smart earning and referral platform that helps users
+                earn rewards by completing tasks, inviting friends, and engaging
+                with verified partner offers. Users can track earnings, manage
+                referrals, and withdraw rewards securely.
+              </p>
+
+              <p className="mt-2 text-xs text-muted-foreground/60 max-w-[600px] mx-auto lg:mx-0">
+                We use Google Sign-In to securely identify users and protect accounts.
+              </p>
+
               {/* New Bullet Points */}
               <ul className="space-y-2 mt-4 text-lg text-muted-foreground md:text-xl max-w-[600px] mx-auto lg:mx-0">
                 <li className="flex items-center gap-3 justify-center lg:justify-start">

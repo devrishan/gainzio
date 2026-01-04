@@ -23,7 +23,7 @@ type MaintenanceResponse = {
   state: MaintenanceState;
 };
 
-export function MaintenanceScheduler() {
+export function MaintenanceScheduler({ initialState }: { initialState: MaintenanceState }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [durationMinutes, setDurationMinutes] = useState(30);
@@ -40,6 +40,7 @@ export function MaintenanceScheduler() {
       }
       return (await response.json()) as MaintenanceResponse;
     },
+    initialData: { state: initialState },
     refetchInterval: 30_000,
   });
 

@@ -1,6 +1,11 @@
 import { FeatureFlagsManager } from "@/components/admin/feature-flags-manager";
+import { getAdminFeatureFlags } from "@/services/admin";
 
-export default function AdminFeatureFlagsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AdminFeatureFlagsPage() {
+  const flags = await getAdminFeatureFlags();
+
   return (
     <section className="space-y-6">
       <header className="space-y-1">
@@ -10,8 +15,7 @@ export default function AdminFeatureFlagsPage() {
         </p>
       </header>
 
-      <FeatureFlagsManager />
+      <FeatureFlagsManager initialFlags={flags} />
     </section>
   );
 }
-

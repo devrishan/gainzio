@@ -1,19 +1,23 @@
-import { NextResponse } from "next/server";
-import { getAuthUser } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
+import { getAuthenticatedUser } from '@/lib/api-auth';
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
-        const user = await getAuthUser();
-        if (!user) {
-            return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+        const authUser = await getAuthenticatedUser(request);
+
+        if (!authUser) {
+            return NextResponse.json(
+                { success: false, error: 'Unauthenticated' },
+                { status: 401 },
+            );
         }
 
         const withdrawals = await prisma.withdrawal.findMany({
             where: {
-                userId: user.id,
+                userId: authUser.userId,
             },
             orderBy: {
                 requestedAt: "desc",

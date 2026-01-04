@@ -112,7 +112,7 @@ interface PaginationMeta {
 
 export async function getAdminDashboard(): Promise<AdminDashboardMetrics> {
   try {
-    const data = await serverFetch<{ success: boolean } & AdminDashboardMetrics>("/api/admin/dashboard.php");
+    const data = await serverFetch<{ success: boolean } & AdminDashboardMetrics>("/api/admin/dashboard");
     if (!data.success) {
       redirect("/login");
     }
@@ -132,7 +132,7 @@ export async function getAdminReferrals(
 }> {
   try {
     const query = new URLSearchParams(searchParams);
-    const path = `/api/admin/referrals.php${query.toString() ? `?${query.toString()}` : ""}`;
+    const path = `/api/admin/referrals${query.toString() ? `?${query.toString()}` : ""}`;
     const data = await serverFetch<{ success: boolean; data: AdminReferral[]; pagination: PaginationMeta }>(path);
     if (!data.success) {
       redirect("/login");
@@ -149,7 +149,7 @@ export async function getAdminReferrals(
 export async function getAdminWithdrawals(status: string = "pending"): Promise<AdminWithdrawal[]> {
   try {
     const data = await serverFetch<{ success: boolean; withdrawals: AdminWithdrawal[] }>(
-      `/api/admin/withdrawals.php?status=${encodeURIComponent(status)}`,
+      `/api/admin/withdrawals?status=${encodeURIComponent(status)}`,
     );
     if (!data.success) {
       redirect("/login");
@@ -162,7 +162,7 @@ export async function getAdminWithdrawals(status: string = "pending"): Promise<A
 
 export async function getAdminAds(): Promise<AdminAd[]> {
   try {
-    const data = await serverFetch<{ success: boolean; ads: AdminAd[] }>("/api/admin/ads.php");
+    const data = await serverFetch<{ success: boolean; ads: AdminAd[] }>("/api/admin/ads");
     if (!data.success) {
       redirect("/login");
     }
@@ -176,7 +176,7 @@ export async function getAdminSubmissions(status?: string): Promise<AdminSubmiss
   try {
     const query = status ? `?status=${encodeURIComponent(status)}` : "";
     const data = await serverFetch<{ success: boolean; submissions: AdminSubmission[] }>(
-      `/api/admin/submissions.php${query}`,
+      `/api/admin/submissions${query}`,
     );
     if (!data.success) {
       redirect("/login");
@@ -228,6 +228,223 @@ export async function getTaskSubmissions({
       data: submissions,
       pagination,
     };
+  } catch {
+    redirect("/login");
+  }
+}
+
+export interface AdminUser {
+  id: string;
+  username: string | null;
+  email: string | null;
+  phone: string | null;
+  role: "USER" | "ADMIN" | "VERIFIER" | "PAYOUT_MANAGER";
+  status: string;
+  walletBalance: number;
+  createdAt: string;
+  lastLoginAt: string | null;
+}
+
+export async function getAdminMembers(
+  searchParams?: Record<string, string>,
+): Promise<{
+  users: AdminUser[];
+  pagination: PaginationMeta;
+}> {
+  try {
+    const query = new URLSearchParams(searchParams);
+    const path = `/api/admin/members?${query.toString()}`;
+    const data = await serverFetch<{ success: boolean; users: AdminUser[]; pagination: PaginationMeta }>(path);
+
+    if (!data.success) {
+      redirect("/login");
+    }
+
+    return {
+      users: data.users,
+      pagination: data.pagination,
+    };
+  } catch {
+    redirect("/login");
+  }
+}
+
+export interface AdminSecurityLog {
+  id: string;
+  action: string;
+  actor: {
+    username: string | null;
+    role: string;
+  } | null;
+  entityType: string | null;
+  entityId: string | null;
+  metadata: any;
+  createdAt: string;
+}
+
+export async function getAdminSecurityLogs(
+  page: number = 1
+): Promise<{
+  logs: AdminSecurityLog[];
+  pagination: PaginationMeta;
+}> {
+  try {
+    const path = `/api/admin/security?page=${page}`;
+    const data = await serverFetch<{ success: boolean; logs: AdminSecurityLog[]; pagination: PaginationMeta }>(path);
+
+    if (!data.success) {
+      redirect("/login");
+    }
+
+    return {
+      logs: data.logs,
+      pagination: data.pagination,
+    };
+  } catch {
+    redirect("/login");
+  }
+}
+
+export interface AdminStaff {
+  id: string;
+  username: string | null;
+  email: string | null;
+  role: "ADMIN" | "VERIFIER" | "PAYOUT_MANAGER";
+  lastLoginAt: string | null;
+  createdAt: string;
+}
+
+export async function getAdminStaff(): Promise<AdminStaff[]> {
+  try {
+    const data = await serverFetch<{ success: boolean; staff: AdminStaff[] }>("/api/admin/admins");
+
+    if (!data.success) {
+      redirect("/login");
+    }
+
+    return data.staff;
+  } catch {
+    redirect("/login");
+  }
+}
+
+export interface AdminTask {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  rewardAmount: number;
+  rewardCoins: number;
+  difficulty: string;
+  isActive: boolean;
+  category: {
+    name: string;
+    slug: string;
+  };
+  submissionCount: number;
+  createdAt: string;
+}
+
+export async function getAdminTasks(
+  page: number = 1
+): Promise<{
+  tasks: AdminTask[];
+  pagination: PaginationMeta;
+}> {
+  try {
+    const path = `/api/admin/tasks?page=${page}`;
+    const data = await serverFetch<{ success: boolean; tasks: AdminTask[]; pagination: PaginationMeta }>(path);
+
+    if (!data.success) {
+      redirect("/login");
+    }
+
+    return {
+      tasks: data.tasks,
+      pagination: data.pagination,
+    };
+  } catch {
+    redirect("/login");
+  }
+}
+
+export interface AdminProduct {
+  id: string;
+  productName: string;
+  platform: string;
+  category: string | null;
+  amount: number;
+  status: string;
+  user: {
+    username: string | null;
+    email: string | null;
+  };
+  createdAt: string;
+}
+
+export async function getAdminProducts(
+  searchParams?: Record<string, string>,
+): Promise<{
+  products: AdminProduct[];
+  pagination: PaginationMeta;
+}> {
+  try {
+    const query = new URLSearchParams(searchParams);
+    const path = `/api/admin/products?${query.toString()}`;
+    const data = await serverFetch<{ success: boolean; products: AdminProduct[]; pagination: PaginationMeta }>(path);
+
+    if (!data.success) {
+      redirect("/login");
+    }
+
+    return {
+      products: data.products,
+      pagination: data.pagination,
+    };
+  } catch {
+    redirect("/login");
+  }
+}
+
+export interface AdminMaintenanceState {
+  enabled: boolean;
+  message?: string;
+  endsAt?: string;
+}
+
+export async function getAdminMaintenanceState(): Promise<AdminMaintenanceState> {
+  try {
+    const data = await serverFetch<{ success: boolean; state: AdminMaintenanceState }>("/api/admin/maintenance");
+
+    if (!data.success) {
+      redirect("/login");
+    }
+
+    return data.state;
+  } catch {
+    redirect("/login");
+  }
+}
+
+export interface AdminFeatureFlag {
+  key: string;
+  enabled: boolean;
+  rolloutPercentage: number;
+  targetUsers?: string[];
+  targetRoles?: string[];
+  description?: string;
+  updatedAt: string;
+}
+
+export async function getAdminFeatureFlags(): Promise<AdminFeatureFlag[]> {
+  try {
+    const data = await serverFetch<{ success: boolean; flags: AdminFeatureFlag[] }>("/api/admin/feature-flags");
+
+    if (!data.success) {
+      redirect("/login");
+    }
+
+    return data.flags;
   } catch {
     redirect("/login");
   }
