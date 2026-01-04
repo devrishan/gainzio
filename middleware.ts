@@ -59,7 +59,10 @@ function tryExtractRoleFromToken(token: string): string | null {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  // Update matcher to include api/admin and api/member, while still excluding other static assets
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico).*)",
+  ],
 };
 
 export async function middleware(request: NextRequest) {
@@ -97,23 +100,17 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/register");
   const isMemberRoute = pathname.startsWith("/member");
   const isAdminRoute = pathname.startsWith("/admin");
-  const isPublicRoute = !isMemberRoute && !isAdminRoute;
 
-  // Determining Role (Simplified for NextAuth migration - assuming USER for now if NextAuth)
-  // For legacy, we try to parse cookies. For NextAuth, we'd typically use `getToken` but
-  // standard middleware cannot easily decode JWT without SECRET in Edge Runtime sometimes.
-  // We will assume if nextAuthToken exists, they are at least a USER.
-  // Refined RBAC should happen in layout or page if needed.
+  // Specific API Protection
+  const isApiMemberRoute = pathname.startsWith("/api/member");
+  const isApiAdminRoute = pathname.startsWith("/api/admin");
+  const isProtectedApiRoute = isApiMemberRoute || isApiAdminRoute;
 
-  const legacyUser = parseLegacyUserCookie(request.cookies.get("sparkio_user")?.value);
-  const earniqUser = parseLegacyUserCookie(request.cookies.get("earniq_user")?.value);
-
-  let userRole = "USER";
-  if (earniqUser?.role) userRole = earniqUser.role;
-  // TODO: Decode NextAuth token for role if strict Admin protection is needed at middleware level
-
-  if (isMemberRoute || isAdminRoute) {
+  if (isMemberRoute || isAdminRoute || isProtectedApiRoute) {
     if (!hasAnyToken) {
+      if (isProtectedApiRoute) {
+        return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+      }
       const redirectUrl = request.nextUrl.clone();
       redirectUrl.pathname = "/login";
       redirectUrl.searchParams.set("redirect", `${pathname}${request.nextUrl.search}`);
