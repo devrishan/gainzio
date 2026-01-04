@@ -1,0 +1,9 @@
+
+> gainzio@1.0.0 lint
+> next lint
+
+
+./app/api/admin/maintenance/route.ts
+26:3  Error: Include a description after the "@ts-expect-error" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.  @typescript-eslint/ban-ts-comment
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules

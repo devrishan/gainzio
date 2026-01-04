@@ -87,5 +87,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: "Failed to update maintenance state." }, { status: 500 });
   }
 }
-
-

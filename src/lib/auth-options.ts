@@ -240,9 +240,7 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token }) {
             if (session.user && token.sub) {
                 session.user.id = token.sub;
-                // @ts-expect-error - username is added to token in jwt callback
                 session.user.username = token.username;
-                // @ts-expect-error - role is added to token in jwt callback
                 session.user.role = token.role;
             }
             return session;
@@ -251,7 +249,6 @@ export const authOptions: NextAuthOptions = {
             if (user) {
                 token.id = user.id;
                 token.username = user.username;
-                // @ts-expect-error - role property exists on user object from Prisma
                 token.role = user.role;
             }
             // Update token if session is updated (e.g. username change)

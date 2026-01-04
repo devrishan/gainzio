@@ -16,8 +16,7 @@ export async function getAuthenticatedUser(request?: NextRequest): Promise<Authe
     if (session?.user?.email) {
         return {
             userId: session.user.id,
-            // @ts-ignore
-            role: session.user.role || "USER"
+            role: (session.user as any).role || "USER"
         };
     }
 
