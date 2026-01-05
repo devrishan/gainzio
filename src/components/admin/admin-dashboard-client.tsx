@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Banknote, HandCoins, Users } from "lucide-react";
+import { Banknote, HandCoins, Users, Zap, ShieldCheck } from "lucide-react";
 
 import { StatsCard } from "@/components/StatsCard";
 import { Card } from "@/components/ui/card";
@@ -20,21 +20,22 @@ export function AdminDashboardClient({ metrics, pendingWithdrawals }: AdminDashb
 
   const summary = [
     {
-      title: "Total Users",
+      title: "Total Members",
       value: metrics.total_users,
-      subtitle: "Across the entire network",
+      subtitle: "Verified Network",
       icon: Users,
     },
     {
-      title: "Pending Withdrawals",
+      title: "Pending Payouts",
       value: metrics.pending_withdrawals.count,
-      subtitle: `₹${metrics.pending_withdrawals.amount.toFixed(2)} waiting`,
+      subtitle: `₹${metrics.pending_withdrawals.amount.toFixed(0)} Volume`,
       icon: HandCoins,
+      trend: "up" as const,
     },
     {
-      title: "Total Earnings Paid",
-      value: `₹${metrics.total_earnings_paid.toFixed(2)}`,
-      subtitle: "Lifetime payouts to members",
+      title: "Total Paid Out",
+      value: `₹${(metrics.total_earnings_paid / 1000).toFixed(1)}K`,
+      subtitle: "Lifetime Volume",
       icon: Banknote,
     },
   ];
@@ -42,9 +43,13 @@ export function AdminDashboardClient({ metrics, pendingWithdrawals }: AdminDashb
   const latestWithdrawals = pendingWithdrawals.slice(0, 5);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10 relative">
+      {/* Background Decor */}
+      <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+      <div className="absolute top-60 -left-40 h-[400px] w-[400px] rounded-full bg-accent/5 blur-[100px] pointer-events-none" />
+
       {/* Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-3 relative z-10">
         {summary.map((item) => (
           <StatsCard
             key={item.title}
@@ -52,90 +57,110 @@ export function AdminDashboardClient({ metrics, pendingWithdrawals }: AdminDashb
             value={item.value}
             subtitle={item.subtitle}
             icon={item.icon}
+            trend={item.trend}
           />
         ))}
       </div>
 
-      {/* Control Panel Grid */}
-      <div>
-        <h2 className="mb-4 text-lg font-semibold tracking-tight">System Control</h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="cursor-pointer border-l-4 border-l-blue-500 transition-all hover:bg-accent/50" onClick={() => router.push('/admin/tasks/create')}>
-            <div className="p-6">
-              <h3 className="font-semibold text-foreground">Create Task</h3>
-              <p className="text-sm text-muted-foreground">Add new missions & levels</p>
-            </div>
-          </Card>
-          <Card className="cursor-pointer border-l-4 border-l-purple-500 transition-all hover:bg-accent/50" onClick={() => router.push('/admin/users')}>
-            <div className="p-6">
-              <h3 className="font-semibold text-foreground">User Database</h3>
-              <p className="text-sm text-muted-foreground">Manage ranks & accounts</p>
-            </div>
-          </Card>
-          <Card className="cursor-pointer border-l-4 border-l-orange-500 transition-all hover:bg-accent/50" onClick={() => router.push('/admin/config')}>
-            <div className="p-6">
-              <h3 className="font-semibold text-foreground">Engine Tuning</h3>
-              <p className="text-sm text-muted-foreground">Adjust formulas & thresholds</p>
-            </div>
-          </Card>
-          <Card className="cursor-pointer border-l-4 border-l-green-500 transition-all hover:bg-accent/50" onClick={() => router.push('/admin/withdrawals')}>
-            <div className="p-6">
-              <h3 className="font-semibold text-foreground">Payout Gateway</h3>
-              <p className="text-sm text-muted-foreground">{metrics.pending_withdrawals.count} pending requests</p>
-            </div>
-          </Card>
+      {/* Command Control Grid */}
+      <div className="relative z-10">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-6 w-1.5 bg-primary rounded-full" />
+          <h2 className="text-xl font-black italic tracking-tight uppercase text-white/90">Command Center</h2>
+        </div>
+
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+          {[
+            { label: "Tasks", desc: "Missions & Levels", path: "/admin/tasks", color: "from-blue-600/20", border: "hover:border-blue-500/50" },
+            { label: "Users", desc: "Ranks & Accounts", path: "/admin/members", color: "from-purple-600/20", border: "hover:border-purple-500/50" },
+            { label: "Config", desc: "Engine Tuning", path: "/admin/maintenance", color: "from-orange-600/20", border: "hover:border-orange-500/50" },
+            { label: "Payouts", desc: `${metrics.pending_withdrawals.count} Pending`, path: "/admin/withdrawals", color: "from-emerald-600/20", border: "hover:border-emerald-500/50" }
+          ].map((action) => (
+            <Card
+              key={action.label}
+              className={`cursor-pointer overflow-hidden bg-gradient-to-br ${action.color} to-transparent border-white/5 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] active:scale-95 ${action.border} group`}
+              onClick={() => router.push(action.path)}
+            >
+              <div className="p-6 relative">
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Zap className="h-4 w-4 text-white/20" />
+                </div>
+                <h3 className="font-bold text-white uppercase tracking-tighter text-lg">{action.label}</h3>
+                <p className="text-xs font-medium text-zinc-500">{action.desc}</p>
+              </div>
+            </Card>
+          ))}
         </div>
       </div>
 
-      <Card className="border-border bg-card p-4 sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* Live Feed: Pending Withdrawals */}
+      <Card className="relative z-10 border-white/5 bg-zinc-950/40 backdrop-blur-2xl p-6 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
           <div>
-            <h3 className="text-lg font-semibold text-foreground">Pending Withdrawals</h3>
-            <p className="text-sm text-muted-foreground">
-              Approve or reject payouts to keep the community paid on time.
+            <h3 className="text-lg font-black italic uppercase tracking-tight text-white/90">Payout Pipeline</h3>
+            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">
+              Live monitoring of outbound transactions
             </p>
           </div>
-          <Button variant="outline" onClick={() => router.push("/admin/withdrawals")}>
-            Manage Queue
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-[10px] font-bold uppercase tracking-widest"
+            onClick={() => router.push("/admin/withdrawals")}
+          >
+            Open Queue
           </Button>
         </div>
-        <Table className="mt-4">
-          <TableHeader>
-            <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>UPI ID</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead className="text-right">Requested</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {latestWithdrawals.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4} className="py-8 text-center text-sm text-muted-foreground">
-                  No pending withdrawals. You&apos;re all caught up!
-                </TableCell>
+
+        <div className="rounded-2xl border border-white/5 overflow-hidden">
+          <Table>
+            <TableHeader className="bg-white/5">
+              <TableRow className="hover:bg-transparent border-white/5">
+                <TableHead className="text-[10px] font-black uppercase text-zinc-500 tracking-widest">Operator</TableHead>
+                <TableHead className="text-[10px] font-black uppercase text-zinc-500 tracking-widest">Gateway ID</TableHead>
+                <TableHead className="text-right text-[10px] font-black uppercase text-zinc-500 tracking-widest">Volume</TableHead>
+                <TableHead className="text-right text-[10px] font-black uppercase text-zinc-500 tracking-widest hidden sm:table-cell">Timestamp</TableHead>
               </TableRow>
-            ) : (
-              latestWithdrawals.map((withdrawal) => (
-                <TableRow key={withdrawal.id}>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{withdrawal.user.username}</span>
-                      <span className="text-xs text-muted-foreground">{withdrawal.user.email}</span>
+            </TableHeader>
+            <TableBody>
+              {latestWithdrawals.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="py-12 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <ShieldCheck className="h-8 w-8 text-emerald-500/20" />
+                      <p className="text-xs font-bold text-zinc-600 uppercase tracking-widest">Clear Pipeline: No Pending Work</p>
                     </div>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{withdrawal.upi_id}</TableCell>
-                  <TableCell className="text-right font-semibold">₹{withdrawal.amount.toFixed(2)}</TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    {new Date(withdrawal.created_at).toLocaleString()}
-                  </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                latestWithdrawals.map((withdrawal) => (
+                  <TableRow key={withdrawal.id} className="hover:bg-white/5 border-white/5 transition-colors group">
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-white text-sm">{withdrawal.user.username}</span>
+                        <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-tighter">{withdrawal.user.email}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-zinc-500 text-xs font-mono">{withdrawal.upi_id}</TableCell>
+                    <TableCell className="text-right">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-black text-xs tracking-tight italic">
+                        ₹{withdrawal.amount.toFixed(0)}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right text-[10px] font-bold text-zinc-600 uppercase hidden sm:table-cell group-hover:text-zinc-400 transition-colors">
+                      {new Date(withdrawal.created_at).toLocaleTimeString()}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </Card>
     </div>
   );
 }
+
 

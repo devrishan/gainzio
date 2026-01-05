@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { CircleUserRound, LogOut, Settings, Shield } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -36,7 +37,10 @@ export function UserMenu({ username = "Member", role = "member", onLogout }: Use
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2 px-2">
+        <Button variant="ghost" className={cn(
+          "flex items-center gap-2 px-2 transition-all",
+          role === "admin" ? "hover:bg-white/10 text-white" : ""
+        )}>
           <CircleUserRound className="h-5 w-5" />
           <span className="hidden text-sm font-medium md:inline">{username}</span>
         </Button>

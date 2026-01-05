@@ -34,7 +34,7 @@ const iconMap: Record<NavigationIcon, LucideIcon> = {
   profile: User,
 };
 
-export function Sidebar({ items }: { items: NavigationItem[] }) {
+export function Sidebar({ items, role = "member" }: { items: NavigationItem[], role?: "member" | "admin" }) {
   const pathname = usePathname();
 
   return (
@@ -47,8 +47,10 @@ export function Sidebar({ items }: { items: NavigationItem[] }) {
             key={href}
             href={href as Route}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-              isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
+              isActive
+                ? (role === "admin" ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-primary/10 text-primary")
+                : (role === "admin" ? "text-zinc-500 hover:text-white hover:bg-white/5" : "text-muted-foreground hover:text-foreground hover:bg-muted/60"),
             )}
           >
             <Icon className="h-4 w-4" />
