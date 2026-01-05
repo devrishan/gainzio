@@ -69,16 +69,20 @@ export function Hero() {
                 Experience instant UPI withdrawals with Gainzio&apos;s compliance-first ecosystem.
               </p>
 
-              <div className="flex items-center gap-2 justify-center lg:justify-start">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="h-8 w-8 rounded-full border-2 border-background bg-zinc-800 flex items-center justify-center overflow-hidden">
-                      <div className="h-full w-full bg-gradient-to-br from-zinc-700 to-zinc-900" />
+              <div className="flex items-center gap-3 justify-center lg:justify-start">
+                <div className="flex -space-x-3">
+                  {[
+                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=64&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=64&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=64&auto=format&fit=crop",
+                  ].map((url, i) => (
+                    <div key={i} className="h-9 w-9 rounded-full border-2 border-background bg-zinc-800 flex items-center justify-center overflow-hidden shadow-xl ring-1 ring-white/10">
+                      <img src={url} alt={`Member ${i + 1}`} className="h-full w-full object-cover" />
                     </div>
                   ))}
                 </div>
-                <p className="text-sm font-medium">
-                  <span className="text-primary font-bold">10k+</span> members earning today
+                <p className="text-sm font-semibold tracking-tight">
+                  Trusted by <span className="text-primary font-bold">10,000+ users</span>
                 </p>
               </div>
             </motion.div>
