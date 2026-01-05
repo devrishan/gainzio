@@ -45,7 +45,7 @@ export function EarningStreams() {
   return (
     <motion.section
       id="features"
-      className="container mx-auto px-6 py-24"
+      className="container mx-auto px-4 md:px-6 py-24"
       initial="hidden"
       whileInView="visible"
       viewport={viewport}

@@ -3,6 +3,9 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Menu } from "lucide-react";
+
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 import { Button } from "@/components/ui/button";
 import { GainzioLogo } from "@/components/shared/logo";
@@ -60,7 +63,7 @@ export function Navbar() {
               size="sm"
               variant={isLoginPage ? "ghost" : "default"}
               className={cn(
-                "rounded-full",
+                "hidden md:inline-flex rounded-full",
                 isLoginPage
                   ? "text-muted-foreground hover:text-foreground hover:bg-transparent"
                   : "bg-primary px-6 shadow-md shadow-primary/20 hover:bg-primary/90"
@@ -68,6 +71,52 @@ export function Navbar() {
             >
               <Link href="/register">Get Started</Link>
             </Button>
+
+            {/* Mobile Menu */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground hover:text-foreground">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Toggle menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] sm:w-[350px] flex flex-col gap-8 pt-10">
+                <div className="flex justify-center">
+                  <GainzioLogo href="/" size="xl" />
+                </div>
+
+                <div className="flex flex-col gap-4 text-base font-medium text-muted-foreground">
+                  {navLinks.map((link) =>
+                    link.href.startsWith("#") ? (
+                      <a
+                        key={link.label}
+                        href={link.href}
+                        className="py-2 hover:text-primary transition-colors border-b border-border/40"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        key={link.label}
+                        href={link.href as Route}
+                        className="py-2 hover:text-primary transition-colors border-b border-border/40"
+                      >
+                        {link.label}
+                      </Link>
+                    ),
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-3 mt-auto">
+                  <Button asChild variant="outline" className="w-full rounded-full">
+                    <Link href="/login">Log in</Link>
+                  </Button>
+                  <Button asChild className="w-full rounded-full shadow-lg shadow-primary/20">
+                    <Link href="/register">Get Started</Link>
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </nav>
       </div>
