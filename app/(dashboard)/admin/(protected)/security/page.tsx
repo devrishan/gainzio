@@ -81,7 +81,7 @@ export default async function AdminSecurityPage() {
         <Card className="border-white/5 bg-zinc-950/40 backdrop-blur-2xl p-6 overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-500/50 to-transparent" />
 
-          <div className="rounded-2xl border border-white/5 overflow-hidden">
+          <div className="rounded-2xl border border-white/5 overflow-x-auto">
             <Table>
               <TableHeader className="bg-white/5">
                 <TableRow className="hover:bg-transparent border-white/5">

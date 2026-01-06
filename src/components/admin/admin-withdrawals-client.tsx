@@ -60,66 +60,68 @@ export function AdminWithdrawalsClient({ withdrawals }: AdminWithdrawalsClientPr
         <h2 className="text-xl font-semibold text-foreground">Pending Withdrawals</h2>
         <p className="text-sm text-muted-foreground">Confirm or decline payout requests submitted by members.</p>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>User</TableHead>
-            <TableHead>UPI ID</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
-            <TableHead className="text-right">Requested</TableHead>
-            <TableHead className="text-right">Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {withdrawals.length === 0 ? (
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">
-                No withdrawal requests waiting. Nicely done!
-              </TableCell>
+              <TableHead>User</TableHead>
+              <TableHead>UPI ID</TableHead>
+              <TableHead className="text-right">Amount</TableHead>
+              <TableHead className="text-right">Requested</TableHead>
+              <TableHead className="text-right">Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
-          ) : (
-            withdrawals.map((withdrawal) => (
-              <TableRow key={withdrawal.id}>
-                <TableCell>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{withdrawal.user.username}</span>
-                    <span className="text-xs text-muted-foreground">{withdrawal.user.email}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-muted-foreground">{withdrawal.upi_id}</TableCell>
-                <TableCell className="text-right font-semibold">₹{withdrawal.amount.toFixed(2)}</TableCell>
-                <TableCell className="text-right text-muted-foreground">
-                  {new Date(withdrawal.created_at).toLocaleString()}
-                </TableCell>
-                <TableCell className="text-right">
-                  <Badge variant="outline" className={statusStyles[withdrawal.status]}>
-                    {withdrawal.status.toUpperCase()}
-                  </Badge>
-                </TableCell>
-                <TableCell className="flex justify-end gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    disabled={withdrawal.status !== "pending" || mutation.isPending}
-                    onClick={() => mutation.mutate({ withdrawal_id: withdrawal.id, new_status: "APPROVED" })}
-                  >
-                    <Check className="h-4 w-4 text-success" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    disabled={withdrawal.status !== "pending" || mutation.isPending}
-                    onClick={() => mutation.mutate({ withdrawal_id: withdrawal.id, new_status: "REJECTED" })}
-                  >
-                    <X className="h-4 w-4 text-destructive" />
-                  </Button>
+          </TableHeader>
+          <TableBody>
+            {withdrawals.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">
+                  No withdrawal requests waiting. Nicely done!
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              withdrawals.map((withdrawal) => (
+                <TableRow key={withdrawal.id}>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{withdrawal.user.username}</span>
+                      <span className="text-xs text-muted-foreground">{withdrawal.user.email}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">{withdrawal.upi_id}</TableCell>
+                  <TableCell className="text-right font-semibold">₹{withdrawal.amount.toFixed(2)}</TableCell>
+                  <TableCell className="text-right text-muted-foreground">
+                    {new Date(withdrawal.created_at).toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Badge variant="outline" className={statusStyles[withdrawal.status]}>
+                      {withdrawal.status.toUpperCase()}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="flex justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      disabled={withdrawal.status !== "pending" || mutation.isPending}
+                      onClick={() => mutation.mutate({ withdrawal_id: withdrawal.id, new_status: "APPROVED" })}
+                    >
+                      <Check className="h-4 w-4 text-success" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      disabled={withdrawal.status !== "pending" || mutation.isPending}
+                      onClick={() => mutation.mutate({ withdrawal_id: withdrawal.id, new_status: "REJECTED" })}
+                    >
+                      <X className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </Card>
   );
 }

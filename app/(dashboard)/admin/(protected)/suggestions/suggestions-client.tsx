@@ -19,11 +19,16 @@ interface SuggestionsFeedProps {
 export default function SuggestionsFeed({ initialData }: SuggestionsFeedProps) {
     const router = useRouter();
     const [filter, setFilter] = useState("all"); // all, pending, approved, rejected
+    const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
     const [isUpdating, setIsUpdating] = useState<string | null>(null);
 
     const filteredData = initialData.filter(item => {
         if (filter === "all") return true;
         return item.status === filter;
+    }).sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
     });
 
     const handleStatusUpdate = async (id: string, newStatus: string) => {
@@ -50,21 +55,28 @@ export default function SuggestionsFeed({ initialData }: SuggestionsFeedProps) {
         <div className="space-y-6">
             {/* Options Bar */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-1 rounded-xl bg-neutral-900/50 border border-white/5 backdrop-blur-sm">
-                <div className="flex p-1 bg-black/20 rounded-lg w-full sm:w-auto">
+                <div className="flex p-1 bg-black/20 rounded-lg w-full sm:w-auto overflow-x-auto">
                     {["all", "pending", "approved", "rejected"].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setFilter(tab)}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all capitalize flex-1 sm:flex-none ${filter === tab
-                                    ? "bg-neutral-800 text-white shadow-sm"
-                                    : "text-neutral-500 hover:text-neutral-300"
+                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all capitalize whitespace-nowrap ${filter === tab
+                                ? "bg-neutral-800 text-white shadow-sm"
+                                : "text-neutral-500 hover:text-neutral-300"
                                 }`}
                         >
                             {tab}
                         </button>
                     ))}
                 </div>
-                {/* Could add search here later if needed */}
+
+                <button
+                    onClick={() => setSortOrder(prev => prev === "desc" ? "asc" : "desc")}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-neutral-400 hover:text-white transition-colors"
+                >
+                    <Filter className="w-4 h-4" />
+                    <span>{sortOrder === "desc" ? "Newest First" : "Oldest First"}</span>
+                </button>
             </div>
 
             {/* Feed */}
@@ -93,8 +105,8 @@ export default function SuggestionsFeed({ initialData }: SuggestionsFeedProps) {
                                                     {item.platform}
                                                 </Badge>
                                                 <Badge variant="outline" className={`text-[10px] uppercase font-bold tracking-wider border-0 ${item.status === 'pending' ? 'bg-amber-500/10 text-amber-500' :
-                                                        item.status === 'approved' ? 'bg-emerald-500/10 text-emerald-500' :
-                                                            'bg-red-500/10 text-red-500'
+                                                    item.status === 'approved' ? 'bg-emerald-500/10 text-emerald-500' :
+                                                        'bg-red-500/10 text-red-500'
                                                     }`}>
                                                     {item.status}
                                                 </Badge>

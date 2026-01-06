@@ -78,3 +78,81 @@ export async function GET(request: NextRequest) {
         );
     }
 }
+
+export async function POST(request: NextRequest) {
+    try {
+        const authUser = await getAuthenticatedUser(request);
+
+        if (!authUser || authUser.role !== Role.ADMIN) {
+            return NextResponse.json(
+                { success: false, error: 'Forbidden' },
+                { status: 403 },
+            );
+        }
+
+        const body = await request.json();
+        const {
+            title,
+            description,
+            categoryId,
+            rewardAmount,
+            rewardCoins,
+            difficulty,
+            minRank,
+            isActive,
+            priority,
+            expiresAt,
+            maxSubmissions
+        } = body;
+
+        // Basic validation
+        if (!title || !description || !categoryId || !difficulty) {
+            return NextResponse.json(
+                { success: false, error: 'Missing required fields' },
+                { status: 400 },
+            );
+        }
+
+        // Generate base slug
+        let slug = title.toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '');
+
+        // Ensure uniqueness
+        let uniqueSlug = slug;
+        let counter = 1;
+        while (await prisma.task.findUnique({ where: { slug: uniqueSlug } })) {
+            uniqueSlug = `${slug}-${counter}`;
+            counter++;
+        }
+
+        const newTask = await prisma.task.create({
+            data: {
+                title,
+                slug: uniqueSlug,
+                description,
+                categoryId,
+                rewardAmount: Number(rewardAmount) || 0,
+                rewardCoins: Number(rewardCoins) || 0,
+                difficulty,
+                minRank: minRank || "NEWBIE", // Default
+                isActive: isActive ?? true,
+                priority: Number(priority) || 0,
+                maxSubmissions: maxSubmissions ? Number(maxSubmissions) : null,
+                expiresAt: expiresAt ? new Date(expiresAt) : null,
+            }
+        });
+
+        return NextResponse.json({
+            success: true,
+            task: newTask
+        });
+
+    } catch (error) {
+        console.error('Error creating task:', error);
+        return NextResponse.json(
+            { success: false, error: 'Failed to create task' },
+            { status: 500 },
+        );
+    }
+}
