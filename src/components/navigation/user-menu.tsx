@@ -59,14 +59,7 @@ export function UserMenu({ username = "Member", role = "member", onLogout }: Use
             Settings
           </Link>
         </DropdownMenuItem>
-        {role === "admin" ? (
-          <DropdownMenuItem asChild>
-            <Link href="/admin/security" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Security Center
-            </Link>
-          </DropdownMenuItem>
-        ) : null}
+
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-destructive focus:text-destructive">
           <LogOut className="h-4 w-4" />
