@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
 import {
-    User, Mail, Phone, Calendar, Clock, creditCard,
+    User, Mail, Phone, Calendar, Clock, CreditCard,
     Shield, Activity, Users, DollarSign, Ban, CheckCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
