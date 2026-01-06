@@ -43,7 +43,7 @@ export async function GET(
                 wallet: {
                     select: {
                         balance: true,
-                        total_earnings: true,
+                        totalEarned: true,
                     }
                 },
                 createdAt: true,
@@ -58,8 +58,8 @@ export async function GET(
                 _count: {
                     select: {
                         referrals: true,
-                        taskSubmissions: true,
-                        withdrawalRequests: true,
+                        submissions: true,
+                        withdrawals: true,
                     }
                 }
             },
@@ -82,15 +82,15 @@ export async function GET(
                 role: user.role,
                 status: user.isDeleted ? 'Deleted' : (user.is_locked ? 'Locked' : 'Active'),
                 walletBalance: user.wallet ? Number(user.wallet.balance) : 0,
-                totalEarnings: user.wallet ? Number(user.wallet.total_earnings) : 0,
+                totalEarnings: user.wallet ? Number(user.wallet.totalEarned) : 0,
                 createdAt: user.createdAt.toISOString(),
                 lastLoginAt: user.last_login_at?.toISOString() || null,
                 referralCode: user.referralCode,
                 referredBy: user.referredBy,
                 stats: {
                     referrals: user._count.referrals,
-                    tasks: user._count.taskSubmissions,
-                    withdrawals: user._count.withdrawalRequests,
+                    tasks: user._count.submissions,
+                    withdrawals: user._count.withdrawals,
                 }
             },
         });
