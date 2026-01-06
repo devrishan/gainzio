@@ -302,6 +302,46 @@ export async function getAdminMemberById(id: string): Promise<AdminMemberDetail>
   }
 }
 
+redirect("/admin/members");
+  }
+}
+
+export interface AdminProductSuggestion {
+  id: string;
+  userId: string;
+  user: {
+    id: string;
+    username: string | null;
+    email: string | null;
+  };
+  productName: string;
+  platform: string;
+  category: string | null;
+  amount: number | null; // Prism decimal
+  orderId: string | null;
+  status: string;
+  createdAt: string;
+  files: any;
+}
+
+export async function getAdminSuggestions(): Promise<AdminProductSuggestion[]> {
+  try {
+    const data = await serverFetch<{ success: boolean; suggestions: any[] }>('/api/admin/suggestions');
+
+    if (!data.success) return [];
+
+    return data.suggestions.map((s: any) => ({
+      ...s,
+      amount: s.amount ? Number(s.amount) : 0,
+      createdAt: s.createdAt,
+    }));
+
+  } catch (error) {
+    console.error("Failed to get suggestions", error);
+    return [];
+  }
+}
+
 export interface AdminSecurityLog {
   id: string;
   action: string;
