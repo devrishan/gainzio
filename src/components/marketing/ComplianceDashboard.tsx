@@ -18,13 +18,13 @@ const reviewers = [
 export function ComplianceDashboard() {
   return (
     <motion.section
-      className="px-6 pb-20 lg:px-12"
+      className="px-4 pb-20 md:px-6 lg:px-12"
       initial="hidden"
       whileInView="visible"
       viewport={viewport}
       variants={fadeInUp}
     >
-      <div className="mx-auto max-w-6xl rounded-[32px] border border-white/10 bg-gradient-to-b from-primary/10 via-background to-background p-8 shadow-2xl shadow-primary/10">
+      <div className="mx-auto max-w-6xl rounded-[32px] border border-white/10 bg-gradient-to-b from-primary/10 via-background to-background p-6 shadow-2xl shadow-primary/10 md:p-8">
         <div className="space-y-6">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary/80">Operational trust</p>

@@ -16,7 +16,7 @@ const badges = [
 export function TrustStrip() {
   return (
     <motion.section
-      className="border-t border-white/5 bg-muted/10 px-6 py-8 text-xs text-muted-foreground sm:text-sm lg:px-12"
+      className="border-t border-white/5 bg-muted/10 px-4 py-8 text-xs text-muted-foreground sm:text-sm md:px-6 lg:px-12"
       initial="hidden"
       whileInView="visible"
       viewport={viewport}

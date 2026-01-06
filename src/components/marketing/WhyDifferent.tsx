@@ -31,7 +31,7 @@ const differentiators = [
 export function WhyDifferent() {
   return (
     <motion.section
-      className="px-6 pb-20 lg:px-12"
+      className="px-4 pb-20 md:px-6 lg:px-12"
       initial="hidden"
       whileInView="visible"
       viewport={viewport}

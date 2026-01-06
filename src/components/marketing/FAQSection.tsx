@@ -117,7 +117,7 @@ export const FAQSection = React.memo(() => {
   return (
     <motion.section
       id={sectionId}
-      className="px-6 pb-24 lg:px-12"
+      className="px-4 pb-24 md:px-6 lg:px-12"
       initial="hidden"
       whileInView="visible"
       viewport={viewport}
