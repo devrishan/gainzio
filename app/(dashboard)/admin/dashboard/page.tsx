@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, DollarSign, Users, Activity, CreditCard } from "lucide-react";
+import { ArrowUpRight, DollarSign, Users, Activity, CreditCard, ShieldAlert } from "lucide-react";
 
 export default function AdminDashboardPage() {
 
