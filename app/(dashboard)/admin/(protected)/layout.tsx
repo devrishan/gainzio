@@ -11,7 +11,8 @@ import {
   Settings,
   Menu,
   LogOut,
-  Command
+  Command,
+  MessageSquare,
 } from "lucide-react";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
@@ -30,6 +31,7 @@ export default function AdminLayout({
     { name: "Membership", href: "/admin/members", icon: Users },
     { name: "Withdrawals", href: "/admin/withdrawals", icon: Wallet },
     { name: "Task Matrix", href: "/admin/tasks", icon: CheckSquare },
+    { name: "Suggestions", href: "/admin/suggestions", icon: MessageSquare },
     { name: "Security Protocols", href: "/admin/security", icon: ShieldAlert },
     { name: "System Config", href: "/admin/settings", icon: Settings },
   ];

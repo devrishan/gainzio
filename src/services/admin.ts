@@ -302,9 +302,7 @@ export async function getAdminMemberById(id: string): Promise<AdminMemberDetail>
   }
 }
 
-redirect("/admin/members");
-  }
-}
+
 
 export interface AdminProductSuggestion {
   id: string;
