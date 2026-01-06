@@ -269,6 +269,39 @@ export async function getAdminMembers(
   }
 }
 
+export interface AdminMemberDetail extends AdminUser {
+  totalEarnings: number;
+  referralCode: string | null;
+  referredBy: {
+    id: string;
+    username: string | null;
+  } | null;
+  stats: {
+    referrals: number;
+    tasks: number;
+    withdrawals: number;
+  };
+}
+
+export async function getAdminMemberById(id: string): Promise<AdminMemberDetail> {
+  try {
+    const data = await serverFetch<{ success: boolean; user: AdminMemberDetail }>(`/api/admin/members/${id}`);
+
+    if (!data.success) {
+      // Return a dummy object or throw, but here we redirect or error handled by page
+      throw new Error("Failed to fetch user");
+    }
+
+    return data.user;
+  } catch {
+    // In server components, this might just crash the render, 
+    // but usually we want to handle 404s gracefully. 
+    // For now, let's allow it to bubble or return null if we change return type.
+    // But adhering to the pattern:
+    redirect("/admin/members");
+  }
+}
+
 export interface AdminSecurityLog {
   id: string;
   action: string;
