@@ -1,8 +1,10 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { verifyPassword } from "@/lib/hash";
 
 export const authOptions: NextAuthOptions = {
     debug: process.env.NODE_ENV === "development",
@@ -24,6 +26,45 @@ export const authOptions: NextAuthOptions = {
                 };
             },
         }),
+        CredentialsProvider({
+            name: "Admin Login",
+            credentials: {
+                email: { label: "Email", type: "email" },
+                password: { label: "Password", type: "password" }
+            },
+            async authorize(credentials) {
+                if (!credentials?.email || !credentials?.password) {
+                    throw new Error("Invalid credentials");
+                }
+
+                const user = await prisma.user.findUnique({
+                    where: { email: credentials.email }
+                });
+
+                if (!user || user.role !== "ADMIN") {
+                    throw new Error("Access denied");
+                }
+
+                if (!user.password_hash) {
+                    throw new Error("Admin must log in via Google first to set up");
+                }
+
+                const isValid = await verifyPassword(credentials.password, user.password_hash);
+
+                if (!isValid) {
+                    throw new Error("Invalid password");
+                }
+
+                return {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    role: user.role,
+                    username: user.username,
+                    image: user.image,
+                };
+            }
+        })
     ],
     session: {
         strategy: "jwt",
@@ -72,7 +113,7 @@ export const authOptions: NextAuthOptions = {
         },
     },
     callbacks: {
-        async signIn({ user }) {
+        async signIn({ user, account }) {
             // Enforce Admin Role Consistency for info.gainzio@gmail.com
             // This runs on every sign-in.
             if (user.email === "info.gainzio@gmail.com") {
@@ -85,9 +126,19 @@ export const authOptions: NextAuthOptions = {
                     user.role = "ADMIN";
                 }
             }
+
+            // Allow admin to sign in via Credentials
+            if (account?.provider === "credentials") {
+                return user.role === "ADMIN";
+            }
+
             return true;
         },
         async redirect({ url, baseUrl }) {
+            // If the user is an admin, always send them to admin dashboard if they are coming from an admin login flow
+            // Note: We can't easily detect "where they came from" here directly without custom params, 
+            // but the middleware handles the route protection.
+
             // Allows relative callback URLs
             if (url.startsWith("/")) return `${baseUrl}${url}`;
             // Allows callback URLs on the same origin
