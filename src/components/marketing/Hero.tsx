@@ -132,18 +132,18 @@ export function Hero() {
             <div className="absolute -inset-4 bg-gradient-to-tr from-primary/20 via-transparent to-accent/20 blur-3xl opacity-30 animate-pulse" />
 
             {/* Dashboard Mockup */}
-            <div className="relative rounded-[32px] border border-white/10 bg-zinc-950/40 p-3 backdrop-blur-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]">
-              <div className="relative rounded-[24px] overflow-hidden border border-white/5 bg-zinc-900/50 p-4 md:p-8 space-y-8">
+            <div className="relative rounded-[32px] border border-white/10 bg-zinc-950/40 p-2 sm:p-3 backdrop-blur-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]">
+              <div className="relative rounded-[24px] overflow-hidden border border-white/5 bg-zinc-900/50 p-4 sm:p-6 md:p-8 space-y-6 md:space-y-8">
 
                 {/* Header Section */}
-                <div className="flex justify-between items-center">
-                  <div className="space-y-1">
-                    <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">Live Balance</h3>
+                <div className="flex justify-between items-center gap-2">
+                  <div className="space-y-1 min-w-0">
+                    <h3 className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 truncate">Live Balance</h3>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-3xl md:text-5xl font-black tracking-tight text-white italic">₹1,24,800.00</span>
+                      <span className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight text-white italic truncate">₹1,24,800</span>
                     </div>
                   </div>
-                  <div className="px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black tracking-wide flex items-center gap-2">
+                  <div className="shrink-0 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] sm:text-xs font-black tracking-wide flex items-center gap-1 sm:gap-2">
                     <TrendingUp className="h-3.5 w-3.5" />
                     +₹9,204.00
                   </div>

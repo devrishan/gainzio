@@ -22,7 +22,7 @@ export function PayoutPulse() {
       transition={{ duration: 0.5 }}
     >
       <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="rounded-[32px] border border-white/10 bg-gradient-to-br from-primary/5 via-background/90 to-background p-8 shadow-2xl shadow-primary/10">
+        <div className="rounded-[32px] border border-white/10 bg-gradient-to-br from-primary/5 via-background/90 to-background p-6 sm:p-8 shadow-2xl shadow-primary/10">
           <div className="space-y-6">
             <div>
               <p className="text-sm font-medium uppercase tracking-[0.3em] text-primary/80">Payout pulse</p>
@@ -46,7 +46,7 @@ export function PayoutPulse() {
           </div>
         </div>
 
-        <div className="rounded-[32px] border border-emerald-400/30 bg-emerald-400/10 p-8 text-emerald-50 shadow-2xl shadow-emerald-400/20">
+        <div className="rounded-[32px] border border-emerald-400/30 bg-emerald-400/10 p-6 sm:p-8 text-emerald-50 shadow-2xl shadow-emerald-400/20">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-100/80">Instant UPI</p>
           <p className="mt-3 text-3xl font-semibold text-white">₹82,400 released in the last 24h</p>
           <p className="mt-2 text-sm text-emerald-100">

@@ -68,7 +68,7 @@ export function EarningStreams() {
           <motion.div
             key={earning.title}
             className={cn(
-              "group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent p-8 transition-all hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/5",
+              "group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent p-6 sm:p-8 transition-all hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/5",
               earning.size
             )}
             variants={fadeInUp}
