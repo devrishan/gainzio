@@ -200,10 +200,10 @@ export function FeatureFlagsManager({ initialFlags }: { initialFlags: FeatureFla
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
+      <div className="flex justify-end mb-6">
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="font-bold uppercase tracking-wider text-xs">
               <Plus className="mr-2 h-4 w-4" />
               Create Feature Flag
             </Button>
@@ -287,10 +287,10 @@ export function FeatureFlagsManager({ initialFlags }: { initialFlags: FeatureFla
         </Dialog>
       </div>
 
-      <Card>
+      <Card className="border-white/5 bg-zinc-950/40 backdrop-blur-md">
         <CardHeader>
-          <CardTitle>Feature Flags</CardTitle>
-          <CardDescription>Manage feature flags for progressive rollout</CardDescription>
+          <CardTitle className="text-xl font-bold uppercase tracking-tight">Feature Flags</CardTitle>
+          <CardDescription className="font-mono text-xs text-zinc-500 uppercase tracking-widest">Manage progressive rollouts</CardDescription>
         </CardHeader>
         <CardContent>
           {flags && flags.length > 0 ? (
@@ -298,7 +298,7 @@ export function FeatureFlagsManager({ initialFlags }: { initialFlags: FeatureFla
               {flags.map((flag) => (
                 <div
                   key={flag.key}
-                  className="flex items-center justify-between p-4 rounded-lg border border-border bg-card"
+                  className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 transition-colors"
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">

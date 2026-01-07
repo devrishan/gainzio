@@ -3,13 +3,16 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, DollarSign, Users, Activity, CreditCard, ShieldAlert } from "lucide-react";
 
-export default function AdminDashboardPage() {
+import { getAdminDashboard } from "@/services/admin";
+
+export default async function AdminDashboardPage() {
+  const { metrics } = await getAdminDashboard();
 
   const stats = [
-    { title: "Total Users", value: "24,592", change: "+12%", icon: Users, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
-    { title: "Revenue", value: "$12,450", change: "+8.2%", icon: DollarSign, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
-    { title: "Pending Payouts", value: "148", change: "-2%", icon: CreditCard, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
-    { title: "System Load", value: "98%", change: "+1.2%", icon: Activity, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
+    { title: "Total Users", value: metrics.total_users.toLocaleString(), change: "+12%", icon: Users, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+    { title: "Revenue", value: `₹${metrics.total_earnings_paid.toLocaleString()}`, change: "+8.2%", icon: DollarSign, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+    { title: "Pending Payouts", value: metrics.pending_withdrawals.count.toString(), change: "-2%", icon: CreditCard, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+    { title: "System Load", value: "Normal", change: "+1.2%", icon: Activity, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
   ];
 
   return (
@@ -139,8 +142,8 @@ export default function AdminDashboardPage() {
             ].map((log, i) => (
               <div key={i} className="flex gap-4 relative">
                 <div className={`mt-1.5 h-2.5 w-2.5 rounded-full border-2 border-neutral-950 shrink-0 z-10 ${log.type === 'error' ? 'bg-red-500' :
-                    log.type === 'warn' ? 'bg-amber-500' :
-                      log.type === 'success' ? 'bg-emerald-500' : 'bg-blue-500'
+                  log.type === 'warn' ? 'bg-amber-500' :
+                    log.type === 'success' ? 'bg-emerald-500' : 'bg-blue-500'
                   }`} />
                 <div>
                   <p className="text-xs text-neutral-500 font-mono mb-0.5">{log.time}</p>

@@ -153,13 +153,13 @@ export function AdminAdsManager({ ads }: AdminAdsManagerProps) {
   };
 
   return (
-    <Card className="border-border bg-card">
-      <div className="flex items-center justify-between border-b border-border/60 p-4 sm:p-6">
+    <Card className="border-white/5 bg-zinc-950/40 backdrop-blur-md">
+      <div className="flex items-center justify-between border-b border-white/5 p-6 md:p-8">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">Ad Placements</h2>
-          <p className="text-sm text-muted-foreground">Manage snippets that appear across the Gainzio platform.</p>
+          <h2 className="text-2xl font-black uppercase tracking-tighter italic text-white">Ad Placements</h2>
+          <p className="text-xs font-mono text-zinc-500 uppercase tracking-widest mt-1">Manage global ad snippets</p>
         </div>
-        <Button onClick={openForCreate}>
+        <Button onClick={openForCreate} className="font-bold uppercase tracking-wider text-xs">
           <Plus className="mr-2 h-4 w-4" />
           New Ad
         </Button>
