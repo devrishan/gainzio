@@ -84,7 +84,7 @@ export function AdminSheriffClient() {
                             </div>
                             <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20">{velocityUsers.length} Suspects</Badge>
                         </div>
-                        <CardDescription>> 20 Tasks in 24 hours.</CardDescription>
+                        <CardDescription>&gt; 20 Tasks in 24 hours.</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0">
                         {velocityUsers.length === 0 ? (

@@ -284,6 +284,7 @@ model Withdrawal {
   txId           String?           
   receiptUrl     String?           
   notes          String?           @db.Text
+  metadata       Json?
 
   @@index([userId])
   @@index([status])

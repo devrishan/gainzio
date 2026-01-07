@@ -200,7 +200,7 @@ export default function TasksClient({ initialTasks, categories }: TasksClientPro
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label>Category</Label>
-                                <Select name="categoryId" defaultValue={currentTask?.category?.slug ? categories.find(c => c.name === currentTask.category.name)?.id : undefined}>
+                                <Select name="categoryId" defaultValue={currentTask?.category?.slug ? categories.find(c => c.name === currentTask.category?.name)?.id : undefined}>
                                     <SelectTrigger className="bg-white/5 border-white/10">
                                         <SelectValue placeholder="Select category" />
                                     </SelectTrigger>

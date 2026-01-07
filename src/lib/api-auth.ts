@@ -4,6 +4,7 @@ import { verifyAccessToken } from '@/lib/jwt';
 
 export interface AuthenticatedUser {
     userId: string;
+    id: string;
     role?: string;
 }
 
@@ -16,6 +17,7 @@ export async function getAuthenticatedUser(request?: NextRequest): Promise<Authe
     if (session?.user?.email) {
         return {
             userId: session.user.id,
+            id: session.user.id,
             role: (session.user as any).role || "USER"
         };
     }
@@ -46,6 +48,7 @@ export async function getAuthenticatedUser(request?: NextRequest): Promise<Authe
         const payload = await verifyAccessToken(accessToken);
         return {
             userId: payload.sub,
+            id: payload.sub,
             role: payload.role,
         };
     } catch (error) {

@@ -55,8 +55,7 @@ export async function POST(request: NextRequest) {
             where: { key: CONFIG_KEY },
             update: {
                 value: newSettings,
-                updatedBy: authUser.id,
-                timestamp: new Date()
+                updatedBy: authUser.id
             },
             create: {
                 key: CONFIG_KEY,

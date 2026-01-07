@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
             where: {
                 isDeleted: false,
                 is_locked: false,
-                lastLoginAt: { gte: thirtyDaysAgo }
+                last_login_at: { gte: thirtyDaysAgo }
             },
             select: { id: true }
         });
