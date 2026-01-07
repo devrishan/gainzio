@@ -68,24 +68,32 @@ export function EarningStreams() {
           <motion.div
             key={earning.title}
             className={cn(
-              "group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent p-6 sm:p-8 transition-all hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/5",
+              "group relative overflow-hidden rounded-3xl bg-zinc-900/40 p-1 transition-all hover:shadow-2xl hover:shadow-primary/5",
               earning.size
             )}
             variants={fadeInUp}
           >
-            <div className={cn("inline-flex h-12 w-12 items-center justify-center rounded-xl mb-6", earning.color)}>
-              <earning.icon className="h-6 w-6" />
+            {/* Spark Border Container */}
+            <div className="spark-border absolute inset-0 rounded-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+            {/* Inner Content */}
+            <div className="relative h-full rounded-[20px] bg-gradient-to-b from-white/5 to-transparent p-6 sm:p-8 backdrop-blur-sm">
+
+              <div className={cn("inline-flex h-14 w-14 items-center justify-center rounded-2xl mb-6 ring-1 ring-inset ring-white/5 bg-gradient-to-br from-white/10 to-transparent", earning.color)}>
+                <earning.icon className="h-7 w-7" />
+              </div>
+
+              <h3 className="text-2xl font-bold mb-3 text-white tracking-tight">{earning.title}</h3>
+              <p className="text-muted-foreground mb-8 leading-relaxed text-base">{earning.description}</p>
+
+              <div className="absolute bottom-6 right-6">
+                <span className="inline-flex items-center rounded-full border border-white/10 bg-black/40 px-4 py-1.5 text-sm font-semibold text-white backdrop-blur-md shadow-inner shadow-white/5">
+                  <span className="mr-2 h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                  {earning.rate}
+                </span>
+              </div>
             </div>
 
-            <h3 className="text-2xl font-bold mb-2">{earning.title}</h3>
-            <p className="text-muted-foreground mb-6 leading-relaxed">{earning.description}</p>
-
-            <div className="absolute bottom-6 right-6">
-              <span className="inline-flex items-center rounded-full border border-white/10 bg-background/50 backdrop-blur px-3 py-1 text-sm font-medium">
-                <span className="mr-2 h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                {earning.rate}
-              </span>
-            </div>
           </motion.div>
         ))}
       </motion.div>

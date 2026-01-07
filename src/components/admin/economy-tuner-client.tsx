@@ -47,78 +47,111 @@ export function EconomyTunerClient() {
     };
 
     return (
-        <Card className="bg-zinc-950/40 border-white/5 backdrop-blur-md">
-            <CardHeader className="border-b border-white/5 pb-4">
-                <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                        <TrendingUp className="h-5 w-5 text-blue-400" />
-                    </div>
-                    <div>
-                        <CardTitle className="text-base font-black uppercase text-white tracking-wide">Economy Tuner</CardTitle>
-                        <CardDescription className="text-xs">Adjust global gamification & value variables.</CardDescription>
-                    </div>
-                </div>
-            </CardHeader>
-            <CardContent className="pt-6 space-y-6">
 
-                {/* XP RATE */}
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                        <Label className="text-xs font-black uppercase text-zinc-500">XP Yield (per ₹1)</Label>
-                        <span className="font-mono text-xl font-bold text-white">{localSettings.xpPerRupee} XP</span>
+        <Card className="relative overflow-hidden border-0 bg-transparent shadow-none">
+            {/* Background Decor */}
+            <div className="absolute inset-0 z-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 opacity-50" />
+
+            <div className="glass-morphism spark-border relative z-10 rounded-xl p-1">
+                <CardHeader className="border-b border-white/5 pb-4">
+                    <div className="flex items-center gap-4">
+                        <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 shadow-lg shadow-blue-500/10">
+                            <div className="absolute inset-0 rounded-xl bg-blue-400/20 blur opacity-50" />
+                            <TrendingUp className="relative h-6 w-6 text-blue-400" />
+                        </div>
+                        <div>
+                            <CardTitle className="bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-xl font-black uppercase tracking-wide text-transparent drop-shadow-sm">
+                                Economy Tuner
+                            </CardTitle>
+                            <CardDescription className="text-xs font-medium text-blue-200/60">
+                                GLOBAL GAMIFICATION & VALUE CONTROLS
+                            </CardDescription>
+                        </div>
                     </div>
-                    <Slider
-                        defaultValue={[localSettings.xpPerRupee]}
-                        max={100}
-                        step={1}
-                        onValueChange={(val) => setLocalSettings({ ...localSettings, xpPerRupee: val[0] })}
-                        className="py-2"
-                    />
-                </div>
+                </CardHeader>
+                <CardContent className="space-y-8 pt-8">
 
-                {/* REFERRAL COMMISISON */}
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                        <Label className="text-xs font-black uppercase text-zinc-500">Ref Commission</Label>
-                        <span className="font-mono text-xl font-bold text-emerald-400">{localSettings.referralCommissionPercent}%</span>
+                    {/* XP RATE */}
+                    <div className="space-y-4">
+                        <div className="flex items-end justify-between">
+                            <Label className="text-xs font-bold uppercase tracking-wider text-zinc-400">XP Yield (per ₹1)</Label>
+                            <div className="flex items-baseline gap-1">
+                                <span className="font-mono text-2xl font-bold text-white text-shadow-glow-sm">{localSettings.xpPerRupee}</span>
+                                <span className="text-xs font-bold text-blue-400">XP</span>
+                            </div>
+                        </div>
+                        <div className="relative py-2">
+                            <Slider
+                                defaultValue={[localSettings.xpPerRupee]}
+                                max={100}
+                                step={1}
+                                onValueChange={(val) => setLocalSettings({ ...localSettings, xpPerRupee: val[0] })}
+                                className="relative z-10 cursor-pointer [&>.relative>.bg-primary]:bg-blue-500 [&>.relative>.bg-primary]:shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                            />
+                        </div>
                     </div>
-                    <Slider
-                        defaultValue={[localSettings.referralCommissionPercent]}
-                        max={50}
-                        step={1}
-                        onValueChange={(val) => setLocalSettings({ ...localSettings, referralCommissionPercent: val[0] })}
-                        className="py-2"
-                    />
-                </div>
 
-                {/* AUTO PAYOUT LIMIT */}
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                        <Label className="text-xs font-black uppercase text-zinc-500">Auto-Approve Limit</Label>
-                        <span className="font-mono text-xl font-bold text-orange-400">₹{localSettings.maxWithdrawalAutoApprove}</span>
+                    {/* REFERRAL COMMISISON */}
+                    <div className="space-y-4">
+                        <div className="flex items-end justify-between">
+                            <Label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Ref Commission</Label>
+                            <div className="flex items-baseline gap-1">
+                                <span className="font-mono text-2xl font-bold text-emerald-400 text-shadow-glow-sm">{localSettings.referralCommissionPercent}</span>
+                                <span className="text-xs font-bold text-emerald-600">%</span>
+                            </div>
+                        </div>
+                        <div className="relative py-2">
+                            <Slider
+                                defaultValue={[localSettings.referralCommissionPercent]}
+                                max={50}
+                                step={1}
+                                onValueChange={(val) => setLocalSettings({ ...localSettings, referralCommissionPercent: val[0] })}
+                                className="relative z-10 cursor-pointer [&>.relative>.bg-primary]:bg-emerald-500 [&>.relative>.bg-primary]:shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                            />
+                        </div>
                     </div>
-                    <Slider
-                        defaultValue={[localSettings.maxWithdrawalAutoApprove]}
-                        max={5000}
-                        step={100}
-                        onValueChange={(val) => setLocalSettings({ ...localSettings, maxWithdrawalAutoApprove: val[0] })}
-                        className="py-2"
-                    />
-                    <p className="text-[10px] text-zinc-600">Withdrawals under this amount can be auto-processed.</p>
-                </div>
 
-                <div className="pt-4 border-t border-white/5">
-                    <Button
-                        onClick={handleSave}
-                        className="w-full bg-blue-600 hover:bg-blue-700 font-bold"
-                        disabled={mutation.isPending}
-                    >
-                        {mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Zap className="w-4 h-4 mr-2" />}
-                        UPDATE ECONOMY
-                    </Button>
-                </div>
+                    {/* AUTO PAYOUT LIMIT */}
+                    <div className="space-y-4">
+                        <div className="flex items-end justify-between">
+                            <div className="space-y-1">
+                                <Label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Auto-Approve Limit</Label>
+                                <p className="text-[10px] text-zinc-500">Max amount for instant processing</p>
+                            </div>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-xs font-bold text-orange-600">₹</span>
+                                <span className="font-mono text-2xl font-bold text-orange-400 text-shadow-glow-sm">{localSettings.maxWithdrawalAutoApprove}</span>
+                            </div>
+                        </div>
+                        <div className="relative py-2">
+                            <Slider
+                                defaultValue={[localSettings.maxWithdrawalAutoApprove]}
+                                max={5000}
+                                step={100}
+                                onValueChange={(val) => setLocalSettings({ ...localSettings, maxWithdrawalAutoApprove: val[0] })}
+                                className="relative z-10 cursor-pointer [&>.relative>.bg-primary]:bg-orange-500 [&>.relative>.bg-primary]:shadow-[0_0_10px_rgba(249,115,22,0.5)]"
+                            />
+                        </div>
+                    </div>
 
-            </CardContent>
+                    <div className="pt-6 border-t border-white/5">
+                        <Button
+                            onClick={handleSave}
+                            className="group relative w-full overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 font-bold tracking-wide transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/25"
+                            disabled={mutation.isPending}
+                        >
+                            <div className="absolute inset-0 bg-white/20 translate-y-full transition-transform group-hover:translate-y-0" />
+                            {mutation.isPending ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <Zap className="mr-2 h-4 w-4 fill-current" />
+                            )}
+                            UPDATE ECONOMY
+                        </Button>
+                    </div>
+
+                </CardContent>
+            </div>
         </Card>
     );
 }
