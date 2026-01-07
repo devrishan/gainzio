@@ -7,6 +7,7 @@ export interface AuthenticatedUser {
     id: string;
     role?: string;
     username?: string;
+    email?: string;
 }
 
 import { getServerSession } from "next-auth";
@@ -20,7 +21,8 @@ export async function getAuthenticatedUser(request?: NextRequest): Promise<Authe
             userId: session.user.id,
             id: session.user.id,
             username: (session.user as any).username || session.user.name || "Admin",
-            role: (session.user as any).role || "USER"
+            role: (session.user as any).role || "USER",
+            email: session.user.email
         };
     }
 

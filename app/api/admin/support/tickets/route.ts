@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const tickets = await prisma.sparkEvent.findMany({
         where: { type: "SUPPORT_TICKET" },
         orderBy: { createdAt: 'desc' },
-        include: { user: { select: { username: true, email: true } } } // Assuming SparkEvent has userId relation? Checking schema...
+        // include: { user: { select: { username: true, email: true } } } // REMOVED: SparkEvent has no user relation
         // Schema: SparkEvent does NOT have userId relation! It has only userId INT or String?
         // Wait, I checked schema: SparkEvent: `id, type, message, data, isPublic, createdAt`. NO userId field in SparkEvent model!
         // CORRECTION: User's previous manual fix in `chat/route.ts` showed storing user info in `data`.

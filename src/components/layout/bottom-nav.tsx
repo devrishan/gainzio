@@ -11,7 +11,8 @@ import {
     Shield,
     FileText,
     Hammer,
-    User
+    User,
+    HelpCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavigationItem } from "@/config/navigation";
@@ -45,6 +46,8 @@ export function BottomNav({ items }: BottomNavProps) {
                 return Hammer;
             case "profile":
                 return User;
+            case "support":
+                return HelpCircle;
             default:
                 return LayoutDashboard;
         }

@@ -4,6 +4,9 @@ import { TrendingUp, Download, Calendar, BarChart3, PieChart, FileText } from "l
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
+import { generateFinancialReportPDF, ReportType } from "@/src/lib/pdf-generator";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock reports data
 const mockReports = [
@@ -54,7 +57,91 @@ const mockMetrics = {
   avgSettlementTime: "2.3 days",
 };
 
+// Helper to generate mock data based on report type
+const getMockData = (type: ReportType) => {
+  switch (type) {
+    case 'payouts':
+      return Array.from({ length: 15 }, (_, i) => ({
+        id: `PO-${1000 + i}`,
+        date: `2024-01-${String(i + 1).padStart(2, '0')}`,
+        recipient: `User ${i + 1}`,
+        amount: `₹${(Math.random() * 5000).toFixed(2)}`,
+        status: i % 5 === 0 ? 'Failed' : 'Success',
+      }));
+    case 'settlements':
+      return Array.from({ length: 10 }, (_, i) => ({
+        id: `SET-${2000 + i}`,
+        date: `2024-01-${String(i * 2 + 1).padStart(2, '0')}`,
+        merchant: `Merchant ${i + 1}`,
+        amount: `₹${(Math.random() * 10000).toFixed(2)}`,
+        fees: `₹${(Math.random() * 500).toFixed(2)}`,
+        net: `₹${(Math.random() * 9500).toFixed(2)}`,
+      }));
+    case 'transactions':
+      return Array.from({ length: 20 }, (_, i) => ({
+        id: `TXN-${3000 + i}`,
+        date: `2024-01-${String(i + 1).padStart(2, '0')}`,
+        type: i % 2 === 0 ? 'Credit' : 'Debit',
+        amount: `₹${(Math.random() * 2000).toFixed(2)}`,
+        status: 'Completed',
+        reference: `REF-${Math.floor(Math.random() * 10000)}`,
+      }));
+    case 'revenue':
+      return Array.from({ length: 10 }, (_, i) => ({
+        date: `2024-01-${String(i + 1).padStart(2, '0')}`,
+        source: i % 2 === 0 ? 'Subscription' : 'Commission',
+        gross: `₹${(Math.random() * 8000).toFixed(2)}`,
+        deductions: `₹${(Math.random() * 500).toFixed(2)}`,
+        net: `₹${(Math.random() * 7500).toFixed(2)}`,
+      }));
+    default:
+      return [];
+  }
+};
+
 export default function FinanceReportsPage() {
+  const [selectedType, setSelectedType] = useState<ReportType>('payouts');
+  const [selectedPeriod, setSelectedPeriod] = useState("month");
+  const [selectedFormat, setSelectedFormat] = useState("pdf");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
+
+  const handleGenerateReport = async () => {
+    if (selectedFormat !== 'pdf') {
+      toast({
+        title: "Format not supported",
+        description: "Only PDF generation is currently supported.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      // detailed mock data generation
+      const data = getMockData(selectedType);
+
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      generateFinancialReportPDF(selectedType, data, selectedPeriod);
+
+      toast({
+        title: "Report Generated",
+        description: `Your ${selectedType} report has been downloaded.`,
+      });
+    } catch (error) {
+      console.error("Failed to generate report:", error);
+      toast({
+        title: "Generation Failed",
+        description: "An error occurred while generating the report.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between">
@@ -62,9 +149,13 @@ export default function FinanceReportsPage() {
           <h1 className="text-2xl font-semibold text-white">Financial Reports</h1>
           <p className="text-sm text-muted-foreground">Generate and download financial reports</p>
         </div>
-        <Button className="bg-teal-500 hover:bg-teal-600 text-white">
+        <Button
+          className="bg-teal-500 hover:bg-teal-600 text-white"
+          onClick={handleGenerateReport}
+          disabled={isGenerating}
+        >
           <FileText className="h-4 w-4 mr-2" />
-          Generate Report
+          {isGenerating ? "Generating..." : "Generate Report"}
         </Button>
       </header>
 
@@ -125,7 +216,10 @@ export default function FinanceReportsPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm text-muted-foreground">Report Type</label>
-              <Select>
+              <Select
+                value={selectedType}
+                onValueChange={(val) => setSelectedType(val as ReportType)}
+              >
                 <SelectTrigger className="bg-white/5 border-white/10">
                   <SelectValue placeholder="Select report type" />
                 </SelectTrigger>
@@ -140,7 +234,7 @@ export default function FinanceReportsPage() {
             </div>
             <div className="space-y-2">
               <label className="text-sm text-muted-foreground">Period</label>
-              <Select>
+              <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
                 <SelectTrigger className="bg-white/5 border-white/10">
                   <SelectValue placeholder="Select period" />
                 </SelectTrigger>
@@ -154,7 +248,7 @@ export default function FinanceReportsPage() {
             </div>
             <div className="space-y-2">
               <label className="text-sm text-muted-foreground">Format</label>
-              <Select>
+              <Select value={selectedFormat} onValueChange={setSelectedFormat}>
                 <SelectTrigger className="bg-white/5 border-white/10">
                   <SelectValue placeholder="Select format" />
                 </SelectTrigger>
@@ -180,9 +274,13 @@ export default function FinanceReportsPage() {
               </div>
             </div>
           </div>
-          <Button className="w-full bg-teal-500 hover:bg-teal-600 text-white">
+          <Button
+            className="w-full bg-teal-500 hover:bg-teal-600 text-white"
+            onClick={handleGenerateReport}
+            disabled={isGenerating}
+          >
             <Download className="h-4 w-4 mr-2" />
-            Generate Report
+            {isGenerating ? "Generating..." : "Generate Report"}
           </Button>
         </CardContent>
       </Card>
@@ -226,4 +324,3 @@ export default function FinanceReportsPage() {
     </div>
   );
 }
-

@@ -15,6 +15,7 @@ import {
   Wrench,
   Shield,
   User,
+  HelpCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -32,6 +33,7 @@ const iconMap: Record<NavigationIcon, LucideIcon> = {
   submissions: ClipboardCheck,
   maintenance: Wrench,
   profile: User,
+  support: HelpCircle,
 };
 
 export function Sidebar({ items, role = "member" }: { items: NavigationItem[], role?: "member" | "admin" }) {
