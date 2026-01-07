@@ -1,35 +1,19 @@
+"use client";
 
-import { getAdminTasks } from "@/services/admin";
-import { prisma } from "@/lib/prisma";
-import TasksClient from "./tasks-client";
+import { TaskCreatorWizard } from "@/components/admin/task-creator-wizard";
+import { getAdminTasks } from "@/services/admin"; // We might not need this if Wizard fetches its own tables.
+import { useState } from "react";
 
-export const dynamic = "force-dynamic";
-
-async function getCategories() {
-  return await prisma.taskCategory.findMany({
-    where: { isDeleted: false },
-    orderBy: { name: 'asc' },
-    select: { id: true, name: true, slug: true }
-  });
-}
-
-export default async function TasksPage() {
-  const [tasksData, categories] = await Promise.all([
-    getAdminTasks(),
-    getCategories()
-  ]);
-
+export default function TasksPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Task Matrix</h1>
-        <p className="text-neutral-500 mt-1">Manage earning tasks, rewards, and compliance rules.</p>
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-black italic tracking-tight uppercase text-white">Task Matrix</h1>
+        <p className="text-neutral-400">Manage daily earning tasks and campaigns.</p>
       </div>
 
-      <TasksClient
-        initialTasks={tasksData.tasks}
-        categories={categories}
-      />
+      {/* The Wizard includes the list view, so it handles the full page UI */}
+      <TaskCreatorWizard />
     </div>
   );
 }

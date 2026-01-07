@@ -13,6 +13,10 @@ import {
   LogOut,
   Command,
   MessageSquare,
+  Layers,
+  Eye,
+  ShieldCheck,
+  Crown,
 } from "lucide-react";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
@@ -28,12 +32,13 @@ export default function AdminLayout({
 
   const navItems = [
     { name: "Command Center", href: "/admin/dashboard", icon: LayoutDashboard },
-    { name: "Membership", href: "/admin/members", icon: Users },
-    { name: "Withdrawals", href: "/admin/withdrawals", icon: Wallet },
+    { name: "Members", href: "/admin/members", icon: Users },
     { name: "Task Matrix", href: "/admin/tasks", icon: CheckSquare },
-    { name: "Suggestions", href: "/admin/suggestions", icon: MessageSquare },
-    { name: "Security Protocols", href: "/admin/security", icon: ShieldAlert },
-    { name: "System Config", href: "/admin/settings", icon: Settings },
+    { name: "The Studio", href: "/admin/content", icon: Layers },
+    { name: "The Oracle", href: "/admin/oracle", icon: Eye },
+    { name: "The Fortress", href: "/admin/fortress", icon: ShieldCheck },
+    { name: "The Empire", href: "/admin/empire", icon: Crown },
+    { name: "System Console", href: "/admin/settings", icon: Settings },
   ];
 
   return (
