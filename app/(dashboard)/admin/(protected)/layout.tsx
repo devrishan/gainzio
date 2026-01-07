@@ -17,6 +17,7 @@ import {
   Eye,
   ShieldCheck,
   Crown,
+  LifeBuoy,
 } from "lucide-react";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
@@ -38,6 +39,7 @@ export default function AdminLayout({
     { name: "The Oracle", href: "/admin/oracle", icon: Eye },
     { name: "The Fortress", href: "/admin/fortress", icon: ShieldCheck },
     { name: "The Empire", href: "/admin/empire", icon: Crown },
+    { name: "Support Desk", href: "/admin/support", icon: LifeBuoy },
     { name: "System Console", href: "/admin/settings", icon: Settings },
   ];
 
