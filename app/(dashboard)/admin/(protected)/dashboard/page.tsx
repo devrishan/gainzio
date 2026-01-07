@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowUpRight, DollarSign, Users, Activity, CreditCard, ShieldAlert } from "lucide-react";
 
 import { getAdminDashboard } from "@/services/admin";
+import { DashboardCharts } from "@/components/admin/dashboard-charts";
 
 export default async function AdminDashboardPage() {
   const { metrics } = await getAdminDashboard();
@@ -99,19 +100,8 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Mock Chart Area */}
-          <div className="h-64 rounded-xl border border-white/5 bg-neutral-900/20 backdrop-blur-sm p-6 relative overflow-hidden group">
-            <div className="absolute top-4 right-4 flex gap-2">
-              <div className="w-2 h-2 rounded-full bg-red-500/50" />
-              <div className="w-2 h-2 rounded-full bg-yellow-500/50" />
-              <div className="w-2 h-2 rounded-full bg-green-500/50" />
-            </div>
-            <div className="flex items-center justify-center h-full text-neutral-600 font-mono text-sm uppercase tracking-widest opacity-40 group-hover:opacity-70 transition-opacity">
-              System Analytics Visualization
-            </div>
-            {/* Visual decoration */}
-            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-emerald-500/5 to-transparent" />
-          </div>
+          {/* Real Analytics Chart */}
+          <DashboardCharts />
 
         </motion.div>
 

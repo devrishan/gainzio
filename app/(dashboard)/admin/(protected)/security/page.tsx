@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldAlert, ShieldCheck, UserCog, ScrollText, Lock } from "lucide-react";
 import { getAdminSecurityLogs } from "@/services/admin";
 import {
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { AdminSheriffClient } from "@/components/admin/admin-sheriff-client";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +60,11 @@ export default async function AdminSecurityPage() {
           Platform hardening protocols, access control logs, and threat monitoring.
         </p>
       </header>
+
+      {/* V4: The Sheriff */}
+      <div className="relative z-10">
+        <AdminSheriffClient />
+      </div>
 
       <div className="grid gap-4 md:grid-cols-3 relative z-10">
         {hardeningTips.map((tip) => (

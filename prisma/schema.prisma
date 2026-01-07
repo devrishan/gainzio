@@ -451,10 +451,33 @@ model AuditLog {
   createdAt   DateTime @default(now())
 
   @@index([actorId])
-  @@index([entityType])
-  @@index([entityId])
-  @@index([createdAt])
-  @@index([entityType, entityId])
+
+model PromoCode {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  description String?
+  value       Decimal  @db.Decimal(10, 2)
+  type        String   @default("FIXED") // FIXED or PERCENTAGE
+  maxUses     Int      @default(1)
+  currentUses Int      @default(0)
+  expiresAt   DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  createdBy   String?
+  
+  @@index([code])
+}
+
+model Blacklist {
+  id        String   @id @default(cuid())
+  type      String   // IP, EMAIL, WALLET
+  value     String   
+  reason    String?
+  createdAt DateTime @default(now())
+  createdBy String?
+
+  @@unique([type, value])
+  @@index([value])
 }
 
 // Rate limiting for API and auth
