@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
-import { generateFinancialReportPDF, ReportType } from "@/src/lib/pdf-generator";
+import { generateFinancialReportPDF, ReportType } from "@/lib/pdf-generator";
 import { useToast } from "@/hooks/use-toast";
 
 // Mock reports data

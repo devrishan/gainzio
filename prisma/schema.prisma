@@ -452,6 +452,7 @@ model AuditLog {
   createdAt   DateTime @default(now())
 
   @@index([actorId])
+}
 
 model PromoCode {
   id          String   @id @default(cuid())
