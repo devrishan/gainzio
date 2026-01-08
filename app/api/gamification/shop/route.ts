@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/session";
+import { getAuthenticatedUser } from "@/lib/api-auth";
 import { getShopItems, purchaseItem } from "@/services/gamification";
 
 export async function GET(req: NextRequest) {
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
-        const user = await getCurrentUser();
+        const user = await getAuthenticatedUser(req);
         if (!user) {
             return new NextResponse("Unauthorized", { status: 401 });
         }

@@ -1,11 +1,11 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/session";
+import { getAuthenticatedUser } from "@/lib/api-auth";
 import { getGamificationProfile, calculateSmartScore } from "@/services/gamification";
 import { prisma as db } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
   try {
-    const user = await getCurrentUser();
+    const user = await getAuthenticatedUser(req);
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
