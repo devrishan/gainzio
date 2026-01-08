@@ -38,14 +38,11 @@ export async function GET(request: NextRequest) {
       // We need to fetch the full user profile including dob/location 
       fullProfile = await prisma.user.findUnique({
         where: { id: authUser.userId },
-        // @ts-expect-error - Prisma client types might be stale
         select: { dob: true, district: true, state: true, phone_verified: true, verificationLevel: true }
       });
 
-      // @ts-expect-error - Prisma client types might be stale
       if (fullProfile?.dob) {
         const today = new Date();
-        // @ts-expect-error - Prisma client types might be stale
         const birthDate = new Date(fullProfile.dob);
         userAge = today.getFullYear() - birthDate.getFullYear();
         const m = today.getMonth() - birthDate.getMonth();
@@ -117,24 +114,19 @@ export async function GET(request: NextRequest) {
       const isLocked = taskRankValue > userRankValue;
 
       // Strict Targeting Check (Social Media Tasks)
-      // @ts-expect-error - taskType does not exist on type yet
       if (task.taskType === 'SOCIAL_MEDIA' && task.targeting) {
-        // @ts-expect-error - targeting does not exist on type yet
         const targeting = task.targeting as any;
 
         // 1. Min Age Check
         if (targeting.minAge && userAge < targeting.minAge) return null; // HIDDEN
 
         // 2. Location Check (District)
-        // @ts-expect-error - Prisma client types might be stale
         if (targeting.district && fullProfile?.district?.toLowerCase() !== targeting.district.toLowerCase()) return null; // HIDDEN
 
         // 3. Location Check (State)
-        // @ts-expect-error - Prisma client types might be stale
         if (targeting.state && fullProfile?.state?.toLowerCase() !== targeting.state.toLowerCase()) return null; // HIDDEN
 
         // 4. Verification Check
-        // @ts-expect-error - verificationLevel might be missing in type definition if not fully generated
         if (targeting.verifiedOnly && (!fullProfile?.phone_verified || (fullProfile?.verificationLevel || 0) < 1)) return null; // HIDDEN
       }
 
@@ -142,7 +134,6 @@ export async function GET(request: NextRequest) {
         id: task.id,
         title: task.title,
         slug: task.slug,
-        // @ts-expect-error - taskType does not exist on type yet
         task_type: task.taskType, // Exposed for frontend logic
         description: task.description,
         reward_amount: Number(task.rewardAmount),
