@@ -150,6 +150,9 @@ export const authOptions: NextAuthOptions = {
                 session.user.id = token.sub;
                 session.user.username = token.username;
                 session.user.role = token.role;
+                session.user.dob = token.dob ? new Date(token.dob as string).toISOString() : null;
+                session.user.state = token.state as string | null;
+                session.user.district = token.district as string | null;
             }
             return session;
         },
@@ -158,6 +161,9 @@ export const authOptions: NextAuthOptions = {
                 token.id = user.id;
                 token.username = user.username;
                 token.role = user.role;
+                token.dob = user.dob;
+                token.state = user.state;
+                token.district = user.district;
             }
             // Update token if session is updated
             if (trigger === "update" && session?.username) {

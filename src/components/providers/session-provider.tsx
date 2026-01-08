@@ -11,6 +11,9 @@ type UserSession = {
   role: "member" | "admin";
   referral_code: string;
   phone: string | null;
+  dob?: string | null;
+  state?: string | null;
+  district?: string | null;
 };
 
 type SessionContextValue = {
