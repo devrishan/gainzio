@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ShieldAlert, AlertTriangle, Users, Ban, Eye, Fingerprint } from "lucide-react";
+import { ShieldAlert, AlertTriangle, Users, Ban, Eye, Fingerprint, Activity } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -118,5 +118,4 @@ export function AdminSheriffClient() {
     );
 }
 
-// Missing import fix
-import { Activity } from "lucide-react";
+

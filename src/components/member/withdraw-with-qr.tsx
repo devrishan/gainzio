@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, CheckCircle, X, Sparkles } from "lucide-react";
+import { Upload, CheckCircle, X, Sparkles, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -74,98 +74,122 @@ export function WithdrawWithQr({ availableBalance, minAmount = 100 }: WithdrawWi
 
   if (showSuccess) {
     return (
-      <Card className="border-success bg-success/5 p-6 text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success/20 animate-scale-in">
-          <CheckCircle className="h-10 w-10 text-success" />
+      <Card className="border-green-500/20 bg-green-500/5 glass-morphism p-8 text-center animate-in zoom-in-95 duration-300">
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-500/20 shadow-[0_0_20px_rgba(34,197,94,0.3)] animate-bounce">
+          <CheckCircle className="h-10 w-10 text-green-500" />
         </div>
-        <h3 className="mb-2 text-xl font-semibold text-foreground">Withdrawal Requested!</h3>
-        <p className="text-sm text-muted-foreground">
-          Your request is being processed. You&apos;ll receive the amount within 24-48 hours.
+        <h3 className="mb-2 text-2xl font-bold text-foreground">Withdrawal Requested!</h3>
+        <p className="text-muted-foreground max-w-xs mx-auto">
+          Your request is being processed. Funds should reflect in your account within 24-48 hours.
         </p>
       </Card>
     );
   }
 
   return (
-    <Card className="border-border bg-card p-4 sm:p-6">
-      <div className="mb-4 flex items-center gap-2">
-        <Sparkles className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-semibold text-foreground">Request Withdrawal</h3>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="amount">Amount (₹)</Label>
-          <Input
-            id="amount"
-            type="number"
-            step="0.01"
-            min={minAmount}
-            max={availableBalance}
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder={`Min ${formatCurrency(minAmount)}`}
-            required
-          />
-          <p className="mt-1 text-xs text-muted-foreground">
-            Available: {formatCurrency(availableBalance)}
-          </p>
-        </div>
-
-        <div>
-          <Label htmlFor="upiId">UPI ID</Label>
-          <Input
-            id="upiId"
-            type="text"
-            value={upiId}
-            onChange={(e) => setUpiId(e.target.value)}
-            placeholder="username@upi"
-            required
-          />
-        </div>
-
-        <div>
-          <Label>UPI QR Code (Optional)</Label>
-          <div className="mt-2">
-            {qrImage ? (
-              <div className="relative inline-block">
-                <img src={qrImage} alt="QR Code" className="h-32 w-32 rounded-lg border border-border object-cover" />
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="destructive"
-                  className="absolute -right-2 -top-2 h-6 w-6 rounded-full"
-                  onClick={() => setQrImage(null)}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
-            ) : (
-              <label className="flex h-32 w-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/30 transition-colors hover:bg-muted/50">
-                <Upload className="h-6 w-6 text-muted-foreground" />
-                <span className="mt-2 text-xs text-muted-foreground">Upload QR</span>
-                <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
-              </label>
-            )}
+    <Card className="glass-morphism border-white/5">
+      <CardHeader className="pb-4 border-b border-white/5">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
+            <QrCode className="h-6 w-6" />
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">Max 5MB • JPG, PNG</p>
+          <div>
+            <CardTitle>Express Withdrawal</CardTitle>
+            <CardDescription>Scan & Pay via UPI QR</CardDescription>
+          </div>
         </div>
+      </CardHeader>
 
-        <Button
-          type="submit"
-          className={cn(
-            "w-full h-11",
-            parseFloat(amount) >= minAmount && "animate-pulse-glow"
-          )}
-          disabled={isSubmitting || availableBalance < minAmount}
-        >
-          {isSubmitting ? "Processing..." : `Withdraw ${amount ? formatCurrency(parseFloat(amount)) : ""}`}
-        </Button>
-      </form>
+      <CardContent className="pt-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="amount" className="text-xs uppercase font-semibold text-muted-foreground">Amount (₹)</Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  step="0.01"
+                  min={minAmount}
+                  max={availableBalance}
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder={`Min ${formatCurrency(minAmount)}`}
+                  className="bg-muted/20 border-white/10 focus:border-primary/50"
+                  required
+                />
+                <p className="text-xs text-muted-foreground flex justify-between">
+                  <span>Available:</span>
+                  <span className="text-foreground font-medium">{formatCurrency(availableBalance)}</span>
+                </p>
+              </div>
 
-      <p className="mt-4 text-xs text-muted-foreground">
-        Withdrawals are processed within 24-48 hours on business days.
-      </p>
+              <div className="space-y-2">
+                <Label htmlFor="upiId" className="text-xs uppercase font-semibold text-muted-foreground">UPI ID</Label>
+                <Input
+                  id="upiId"
+                  type="text"
+                  value={upiId}
+                  onChange={(e) => setUpiId(e.target.value)}
+                  placeholder="username@upi"
+                  className="bg-muted/20 border-white/10 focus:border-primary/50"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs uppercase font-semibold text-muted-foreground">UPI QR Code (Optional)</Label>
+              <div className="mt-1">
+                {qrImage ? (
+                  <div className="relative inline-block w-full">
+                    <img src={qrImage} alt="QR Code" className="h-[140px] w-full rounded-xl border border-white/10 object-cover bg-black/20" />
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      className="absolute right-2 top-2 h-7 w-7 rounded-full shadow-lg"
+                      onClick={() => setQrImage(null)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <label className="flex h-[140px] w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/10 bg-muted/5 transition-all hover:bg-muted/10 hover:border-primary/30 group">
+                    <div className="p-3 rounded-full bg-muted/10 group-hover:scale-110 transition-transform duration-300">
+                      <Upload className="h-5 w-5 text-muted-foreground group-hover:text-primary" />
+                    </div>
+                    <span className="mt-3 text-sm font-medium text-muted-foreground group-hover:text-foreground">Click to upload QR</span>
+                    <span className="text-xs text-muted-foreground/50 mt-1">PNG, JPG up to 5MB</span>
+                    <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+                  </label>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            className={cn(
+              "w-full h-12 text-base font-medium shadow-lg hover:shadow-primary/20 transition-all",
+              parseFloat(amount) >= minAmount && "animate-pulse-glow"
+            )}
+            disabled={isSubmitting || availableBalance < minAmount}
+          >
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 animate-spin" /> Processing...
+              </span>
+            ) : (
+              `Withdraw ${amount ? formatCurrency(parseFloat(amount)) : ""}`
+            )}
+          </Button>
+        </form>
+
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          Payments are processed securely via UPI within 24 hours.
+        </p>
+      </CardContent>
     </Card>
   );
 }
