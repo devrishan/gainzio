@@ -25,7 +25,14 @@ export function TaskCreatorWizard() {
         rewardCoins: "100",
         difficulty: "EASY",
         priority: "0",
-        isActive: true
+        isActive: true,
+        taskType: "STANDARD",
+        targeting: {
+            minAge: 10,
+            state: "",
+            district: "",
+            verifiedOnly: true
+        }
     });
 
     // Fetch Categories
@@ -52,7 +59,7 @@ export function TaskCreatorWizard() {
             queryClient.invalidateQueries({ queryKey: ["admin-tasks"] });
             toast.success("Task Published!");
             setMode("LIST");
-            setFormData({ title: "", description: "", categoryId: "", rewardAmount: "5", rewardCoins: "100", difficulty: "EASY", priority: "0", isActive: true });
+            setFormData({ title: "", description: "", categoryId: "", rewardAmount: "5", rewardCoins: "100", difficulty: "EASY", priority: "0", isActive: true, taskType: "STANDARD", targeting: { minAge: 10, state: "", district: "", verifiedOnly: true } });
         }
     });
 
@@ -119,11 +126,12 @@ export function TaskCreatorWizard() {
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase text-zinc-500">Category</Label>
-                        <Select onValueChange={(v) => setFormData({ ...formData, categoryId: v })} value={formData.categoryId}>
-                            <SelectTrigger className="bg-zinc-900/50 border-white/10"><SelectValue placeholder="Select..." /></SelectTrigger>
+                        <Label className="text-xs font-bold uppercase text-zinc-500">Task Type</Label>
+                        <Select onValueChange={(v) => setFormData({ ...formData, taskType: v })} value={formData.taskType}>
+                            <SelectTrigger className="bg-zinc-900/50 border-white/10"><SelectValue /></SelectTrigger>
                             <SelectContent>
-                                {categories?.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                <SelectItem value="STANDARD">Standard</SelectItem>
+                                <SelectItem value="SOCIAL_MEDIA">Social Media</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -140,39 +148,97 @@ export function TaskCreatorWizard() {
                     </div>
                 </div>
 
-                <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase text-zinc-500">Description / Instructions</Label>
-                    <Textarea
-                        placeholder="Steps to complete..."
-                        value={formData.description}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        className="bg-zinc-900/50 border-white/10 min-h-[100px]"
-                    />
-                </div>
+                {formData.taskType === "SOCIAL_MEDIA" && (
+                    <div className="space-y-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                        <h4 className="text-sm font-bold text-blue-300 uppercase">Targeting & Eligibility</h4>
 
-                <div className="grid grid-cols-3 gap-4 p-4 bg-white/5 rounded-lg border border-white/5">
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase text-zinc-400 flex items-center gap-1"><Coins className="w-3 h-3" /> Cash Reward (₹)</Label>
-                        <Input type="number" value={formData.rewardAmount} onChange={(e) => setFormData({ ...formData, rewardAmount: e.target.value })} className="bg-black/50 border-white/10 text-emerald-400 font-bold" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase text-zinc-400 flex items-center gap-1"><Star className="w-3 h-3" /> XP Reward</Label>
-                        <Input type="number" value={formData.rewardCoins} onChange={(e) => setFormData({ ...formData, rewardCoins: e.target.value })} className="bg-black/50 border-white/10 text-amber-400 font-bold" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase text-zinc-400">Priority</Label>
-                        <Input type="number" value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value })} className="bg-black/50 border-white/10" />
-                    </div>
-                </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label className="text-xs text-zinc-400">Target State</Label>
+                                <Input
+                                    placeholder="e.g. Kerala"
+                                    value={formData.targeting.state}
+                                    onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, state: e.target.value } })}
+                                    className="bg-black/40 border-white/10"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs text-zinc-400">Target District</Label>
+                                <Input
+                                    placeholder="e.g. Kochi"
+                                    value={formData.targeting.district}
+                                    onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, district: e.target.value } })}
+                                    className="bg-black/40 border-white/10"
+                                />
+                            </div>
+                        </div>
 
-                <Button
-                    onClick={() => createMutation.mutate(formData)}
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 font-bold h-12"
-                    disabled={createMutation.isPending || !formData.title || !formData.categoryId}
-                >
-                    {createMutation.isPending ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                    PUBLISH TASK
-                </Button>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label className="text-xs text-zinc-400">Min Age</Label>
+                                <Input
+                                    type="number"
+                                    value={formData.targeting.minAge}
+                                    min={10}
+                                    onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, minAge: parseInt(e.target.value) } })}
+                                    className="bg-black/40 border-white/10"
+                                />
+                            </div>
+                            <div className="flex items-center gap-2 pt-6">
+                                <Switch
+                                    checked={formData.targeting.verifiedOnly}
+                                    onCheckedChange={(c) => setFormData({ ...formData, targeting: { ...formData.targeting, verifiedOnly: c } })}
+                                />
+                                <Label className="text-xs text-zinc-400">Verified Users Only</Label>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase text-zinc-500">Category</Label>
+                        <Select onValueChange={(v) => setFormData({ ...formData, categoryId: v })} value={formData.categoryId}>
+                            <SelectTrigger className="bg-zinc-900/50 border-white/10"><SelectValue placeholder="Select..." /></SelectTrigger>
+                            <SelectContent>
+                                {categories?.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase text-zinc-500">Description / Instructions</Label>
+                        <Textarea
+                            placeholder="Steps to complete..."
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            className="bg-zinc-900/50 border-white/10 min-h-[100px]"
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4 p-4 bg-white/5 rounded-lg border border-white/5">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase text-zinc-400 flex items-center gap-1"><Coins className="w-3 h-3" /> Cash Reward (₹)</Label>
+                            <Input type="number" value={formData.rewardAmount} onChange={(e) => setFormData({ ...formData, rewardAmount: e.target.value })} className="bg-black/50 border-white/10 text-emerald-400 font-bold" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase text-zinc-400 flex items-center gap-1"><Star className="w-3 h-3" /> XP Reward</Label>
+                            <Input type="number" value={formData.rewardCoins} onChange={(e) => setFormData({ ...formData, rewardCoins: e.target.value })} className="bg-black/50 border-white/10 text-amber-400 font-bold" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase text-zinc-400">Priority</Label>
+                            <Input type="number" value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value })} className="bg-black/50 border-white/10" />
+                        </div>
+                    </div>
+
+                    <Button
+                        onClick={() => createMutation.mutate(formData)}
+                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 font-bold h-12"
+                        disabled={createMutation.isPending || !formData.title || !formData.categoryId}
+                    >
+                        {createMutation.isPending ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                        PUBLISH TASK
+                    </Button>
 
             </CardContent>
         </Card>

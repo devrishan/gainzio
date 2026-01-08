@@ -37,7 +37,7 @@ interface AdminTaskSubmissionsClientProps {
 export function AdminTaskSubmissionsClient({ submissions, pagination, statusFilter }: AdminTaskSubmissionsClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [viewingProof, setViewingProof] = useState<{ url: string; type: string | null } | null>(null);
+  const [viewingProof, setViewingProof] = useState<{ url: string; type: string | null; data?: any } | null>(null);
 
   const mutation = useMutation({
     mutationFn: async ({
@@ -187,7 +187,7 @@ export function AdminTaskSubmissionsClient({ submissions, pagination, statusFilt
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setViewingProof({ url: submission.proof_url, type: submission.proof_type })}
+                      onClick={() => setViewingProof({ url: submission.proof_url, type: submission.proof_type, data: submission.proof_data })}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -300,8 +300,27 @@ export function AdminTaskSubmissionsClient({ submissions, pagination, statusFilt
             <DialogDescription>View the submitted proof for this task</DialogDescription>
           </DialogHeader>
           {viewingProof && (
-            <div className="mt-4">
-              {viewingProof.type === "video" ? (
+            <div className="mt-4 space-y-4">
+              {viewingProof.data ? (
+                <div className="grid grid-cols-1 gap-4">
+                  {viewingProof.data.startProof && (
+                    <div>
+                      <h4 className="text-sm font-bold mb-2">Start Proof</h4>
+                      <img src={viewingProof.data.startProof} alt="Start" className="w-full rounded-md" />
+                    </div>
+                  )}
+                  {viewingProof.data.endProof && (
+                    <div>
+                      <h4 className="text-sm font-bold mb-2">End Proof</h4>
+                      <img src={viewingProof.data.endProof} alt="End" className="w-full rounded-md" />
+                    </div>
+                  )}
+                  {/* Fallback if data exists but structure is different */}
+                  {!viewingProof.data.startProof && !viewingProof.data.endProof && (
+                    <pre className="text-xs bg-muted p-2 rounded">{JSON.stringify(viewingProof.data, null, 2)}</pre>
+                  )}
+                </div>
+              ) : viewingProof.type === "video" ? (
                 <video src={viewingProof.url} controls className="w-full rounded-md" />
               ) : (
                 <img src={viewingProof.url} alt="Proof" className="w-full rounded-md" />
