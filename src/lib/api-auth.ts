@@ -8,6 +8,9 @@ export interface AuthenticatedUser {
     role?: string;
     username?: string;
     email?: string;
+    dob?: string | null;
+    state?: string | null;
+    district?: string | null;
 }
 
 import { getServerSession } from "next-auth";
@@ -22,7 +25,10 @@ export async function getAuthenticatedUser(request?: NextRequest): Promise<Authe
             id: session.user.id,
             username: (session.user as any).username || session.user.name || "Admin",
             role: (session.user as any).role || "USER",
-            email: session.user.email
+            email: session.user.email,
+            dob: (session.user as any).dob,
+            state: (session.user as any).state,
+            district: (session.user as any).district
         };
     }
 
@@ -55,6 +61,9 @@ export async function getAuthenticatedUser(request?: NextRequest): Promise<Authe
             id: payload.sub,
             username: payload.username || "User",
             role: payload.role,
+            dob: payload.dob,
+            state: payload.state,
+            district: payload.district,
         };
     } catch (error) {
         // Token valid check failed
