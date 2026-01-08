@@ -32,12 +32,12 @@ export function SquadHUD({ squad }: SquadHUDProps) {
     return (
         <Card className="border-l-4 border-l-indigo-500 bg-gradient-to-br from-card to-indigo-500/5 shadow-md">
             <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
                     <div className="flex items-center gap-2">
                         <Users className="h-5 w-5 text-indigo-500" />
                         <CardTitle className="text-lg font-bold">Squad Weekly Goal</CardTitle>
                     </div>
-                    <div className="flex items-center gap-1.5 rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
+                    <div className="flex items-center gap-1.5 rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 self-start sm:self-auto">
                         <Timer className="h-3 w-3" />
                         {timeLeft}
                     </div>

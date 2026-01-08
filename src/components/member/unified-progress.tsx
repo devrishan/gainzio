@@ -23,19 +23,17 @@ export function UnifiedProgress() {
             <div className="absolute top-0 right-0 p-16 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
             <CardHeader className="pb-2">
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
                     <div className="flex flex-col">
                         <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Current Rank</CardTitle>
-                        <div className="text-2xl font-bold flex items-center gap-2">
+                        <div className="text-xl sm:text-2xl font-bold flex items-center gap-2">
                             {data.rank}
                             <Award className="h-5 w-5 text-primary" />
                         </div>
                     </div>
-                    <div className="flex flex-col items-end">
-                        <div className="flex items-center gap-1 text-orange-500 font-bold">
-                            <Flame className="h-5 w-5 fill-orange-500" />
-                            {data.streakDays} Day Streak
-                        </div>
+                    <div className="flex items-center gap-1 text-orange-500 font-bold self-start sm:self-auto">
+                        <Flame className="h-4 w-4 sm:h-5 sm:w-5 fill-orange-500" />
+                        {data.streakDays} Day Streak
                     </div>
                 </div>
             </CardHeader>
