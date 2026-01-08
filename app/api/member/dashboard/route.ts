@@ -2,6 +2,7 @@
 import { getAuthenticatedUser } from '@/lib/api-auth';
 export const dynamic = 'force-dynamic';
 import { prisma } from '@/lib/prisma';
+import { calculateSmartScore } from '@/services/gamification';
 
 export async function GET(request: NextRequest) {
   try {
@@ -94,6 +95,9 @@ export async function GET(request: NextRequest) {
       currency: 'INR',
     };
 
+    // Recalculate Smart Score (1 INR = 100 Pts)
+    const smartScore = await calculateSmartScore(userId);
+
     // Get gamification state
     let gamification = await prisma.gamificationState.findUnique({
       where: { userId },
@@ -145,6 +149,7 @@ export async function GET(request: NextRequest) {
         xp: gamification.xp,
         rank: gamification.rank,
         streak: gamification.streakDays,
+        smartScore: smartScore,
         next_rank: nextRank,
         xp_to_next: xpToNext,
         progress: progressPercent,

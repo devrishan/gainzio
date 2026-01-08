@@ -27,6 +27,7 @@ export interface MemberDashboardPayload {
     xp: number;
     rank: string;
     streak: number;
+    smartScore: number;
     next_rank: string | null;
     xp_to_next: number;
     progress: number;

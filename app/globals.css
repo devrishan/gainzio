@@ -13,10 +13,10 @@
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 222 47% 11%;
-    /* Deep Charcoal Blue */
-    --primary-foreground: 210 40% 98%;
-    --primary-glow: 222 47% 20%;
+    --primary: 142 70% 45%;
+    /* Gainzio Green */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 142 70% 20%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
     --muted: 210 40% 96%;
@@ -30,7 +30,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 222 47% 11%;
+    --ring: 142 70% 45%;
     --radius: 1rem;
     --glow-sm: 0 0 10px hsl(var(--primary) / 0.1);
     --glow-md: 0 0 20px hsl(var(--primary) / 0.2);
@@ -51,14 +51,14 @@
     /* shadcn usually inverts primary for dark mode to be white/black, but for brand identity we might want a shade of blue. 
        However, "Deep Charcoal" on "Deep Charcoal" is invisible. 
        Let's set Primary in dark mode to a lighter Blue-Gray or White. */
-    --primary: 210 40% 98%;
-    --primary-foreground: 222 47% 11%;
-    --primary-glow: 217 91% 60%;
+    --primary: 142 70% 45%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 142 70% 25%;
     --secondary: 217 32% 17%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217 32% 17%;
     --muted-foreground: 215 20% 65%;
-    --accent: 142 70% 50%;
+    --accent: 142 70% 45%;
     --accent-foreground: 222 47% 11%;
     --success: 142 70% 50%;
     --success-foreground: 222 47% 11%;
