@@ -15,9 +15,20 @@ interface AIChatShellProps {
     children?: React.ReactNode;
 }
 
+interface Message {
+    role: 'user' | 'assistant';
+    content: string;
+    action?: {
+        label: string;
+        url: string;
+    };
+}
+
 export function AIChatShell({ children }: AIChatShellProps) {
     const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
     const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
+
+    const [input, setInput] = useState("");
 
     const [messages, setMessages] = useState<Message[]>([]);
     const [isLoading, setIsLoading] = useState(false);

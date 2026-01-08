@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
         if (!title || !categoryId) return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
 
         // Generate slug
-        let baseSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        let baseSlug = slugify(title);
         let slug = baseSlug;
         let counter = 1;
         while (await prisma.task.findUnique({ where: { slug } })) {
