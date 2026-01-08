@@ -215,30 +215,31 @@ export function TaskCreatorWizard() {
                             className="bg-zinc-900/50 border-white/10 min-h-[100px]"
                         />
                     </div>
+                </div>
 
-                    <div className="grid grid-cols-3 gap-4 p-4 bg-white/5 rounded-lg border border-white/5">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase text-zinc-400 flex items-center gap-1"><Coins className="w-3 h-3" /> Cash Reward (₹)</Label>
-                            <Input type="number" value={formData.rewardAmount} onChange={(e) => setFormData({ ...formData, rewardAmount: e.target.value })} className="bg-black/50 border-white/10 text-emerald-400 font-bold" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase text-zinc-400 flex items-center gap-1"><Star className="w-3 h-3" /> XP Reward</Label>
-                            <Input type="number" value={formData.rewardCoins} onChange={(e) => setFormData({ ...formData, rewardCoins: e.target.value })} className="bg-black/50 border-white/10 text-amber-400 font-bold" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase text-zinc-400">Priority</Label>
-                            <Input type="number" value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value })} className="bg-black/50 border-white/10" />
-                        </div>
+                <div className="grid grid-cols-3 gap-4 p-4 bg-white/5 rounded-lg border border-white/5">
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase text-zinc-400 flex items-center gap-1"><Coins className="w-3 h-3" /> Cash Reward (₹)</Label>
+                        <Input type="number" value={formData.rewardAmount} onChange={(e) => setFormData({ ...formData, rewardAmount: e.target.value })} className="bg-black/50 border-white/10 text-emerald-400 font-bold" />
                     </div>
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase text-zinc-400 flex items-center gap-1"><Star className="w-3 h-3" /> XP Reward</Label>
+                        <Input type="number" value={formData.rewardCoins} onChange={(e) => setFormData({ ...formData, rewardCoins: e.target.value })} className="bg-black/50 border-white/10 text-amber-400 font-bold" />
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase text-zinc-400">Priority</Label>
+                        <Input type="number" value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value })} className="bg-black/50 border-white/10" />
+                    </div>
+                </div>
 
-                    <Button
-                        onClick={() => createMutation.mutate(formData)}
-                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 font-bold h-12"
-                        disabled={createMutation.isPending || !formData.title || !formData.categoryId}
-                    >
-                        {createMutation.isPending ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                        PUBLISH TASK
-                    </Button>
+                <Button
+                    onClick={() => createMutation.mutate(formData)}
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 font-bold h-12"
+                    disabled={createMutation.isPending || !formData.title || !formData.categoryId}
+                >
+                    {createMutation.isPending ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                    PUBLISH TASK
+                </Button>
 
             </CardContent>
         </Card>
