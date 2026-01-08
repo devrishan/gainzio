@@ -38,10 +38,26 @@ export async function GET(request: NextRequest) {
       // We need to fetch the full user profile including dob/location 
       fullProfile = await prisma.user.findUnique({
         where: { id: authUser.userId },
-        select: { dob: true, district: true, state: true, phone_verified: true, verificationLevel: true } as any
+        select: {
+          dob: true,
+          district: true,
+          state: true,
+          phone_verified: true,
+          verificationLevel: true,
+          is_locked: true,
+          confidenceScore: true,
+          // Assuming we might track used platforms in metadata or tags later, 
+          // for now strictly relying on verificationLevel + profile.
+        } as any
       });
 
       const profile = fullProfile as any;
+
+      // ACCOUNT STATUS CHECK
+      if (profile?.is_locked) {
+        // Locked accounts see NO tasks or specific error, but spec says "If any rule fails, the task must not appear"
+        return NextResponse.json({ success: true, tasks: [], pagination: { total: 0, limit, offset, hasMore: false } });
+      }
       if (profile?.dob) {
         const today = new Date();
         const birthDate = new Date(profile.dob);
@@ -82,6 +98,8 @@ export async function GET(request: NextRequest) {
     const [tasks, total] = await Promise.all([
       prisma.task.findMany({
         where,
+        take: limit,
+        skip: offset,
         include: {
           category: {
             select: {
@@ -90,13 +108,16 @@ export async function GET(request: NextRequest) {
               slug: true,
             },
           },
+          // Include submissions to check for duplicates
+          submissions: {
+            where: { userId: authUser.userId },
+            select: { id: true, status: true }
+          }
         },
         orderBy: [
           { priority: 'desc' },
           { createdAt: 'desc' },
         ],
-        take: limit,
-        skip: offset,
       }),
       prisma.task.count({ where }),
     ]);
@@ -118,20 +139,34 @@ export async function GET(request: NextRequest) {
       // Strict Targeting Check (Social Media Tasks)
       if (t.taskType === 'SOCIAL_MEDIA' && t.targeting) {
         const targeting = t.targeting as any;
-
         const profile = fullProfile as any;
+
+        // 0. Duplicate Submission Check (One per campaign)
+        // If user already submitted this task, DO NOT SHOW IT (or show as completed? Spec says "One submission per user", usually implies hide active or move to done)
+        // Spec: "If any eligibility condition fails... Do NOT show the task"
+        // But if they completed it, it's not "eligibility failure", it's "completion". 
+        // Typically completed tasks are unrelated queries. FOR NOW, we hide if submitted.
+        if (t.submissions && t.submissions.length > 0) return null;
 
         // 1. Min Age Check
         if (targeting.minAge && userAge < targeting.minAge) return null; // HIDDEN
 
-        // 2. Location Check (District)
+        // 2. Location Check (District) - STRICT MATCH
         if (targeting.district && profile?.district?.toLowerCase() !== targeting.district.toLowerCase()) return null; // HIDDEN
 
-        // 3. Location Check (State)
+        // 3. Location Check (State) - STRICT MATCH
         if (targeting.state && profile?.state?.toLowerCase() !== targeting.state.toLowerCase()) return null; // HIDDEN
 
         // 4. Verification Check
-        if (targeting.verifiedOnly && (!profile?.phone_verified || (profile?.verificationLevel || 0) < 1)) return null; // HIDDEN
+        // Spec: "Verification Level >= required minimum" & "Platform confidence score >= required minimum"
+        if (targeting.verifiedOnly) {
+          if (!profile?.phone_verified) return null;
+          if ((profile?.verificationLevel || 0) < 1) return null;
+          // Default confidence check if not specified in targeting, assumed 90+ for social tasks?
+          // Spec says "Platform confidence score >= required minimum". 
+          // Let's assume targeting might have it, or we enforce strict default.
+          if ((profile?.confidenceScore || 0) < (targeting.minConfidence || 80)) return null;
+        }
       }
 
       return {
