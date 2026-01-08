@@ -71,42 +71,72 @@ export function MemberReferralsTable({ referrals }: { referrals: MemberReferral[
         </div>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Commission</TableHead>
-            <TableHead className="text-right">Joined</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredReferrals.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
-                No referrals match your filters just yet.
-              </TableCell>
-            </TableRow>
-          ) : (
-            filteredReferrals.map((referral) => (
-              <TableRow key={referral.id}>
-                <TableCell className="font-medium">{referral.referred_user.username}</TableCell>
-                <TableCell className="text-muted-foreground">{referral.referred_user.email}</TableCell>
-                <TableCell>
+      <div className="block sm:hidden">
+        {filteredReferrals.length === 0 ? (
+          <div className="py-8 text-center text-sm text-muted-foreground">
+            No referrals match your filters.
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {filteredReferrals.map((referral) => (
+              <div key={referral.id} className="p-4 space-y-2">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="font-medium">{referral.referred_user.username}</div>
+                    <div className="text-xs text-muted-foreground">{referral.referred_user.email}</div>
+                  </div>
                   <Badge variant="outline" className={statusColor[referral.status]}>
                     {referral.status.charAt(0).toUpperCase() + referral.status.slice(1)}
                   </Badge>
-                </TableCell>
-                <TableCell className="text-right font-medium">₹{referral.commission_amount.toFixed(2)}</TableCell>
-                <TableCell className="text-right text-muted-foreground">
-                  {new Date(referral.created_at).toLocaleDateString()}
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">{new Date(referral.created_at).toLocaleDateString()}</span>
+                  <span className="font-bold text-success">₹{referral.commission_amount.toFixed(2)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="hidden sm:block">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Commission</TableHead>
+              <TableHead className="text-right">Joined</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredReferrals.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
+                  No referrals match your filters just yet.
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              filteredReferrals.map((referral) => (
+                <TableRow key={referral.id}>
+                  <TableCell className="font-medium">{referral.referred_user.username}</TableCell>
+                  <TableCell className="text-muted-foreground">{referral.referred_user.email}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={statusColor[referral.status]}>
+                      {referral.status.charAt(0).toUpperCase() + referral.status.slice(1)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right font-medium">₹{referral.commission_amount.toFixed(2)}</TableCell>
+                  <TableCell className="text-right text-muted-foreground">
+                    {new Date(referral.created_at).toLocaleDateString()}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </Card>
   );
 }

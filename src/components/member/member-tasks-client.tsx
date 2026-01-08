@@ -142,7 +142,7 @@ export function MemberTasksClient() {
 
             <Card className="relative border-0 bg-transparent h-full flex flex-col">
               <CardHeader className="pb-4">
-                <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
                   <Badge variant="outline" className="glass-morphism border-primary/20 text-primary-foreground bg-primary/10">
                     {task.category.name}
                   </Badge>

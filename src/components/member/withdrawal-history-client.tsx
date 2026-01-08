@@ -60,32 +60,53 @@ export function WithdrawalHistoryClient({ withdrawals }: WithdrawalHistoryClient
                 <CardDescription>History of all your payout requests</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
-                <Table>
-                    <TableHeader className="bg-muted/5">
-                        <TableRow className="border-white/5 hover:bg-transparent">
-                            <TableHead className="pl-6">Date</TableHead>
-                            <TableHead>Amount</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right pr-6">UPI ID</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {withdrawals.map((withdrawal) => (
-                            <TableRow key={withdrawal.id} className="border-white/5 hover:bg-muted/50 transition-colors">
-                                <TableCell className="pl-6 font-medium text-muted-foreground">
-                                    {format(new Date(withdrawal.requestedAt), "MMM d, yyyy")}
-                                </TableCell>
-                                <TableCell className="font-bold text-foreground">
-                                    {Number(withdrawal.amount).toFixed(0)} Pts
-                                </TableCell>
-                                <TableCell>{getStatusBadge(withdrawal.status)}</TableCell>
-                                <TableCell className="text-right font-mono text-xs text-muted-foreground pr-6">
-                                    {withdrawal.upiId}
-                                </TableCell>
+                {/* Mobile List View */}
+                <div className="block sm:hidden divide-y divide-white/5">
+                    {withdrawals.map((withdrawal) => (
+                        <div key={withdrawal.id} className="p-4 space-y-2">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <div className="font-bold text-lg">{Number(withdrawal.amount).toFixed(0)} Pts</div>
+                                    <div className="text-xs text-muted-foreground font-mono">{withdrawal.upiId}</div>
+                                </div>
+                                {getStatusBadge(withdrawal.status)}
+                            </div>
+                            <div className="text-xs text-muted-foreground text-right w-full">
+                                {format(new Date(withdrawal.requestedAt), "MMM d, yyyy • h:mm a")}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Desktop Table View */}
+                <div className="hidden sm:block">
+                    <Table>
+                        <TableHeader className="bg-muted/5">
+                            <TableRow className="border-white/5 hover:bg-transparent">
+                                <TableHead className="pl-6">Date</TableHead>
+                                <TableHead>Amount</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right pr-6">UPI ID</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {withdrawals.map((withdrawal) => (
+                                <TableRow key={withdrawal.id} className="border-white/5 hover:bg-muted/50 transition-colors">
+                                    <TableCell className="pl-6 font-medium text-muted-foreground">
+                                        {format(new Date(withdrawal.requestedAt), "MMM d, yyyy")}
+                                    </TableCell>
+                                    <TableCell className="font-bold text-foreground">
+                                        {Number(withdrawal.amount).toFixed(0)} Pts
+                                    </TableCell>
+                                    <TableCell>{getStatusBadge(withdrawal.status)}</TableCell>
+                                    <TableCell className="text-right font-mono text-xs text-muted-foreground pr-6">
+                                        {withdrawal.upiId}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </CardContent>
         </Card>
     );
