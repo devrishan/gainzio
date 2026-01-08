@@ -91,6 +91,7 @@ export interface ApiTaskSubmission {
   };
   status: "SUBMITTED" | "REVIEWING" | "APPROVED" | "REJECTED" | "DELETED";
   proof_url: string;
+  proof_data?: any;
   proof_type: string | null;
   notes: string | null;
   submitted_at: string;

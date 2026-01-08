@@ -5,6 +5,7 @@ export interface Task {
   id: string;
   title: string;
   slug: string;
+  task_type?: string;
   description: string;
   reward_amount: number;
   reward_coins: number;

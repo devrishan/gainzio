@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
@@ -55,21 +55,21 @@ enum Rank {
 }
 
 model User {
-  id              String    @id @default(cuid())
-  phone           String?   @unique  // Made optional for Google Auth users (who might only have email initially)
-  email           String?   @unique 
-  username        String?   @unique 
-  name            String?   // NextAuth standard
-  image           String?   // NextAuth standard
-  emailVerified   DateTime? // NextAuth standard
-  role            Role      @default(USER)
+  id            String    @id @default(cuid())
+  phone         String?   @unique // Made optional for Google Auth users (who might only have email initially)
+  email         String?   @unique
+  username      String?   @unique
+  name          String? // NextAuth standard
+  image         String? // NextAuth standard
+  emailVerified DateTime? // NextAuth standard
+  role          Role      @default(USER)
   // Auth-related
   // Auth-related
   // hashedPassword removed in favor of password_hash
-  password_hash   String?    // Unified field
-  
-  phone_verified  Boolean   @default(false)
-  
+  password_hash String? // Unified field
+
+  phone_verified Boolean @default(false)
+
   // Security Locking
   failed_attempts Int       @default(0)
   lock_until      DateTime?
@@ -77,57 +77,66 @@ model User {
 
   // Tracking & Privacy
   last_login_at      DateTime?
-  last_login_ip_hash String?   
-  last_device_hash   String?   
+  last_login_ip_hash String?
+  last_device_hash   String?
 
-  emailVerifiedAt DateTime?
-  emailVerificationToken String? @unique 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  emailVerifiedAt        DateTime?
+  emailVerificationToken String?   @unique
   
+  // Profile & Targeting
+  dob               DateTime?
+  country           String?
+  state             String?
+  district          String?
+  verificationLevel Int       @default(0) // 0=None, 1=Basic, 2=Identity, 3=Verified
+  confidenceScore   Int       @default(100)
+  
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
   // Soft delete
-  deletedAt       DateTime?
-  isDeleted       Boolean   @default(false)
+  deletedAt DateTime?
+  isDeleted Boolean   @default(false)
 
   // Referral & hierarchy
-  referralCode    String    @unique @default(cuid()) // Ensure default for new users
-  referredById    String?  
-  referredBy      User?     @relation("UserReferrals", fields: [referredById], references: [id], onDelete: SetNull)
-  referrals       User[]    @relation("UserReferrals")
+  referralCode String  @unique @default(cuid()) // Ensure default for new users
+  referredById String?
+  referredBy   User?   @relation("UserReferrals", fields: [referredById], references: [id], onDelete: SetNull)
+  referrals    User[]  @relation("UserReferrals")
 
   // Wallet & gamification
-  wallet          Wallet?
-  transactions    WalletTransaction[]
+  wallet           Wallet?
+  transactions     WalletTransaction[]
   coinTransactions CoinTransaction[]
-  withdrawals     Withdrawal[]
-  gamification    GamificationState?
+  withdrawals      Withdrawal[]
+  gamification     GamificationState?
 
   // Tasks
-  submissions     TaskSubmission[]
+  submissions TaskSubmission[]
 
   // Notifications & sessions
   notifications   Notification[]
   legacySessions  LegacySession[] // Renamed from sessions
   passwordHistory PasswordHistory[]
-  
+
   // NextAuth
-  accounts        Account[]
-  sessions        Session[]
+  accounts Account[]
+  sessions Session[]
 
   // Referrals & tree
-  referralEvents  Referral[] @relation("ReferrerEvents")
+  referralEvents     Referral[] @relation("ReferrerEvents")
   referredUserEvents Referral[] @relation("ReferredUser")
-  
+
   // New relations
-  preferences     UserPreference?
-  paymentMethods  PaymentMethod[]
-  activityLogs    ActivityLog[]
-  leaderboards    Leaderboard[]
-  auditLogs       AuditLog[] @relation("AuditLogActor")
-  
+  preferences    UserPreference?
+  paymentMethods PaymentMethod[]
+  activityLogs   ActivityLog[]
+  leaderboards   Leaderboard[]
+  auditLogs      AuditLog[]      @relation("AuditLogActor")
+
   // Reviewer relation
   reviewedSubmissions TaskSubmission[] @relation("SubmissionReviewer")
-  
+
   // Product suggestions
   productSuggestions ProductSuggestion[]
 
@@ -142,7 +151,7 @@ model PasswordHistory {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  hash      String   
+  hash      String
   createdAt DateTime @default(now())
 
   @@index([userId])
@@ -151,17 +160,17 @@ model PasswordHistory {
 
 // Renamed from Session to avoid conflict with NextAuth
 model LegacySession {
-  id                 String   @id @default(cuid())
-  userId             String
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  refreshToken       String   @unique 
-  createdAt          DateTime @default(now())
-  expiresAt          DateTime
-  lastActivityAt     DateTime?
-  userAgent          String?  
-  ipAddress          String?  
-  revokedAt          DateTime?
-  revokedReason      String?  
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshToken   String    @unique
+  createdAt      DateTime  @default(now())
+  expiresAt      DateTime
+  lastActivityAt DateTime?
+  userAgent      String?
+  ipAddress      String?
+  revokedAt      DateTime?
+  revokedReason  String?
 
   @@index([userId])
   @@index([expiresAt])
@@ -170,18 +179,18 @@ model LegacySession {
 
 // NextAuth Models
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -205,16 +214,16 @@ model VerificationToken {
 }
 
 model OtpRequest {
-  id          String   @id @default(cuid())
-  phone       String   
-  codeHash    String   
-  expiresAt   DateTime
-  createdAt   DateTime @default(now())
-  verifiedAt  DateTime?
-  consumedAt  DateTime?
-  attempts    Int      @default(0)
-  ipAddress   String?  
-  isBlocked   Boolean  @default(false)
+  id         String    @id @default(cuid())
+  phone      String
+  codeHash   String
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
+  verifiedAt DateTime?
+  consumedAt DateTime?
+  attempts   Int       @default(0)
+  ipAddress  String?
+  isBlocked  Boolean   @default(false)
 
   @@index([phone])
   @@index([expiresAt])
@@ -222,30 +231,30 @@ model OtpRequest {
 }
 
 model Wallet {
-  id             String    @id @default(cuid())
-  userId         String    @unique
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  balance        Decimal   @default(0.0) @db.Decimal(10, 2)
-  pendingAmount  Decimal   @default(0.0) @db.Decimal(10, 2)
-  withdrawable   Decimal   @default(0.0) @db.Decimal(10, 2)
-  lockedAmount   Decimal   @default(0.0) @db.Decimal(10, 2)
-  coins          Int       @default(0)
-  totalEarned    Decimal   @default(0.0) @db.Decimal(10, 2)
-  currency       String    @default("INR") @db.VarChar(3)
-  updatedAt      DateTime  @updatedAt
-  transactions   WalletTransaction[]
+  id            String              @id @default(cuid())
+  userId        String              @unique
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance       Decimal             @default(0.0) @db.Decimal(10, 2)
+  pendingAmount Decimal             @default(0.0) @db.Decimal(10, 2)
+  withdrawable  Decimal             @default(0.0) @db.Decimal(10, 2)
+  lockedAmount  Decimal             @default(0.0) @db.Decimal(10, 2)
+  coins         Int                 @default(0)
+  totalEarned   Decimal             @default(0.0) @db.Decimal(10, 2)
+  currency      String              @default("INR") @db.VarChar(3)
+  updatedAt     DateTime            @updatedAt
+  transactions  WalletTransaction[]
 }
 
 model WalletTransaction {
-  id             String           @id @default(cuid())
-  userId         String
-  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  walletId       String
-  wallet         Wallet           @relation(fields: [walletId], references: [id], onDelete: Cascade)
-  amount         Decimal          @db.Decimal(10, 2)
-  type           String           
-  metadata       Json?
-  createdAt      DateTime         @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletId  String
+  wallet    Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  amount    Decimal  @db.Decimal(10, 2)
+  type      String
+  metadata  Json?
+  createdAt DateTime @default(now())
 
   @@index([userId])
   @@index([walletId])
@@ -255,15 +264,15 @@ model WalletTransaction {
 }
 
 model CoinTransaction {
-  id             String           @id @default(cuid())
-  userId         String
-  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount         Int              
-  type           String            // EARN, SPEND
-  description    String           
-  source         String?           // STREAK_FREEZE, TASK_PEEK, TASK_REWARD, etc.
-  metadata       Json?
-  createdAt      DateTime         @default(now())
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      Int
+  type        String // EARN, SPEND
+  description String
+  source      String? // STREAK_FREEZE, TASK_PEEK, TASK_REWARD, etc.
+  metadata    Json?
+  createdAt   DateTime @default(now())
 
   @@index([userId])
   @@index([type])
@@ -272,19 +281,19 @@ model CoinTransaction {
 }
 
 model Withdrawal {
-  id             String            @id @default(cuid())
-  userId         String
-  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount         Decimal           @db.Decimal(10, 2)
-  status         WithdrawalStatus  @default(PENDING)
-  upiId          String            
-  upiQrUrl       String?           
-  requestedAt    DateTime          @default(now())
-  processedAt    DateTime?
-  txId           String?           
-  receiptUrl     String?           
-  notes          String?           @db.Text
-  metadata       Json?
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      Decimal          @db.Decimal(10, 2)
+  status      WithdrawalStatus @default(PENDING)
+  upiId       String
+  upiQrUrl    String?
+  requestedAt DateTime         @default(now())
+  processedAt DateTime?
+  txId        String?
+  receiptUrl  String?
+  notes       String?          @db.Text
+  metadata    Json?
 
   @@index([userId])
   @@index([status])
@@ -293,37 +302,40 @@ model Withdrawal {
 }
 
 model TaskCategory {
-  id        String   @id @default(cuid())
-  name      String   @unique 
-  slug      String   @unique 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String         @id @default(cuid())
+  name      String         @unique
+  slug      String         @unique
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
   deletedAt DateTime?
-  isDeleted Boolean  @default(false)
+  isDeleted Boolean        @default(false)
   tasks     Task[]
   templates TaskTemplate[]
 }
 
 model Task {
-  id             String           @id @default(cuid())
-  title          String           
-  slug           String           @unique 
-  description    String           @db.Text
-  categoryId     String
-  category       TaskCategory     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  rewardAmount   Decimal          @db.Decimal(10, 2)
-  rewardCoins    Int              @default(0)
-  difficulty     String           
-  minRank        Rank             @default(NEWBIE) // "Tasks Become Levels"
-  isActive       Boolean          @default(true)
-  maxSubmissions Int?
-  expiresAt      DateTime?
-  priority       Int              @default(0)
-  deletedAt      DateTime?
-  isDeleted      Boolean          @default(false)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  submissions    TaskSubmission[]
+  id              String               @id @default(cuid())
+  title           String
+  taskType        String               @default("STANDARD") // STANDARD, SOCIAL_MEDIA
+  slug            String               @unique
+  description     String               @db.Text
+  categoryId      String
+  category        TaskCategory         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  rewardAmount    Decimal              @db.Decimal(10, 2)
+  rewardCoins     Int                  @default(0)
+  difficulty      String
+  minRank         Rank                 @default(NEWBIE)
+  targeting       Json?                // { minAge, districts: [], verifiedOnly, platform... }
+  proofConfig     Json?                // { screenshotCount, duration... }
+  isActive        Boolean              @default(true)
+  maxSubmissions  Int?
+  expiresAt       DateTime?
+  priority        Int                  @default(0)
+  deletedAt       DateTime?
+  isDeleted       Boolean              @default(false)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  submissions     TaskSubmission[]
   completionRules TaskCompletionRule[]
 
   @@index([categoryId])
@@ -334,20 +346,21 @@ model Task {
 }
 
 model TaskSubmission {
-  id             String            @id @default(cuid())
-  taskId         String
-  task           Task              @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  userId         String
-  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status         SubmissionStatus  @default(SUBMITTED)
-  proofUrl       String            
-  proofType      String?           
-  notes          String?           @db.Text
-  reviewedById   String?
-  reviewedBy     User?             @relation("SubmissionReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
-  submittedAt    DateTime          @default(now())
-  reviewedAt     DateTime?
-  metadata       Json?
+  id           String           @id @default(cuid())
+  taskId       String
+  task         Task             @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status       SubmissionStatus @default(SUBMITTED)
+  proofUrl     String
+  proofType    String?
+  proofData    Json?            // { startScreenshot, endScreenshot, timestamp... }
+  notes        String?          @db.Text
+  reviewedById String?
+  reviewedBy   User?            @relation("SubmissionReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  submittedAt  DateTime         @default(now())
+  reviewedAt   DateTime?
+  metadata     Json?
 
   @@index([taskId])
   @@index([userId])
@@ -366,7 +379,7 @@ model Referral {
   referredUser     User     @relation("ReferredUser", fields: [referredUserId], references: [id], onDelete: Cascade)
   level            Int
   commissionAmount Decimal  @default(0.0) @db.Decimal(10, 2)
-  status           String   @default("pending") 
+  status           String   @default("pending")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -378,15 +391,15 @@ model Referral {
 }
 
 model Notification {
-  id           String           @id @default(cuid())
-  userId       String
-  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type         NotificationType
-  title        String           
-  body         String           @db.Text
-  data         Json?
-  isRead       Boolean          @default(false)
-  createdAt    DateTime         @default(now())
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  body      String           @db.Text
+  data      Json?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
 
   @@index([userId])
   @@index([isRead])
@@ -395,25 +408,59 @@ model Notification {
 }
 
 model GamificationState {
-  id             String   @id @default(cuid())
-  userId         String   @unique
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  xp             Int      @default(0)
-  rank           Rank     @default(NEWBIE)
-  streakDays     Int      @default(0)
-  lastLoginAt    DateTime?
-  badges         BadgeOnUser[]
+  id              String        @id @default(cuid())
+  userId          String        @unique
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  xp              Int           @default(0)
+  rank            Rank          @default(NEWBIE)
+  streakDays      Int           @default(0)
+  smartScore      Int           @default(0)
+  lastScoreUpdate DateTime      @default(now())
+  lastLoginAt     DateTime?
+  badges          BadgeOnUser[]
+  inventory       UserInventory[]
 
   @@index([rank])
   @@index([xp])
+  @@index([smartScore])
+}
+
+model ShopItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @db.Text
+  cost        Int
+  type        String   // PERK, CONSUMABLE, COSMETIC
+  icon        String?  // Lucide icon name or URL
+  isActive    Boolean  @default(true)
+  metadata    Json?    // e.g. { "duration": 24h }
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  inventory   UserInventory[]
+}
+
+model UserInventory {
+  id             String            @id @default(cuid())
+  userId         String
+  gamificationId String
+  gamification   GamificationState @relation(fields: [gamificationId], references: [id], onDelete: Cascade)
+  shopItemId     String
+  shopItem       ShopItem          @relation(fields: [shopItemId], references: [id], onDelete: Cascade)
+  quantity       Int               @default(1)
+  remainingUses  Int?              // For consummables like "5 Task Peeks"
+  acquiredAt     DateTime          @default(now())
+  expiresAt      DateTime?
+
+  @@unique([gamificationId, shopItemId])
+  @@index([userId])
 }
 
 model Badge {
   id          String        @id @default(cuid())
-  code        String        @unique 
-  name        String        
+  code        String        @unique
+  name        String
   description String        @db.Text
-  icon        String?       
+  icon        String?
   createdAt   DateTime      @default(now())
   users       BadgeOnUser[]
 }
@@ -429,12 +476,12 @@ model BadgeOnUser {
 
 // Spark Wall events (for real-time feed)
 model SparkEvent {
-  id          String   @id @default(cuid())
-  type        String   
-  message     String   @db.Text
-  data        Json?
-  isPublic    Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  type      String
+  message   String   @db.Text
+  data      Json?
+  isPublic  Boolean  @default(true)
+  createdAt DateTime @default(now())
 
   @@index([createdAt])
   @@index([type, createdAt])
@@ -442,38 +489,38 @@ model SparkEvent {
 
 // Minimal audit logs, especially for payouts
 model AuditLog {
-  id          String   @id @default(cuid())
-  actorId     String?
-  actor       User?    @relation("AuditLogActor", fields: [actorId], references: [id], onDelete: SetNull)
-  action      String   
-  entityId    String?  
-  entityType  String?  
-  metadata    Json?
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation("AuditLogActor", fields: [actorId], references: [id], onDelete: SetNull)
+  action     String
+  entityId   String?
+  entityType String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
 
   @@index([actorId])
 }
 
 model PromoCode {
-  id          String   @id @default(cuid())
-  code        String   @unique
+  id          String    @id @default(cuid())
+  code        String    @unique
   description String?
-  value       Decimal  @db.Decimal(10, 2)
-  type        String   @default("FIXED") // FIXED or PERCENTAGE
-  maxUses     Int      @default(1)
-  currentUses Int      @default(0)
+  value       Decimal   @db.Decimal(10, 2)
+  type        String    @default("FIXED") // FIXED or PERCENTAGE
+  maxUses     Int       @default(1)
+  currentUses Int       @default(0)
   expiresAt   DateTime?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
   createdBy   String?
-  
+
   @@index([code])
 }
 
 model Blacklist {
   id        String   @id @default(cuid())
-  type      String   // IP, EMAIL, WALLET
-  value     String   
+  type      String // IP, EMAIL, WALLET
+  value     String
   reason    String?
   createdAt DateTime @default(now())
   createdBy String?
@@ -485,13 +532,13 @@ model Blacklist {
 // Rate limiting for API and auth
 model RateLimit {
   id          String   @id @default(cuid())
-  identifier  String    // phone, email, IP, userId
-  type        String    // "otp", "login", "api"
+  identifier  String // phone, email, IP, userId
+  type        String // "otp", "login", "api"
   count       Int      @default(1)
   windowStart DateTime
   expiresAt   DateTime
   createdAt   DateTime @default(now())
-  
+
   @@index([identifier, type, windowStart])
   @@index([expiresAt])
 }
@@ -502,9 +549,9 @@ model UserPreference {
   userId        String   @unique
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   language      String   @default("en") @db.VarChar(10)
-  timezone      String   @default("UTC") 
-  notifications Json?    // notification preferences
-  theme         String   @default("light") 
+  timezone      String   @default("UTC")
+  notifications Json? // notification preferences
+  theme         String   @default("light")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -514,63 +561,63 @@ model PaymentMethod {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type        String    // "UPI", "BANK", "WALLET"
-  upiId       String?  
+  type        String // "UPI", "BANK", "WALLET"
+  upiId       String?
   bankAccount Json?
   isDefault   Boolean  @default(false)
   isVerified  Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   @@index([userId, isDefault])
 }
 
 // Task templates
 model TaskTemplate {
-  id          String        @id @default(cuid())
-  name        String        
-  description String        @db.Text
-  categoryId  String
-  category    TaskCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  rewardAmount Decimal       @db.Decimal(10, 2)
-  rewardCoins Int           @default(0)
-  difficulty  String        
-  isActive    Boolean       @default(true)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  
+  id           String       @id @default(cuid())
+  name         String
+  description  String       @db.Text
+  categoryId   String
+  category     TaskCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  rewardAmount Decimal      @db.Decimal(10, 2)
+  rewardCoins  Int          @default(0)
+  difficulty   String
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
   @@index([categoryId, isActive])
 }
 
 // Activity logs (enhanced)
 model ActivityLog {
-  id          String   @id @default(cuid())
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  action      String   
-  entityType  String?  
-  entityId    String?  
-  metadata    Json?
-  ipAddress   String?  
-  userAgent   String?  
-  createdAt   DateTime @default(now())
-  
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
   @@index([userId, createdAt])
   @@index([entityType, entityId])
 }
 
 // Leaderboard
 model Leaderboard {
-  id          String   @id @default(cuid())
-  period      String    // "daily", "weekly", "monthly", "alltime"
+  id          String    @id @default(cuid())
+  period      String // "daily", "weekly", "monthly", "alltime"
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   rank        Int
-  score       Decimal  @db.Decimal(10, 2)
+  score       Decimal   @db.Decimal(10, 2)
   periodStart DateTime
   periodEnd   DateTime?
-  createdAt   DateTime @default(now())
-  
+  createdAt   DateTime  @default(now())
+
   @@unique([period, userId, periodStart])
   @@index([period, rank])
   @@index([period, score])
@@ -578,13 +625,13 @@ model Leaderboard {
 
 // Task completion rules
 model TaskCompletionRule {
-  id          String   @id @default(cuid())
-  taskId      String
-  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  ruleType    String    // "daily_limit", "cooldown", "prerequisite"
-  value       Json
-  createdAt   DateTime @default(now())
-  
+  id        String   @id @default(cuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  ruleType  String // "daily_limit", "cooldown", "prerequisite"
+  value     Json
+  createdAt DateTime @default(now())
+
   @@index([taskId])
 }
 
@@ -593,44 +640,42 @@ model ProductSuggestion {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  productName String   
-  platform    String    // "amazon", "flipkart", etc.
-  category    String?  
+  productName String
+  platform    String // "amazon", "flipkart", etc.
+  category    String?
   amount      Decimal? @db.Decimal(10, 2)
-  orderId     String?  
-  files       Json?    // S3 URLs array
-  status      String   @default("pending")  // pending, approved, rejected, converted
+  orderId     String?
+  files       Json? // S3 URLs array
+  status      String   @default("pending") // pending, approved, rejected, converted
   metadata    Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   @@index([userId])
   @@index([status])
   @@index([platform])
   @@index([status, createdAt])
 }
 
-
-
 model Ad {
-  id              String   @id @default(cuid())
-  name            String
-  adPlacementId   String
-  adCodeSnippet   String   @db.Text
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id            String   @id @default(cuid())
+  name          String
+  adPlacementId String
+  adCodeSnippet String   @db.Text
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([isActive])
 }
 
 model SystemConfig {
-  id              String   @id @default(cuid())
-  key             String   @unique  // e.g. "rank_thresholds", "reward_formulas"
-  value           Json     // The config object
-  description     String?  @db.Text
-  updatedBy       String?
-  updatedAt       DateTime @updatedAt
+  id          String   @id @default(cuid())
+  key         String   @unique // e.g. "rank_thresholds", "reward_formulas"
+  value       Json // The config object
+  description String?  @db.Text
+  updatedBy   String?
+  updatedAt   DateTime @updatedAt
 
   @@index([key])
 }
