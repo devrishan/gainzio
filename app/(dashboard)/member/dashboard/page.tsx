@@ -1,12 +1,20 @@
 import { MemberDashboardClient } from "@/components/member/member-dashboard-client";
-import { getMemberDashboard, getMemberReferrals, getMemberSquad } from "@/services/member";
+import { getDashboardData, getMemberReferralsData, getMemberSquadData } from "@/services/member-server";
+import { getAuthenticatedUser } from "@/lib/api-auth";
+import { redirect } from "next/navigation";
+
 export const dynamic = "force-dynamic";
 
 export default async function MemberDashboardPage() {
+  const user = await getAuthenticatedUser();
+  if (!user) {
+    redirect("/login");
+  }
+
   const [dashboard, referrals, squad] = await Promise.all([
-    getMemberDashboard(),
-    getMemberReferrals(),
-    getMemberSquad()
+    getDashboardData(user.userId),
+    getMemberReferralsData(user.userId),
+    getMemberSquadData(user.userId)
   ]);
 
   return (
