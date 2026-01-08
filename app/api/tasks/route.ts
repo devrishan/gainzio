@@ -108,11 +108,11 @@ export async function GET(request: NextRequest) {
               slug: true,
             },
           },
-          // Include submissions to check for duplicates
-          submissions: {
+          // Include submissions to check for duplicates (ONLY if logged in)
+          submissions: authUser ? {
             where: { userId: authUser.userId },
             select: { id: true, status: true }
-          }
+          } : undefined
         },
         orderBy: [
           { priority: 'desc' },
