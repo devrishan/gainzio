@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const taskId = formData.get('task_id') as string;
     const proofFile = formData.get('proof') as File | null;
+    const proofEndFile = formData.get('proof_end') as File | null;
     const notes = formData.get('notes') as string | null;
 
     if (!taskId || !proofFile) {
@@ -30,13 +31,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file
+    // Validate main file
     const validation = validateFile(proofFile);
     if (!validation.valid) {
       return NextResponse.json(
         { success: false, error: validation.error },
         { status: 400 },
       );
+    }
+
+    // Validate second file if present
+    if (proofEndFile) {
+      const v2 = validateFile(proofEndFile);
+      if (!v2.valid) {
+        return NextResponse.json(
+          { success: false, error: "End proof: " + v2.error },
+          { status: 400 },
+        );
+      }
     }
 
     // Check if task exists and is active
@@ -95,17 +107,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Convert file to buffer
+    // Convert file to buffer and upload main proof
     const arrayBuffer = await proofFile.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-
-    // Upload to S3
     const uploadResult = await uploadToS3({
       file: buffer,
       fileName: proofFile.name,
       contentType: proofFile.type,
       folder: 'task-proofs',
     });
+
+    // Upload second proof if exists
+    let endProofUrl = null;
+    if (proofEndFile) {
+      const ab2 = await proofEndFile.arrayBuffer();
+      const b2 = Buffer.from(ab2);
+      const ur2 = await uploadToS3({
+        file: b2,
+        fileName: proofEndFile.name,
+        contentType: proofEndFile.type,
+        folder: 'task-proofs',
+      });
+      endProofUrl = ur2.url;
+    }
 
     // Check Flash Time
     let flashMetadata = {};
@@ -129,14 +153,22 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Prepare proofData
+    const proofData = {
+      startProof: uploadResult.url,
+      endProof: endProofUrl,
+      timestamp: new Date().toISOString()
+    };
+
     // Create submission record
     const submission = await prisma.taskSubmission.create({
       data: {
         taskId: task.id,
         userId: userId,
         status: 'SUBMITTED',
-        proofUrl: uploadResult.url,
+        proofUrl: uploadResult.url, // Primary proof
         proofType: proofFile.type,
+        proofData: proofData, // Store both
         notes: notes || null,
         metadata: {
           fileName: proofFile.name,

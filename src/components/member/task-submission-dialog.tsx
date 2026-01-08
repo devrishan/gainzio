@@ -20,14 +20,16 @@ import { useQueryClient } from "@tanstack/react-query";
 interface TaskSubmissionDialogProps {
   taskId: string;
   taskTitle: string;
+  taskType?: string; // Add taskType
   children?: React.ReactNode;
   onSuccess?: () => void;
 }
 
-export function TaskSubmissionDialog({ taskId, taskTitle, children, onSuccess }: TaskSubmissionDialogProps) {
+export function TaskSubmissionDialog({ taskId, taskTitle, taskType, children, onSuccess }: TaskSubmissionDialogProps) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [proofFile, setProofFile] = useState<File | null>(null);
+  const [proofEndFile, setProofEndFile] = useState<File | null>(null); // State for second file
   const [notes, setNotes] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -59,12 +61,22 @@ export function TaskSubmissionDialog({ taskId, taskTitle, children, onSuccess }:
       return;
     }
 
+    if (taskType === "SOCIAL_MEDIA" && !proofEndFile) {
+      toast({
+        title: "End Proof required",
+        description: "Please select the second screenshot (Proof of duration)",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setUploading(true);
 
     try {
       const formData = new FormData();
       formData.append("task_id", taskId);
       formData.append("proof", proofFile);
+      if (proofEndFile) formData.append("proof_end", proofEndFile); // Append second file if exists
       if (notes.trim()) {
         formData.append("notes", notes.trim());
       }
@@ -86,13 +98,15 @@ export function TaskSubmissionDialog({ taskId, taskTitle, children, onSuccess }:
         description: "Your submission is under review. You'll be notified once it's processed.",
       });
 
+
       setOpen(false);
       setProofFile(null);
+      setProofEndFile(null);
       setNotes("");
-      
+
       // Invalidate tasks query to refresh the list
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      
+
       onSuccess?.();
     } catch (error) {
       toast({
@@ -124,35 +138,75 @@ export function TaskSubmissionDialog({ taskId, taskTitle, children, onSuccess }:
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="proof" className="text-sm text-foreground">
-              Proof File <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="proof"
-              type="file"
-              accept="image/*,video/*"
-              required
-              onChange={handleFileChange}
-              className="border-border bg-muted h-10 text-sm"
-              disabled={uploading}
-            />
-            <p className="text-xs text-muted-foreground">
-              Upload an image or video (max 10MB). Accepted formats: JPEG, PNG, GIF, WebP, MP4, WebM, MOV
-            </p>
-            {proofFile && (
-              <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
-                <span className="text-sm text-foreground flex-1 truncate">{proofFile.name}</span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={() => setProofFile(null)}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="proof" className="text-sm text-foreground">
+                {taskType === "SOCIAL_MEDIA" ? "Start Screenshot (Proof of posting)" : "Proof File"} <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="proof"
+                type="file"
+                accept="image/*,video/*"
+                required
+                onChange={handleFileChange}
+                className="border-border bg-muted h-10 text-sm"
+                disabled={uploading}
+              />
+              <p className="text-xs text-muted-foreground">
+                Upload main proof (max 10MB).
+              </p>
+              {proofFile && (
+                <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
+                  <span className="text-sm text-foreground flex-1 truncate">{proofFile.name}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => setProofFile(null)}
+                    disabled={uploading}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {taskType === "SOCIAL_MEDIA" && (
+              <div className="space-y-2">
+                <Label htmlFor="proof_end" className="text-sm text-foreground">
+                  End Screenshot (Proof of duration) <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="proof_end"
+                  type="file"
+                  accept="image/*"
+                  required
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setProofEndFile(file);
+                  }}
+                  className="border-border bg-muted h-10 text-sm"
                   disabled={uploading}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+                />
+                <p className="text-xs text-muted-foreground">
+                  Upload screenshot after 20+ hours (max 10MB).
+                </p>
+                {proofEndFile && (
+                  <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
+                    <span className="text-sm text-foreground flex-1 truncate">{proofEndFile.name}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={() => setProofEndFile(null)}
+                      disabled={uploading}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -180,13 +234,14 @@ export function TaskSubmissionDialog({ taskId, taskTitle, children, onSuccess }:
               onClick={() => {
                 setOpen(false);
                 setProofFile(null);
+                setProofEndFile(null);
                 setNotes("");
               }}
               disabled={uploading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={uploading || !proofFile}>
+            <Button type="submit" disabled={uploading || !proofFile || (taskType === 'SOCIAL_MEDIA' && !proofEndFile)}>
               {uploading ? "Submitting..." : "Submit for Review"}
             </Button>
           </div>
