@@ -1,4 +1,5 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
+export const dynamic = 'force-dynamic';
 import { getAuthenticatedUser } from "@/lib/api-auth";
 import { getGamificationProfile, calculateSmartScore } from "@/services/gamification";
 import { prisma as db } from "@/lib/prisma";
