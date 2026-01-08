@@ -38,12 +38,13 @@ export async function GET(request: NextRequest) {
       // We need to fetch the full user profile including dob/location 
       fullProfile = await prisma.user.findUnique({
         where: { id: authUser.userId },
-        select: { dob: true, district: true, state: true, phone_verified: true, verificationLevel: true }
+        select: { dob: true, district: true, state: true, phone_verified: true, verificationLevel: true } as any
       });
 
-      if (fullProfile?.dob) {
+      const profile = fullProfile as any;
+      if (profile?.dob) {
         const today = new Date();
-        const birthDate = new Date(fullProfile.dob);
+        const birthDate = new Date(profile.dob);
         userAge = today.getFullYear() - birthDate.getFullYear();
         const m = today.getMonth() - birthDate.getMonth();
         if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
@@ -104,37 +105,40 @@ export async function GET(request: NextRequest) {
     const userRankValue = RANK_VALUES[userRank as keyof typeof RANK_VALUES] || 0;
 
     const filteredTasks = tasks.map((task) => {
+      const t = task as any;
       // Derive minRank from difficulty
       let minRank = 'NEWBIE';
-      if (task.difficulty === 'MEDIUM') minRank = 'PRO';
-      if (task.difficulty === 'HARD') minRank = 'ELITE';
-      if (task.difficulty === 'EXPERT') minRank = 'MASTER';
+      if (t.difficulty === 'MEDIUM') minRank = 'PRO';
+      if (t.difficulty === 'HARD') minRank = 'ELITE';
+      if (t.difficulty === 'EXPERT') minRank = 'MASTER';
 
       const taskRankValue = RANK_VALUES[minRank as keyof typeof RANK_VALUES] || 0;
       const isLocked = taskRankValue > userRankValue;
 
       // Strict Targeting Check (Social Media Tasks)
-      if (task.taskType === 'SOCIAL_MEDIA' && task.targeting) {
-        const targeting = task.targeting as any;
+      if (t.taskType === 'SOCIAL_MEDIA' && t.targeting) {
+        const targeting = t.targeting as any;
+
+        const profile = fullProfile as any;
 
         // 1. Min Age Check
         if (targeting.minAge && userAge < targeting.minAge) return null; // HIDDEN
 
         // 2. Location Check (District)
-        if (targeting.district && fullProfile?.district?.toLowerCase() !== targeting.district.toLowerCase()) return null; // HIDDEN
+        if (targeting.district && profile?.district?.toLowerCase() !== targeting.district.toLowerCase()) return null; // HIDDEN
 
         // 3. Location Check (State)
-        if (targeting.state && fullProfile?.state?.toLowerCase() !== targeting.state.toLowerCase()) return null; // HIDDEN
+        if (targeting.state && profile?.state?.toLowerCase() !== targeting.state.toLowerCase()) return null; // HIDDEN
 
         // 4. Verification Check
-        if (targeting.verifiedOnly && (!fullProfile?.phone_verified || (fullProfile?.verificationLevel || 0) < 1)) return null; // HIDDEN
+        if (targeting.verifiedOnly && (!profile?.phone_verified || (profile?.verificationLevel || 0) < 1)) return null; // HIDDEN
       }
 
       return {
-        id: task.id,
-        title: task.title,
-        slug: task.slug,
-        task_type: task.taskType, // Exposed for frontend logic
+        id: t.id,
+        title: t.title,
+        slug: t.slug,
+        task_type: t.taskType, // Exposed for frontend logic
         description: task.description,
         reward_amount: Number(task.rewardAmount),
         reward_coins: task.rewardCoins,
