@@ -7,22 +7,44 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Lock, Mail, Phone, Save, ShieldCheck } from "lucide-react";
+import { User, Lock, Mail, Phone, Save, ShieldCheck, Loader2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { IndianStates } from "@/lib/constants";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
 export function MemberSettingsClient() {
     const { user } = useSession();
-    const [isLoading, setIsLoading] = useState(false);
+    const [selectedState, setSelectedState] = useState<string>(user?.state || "");
 
-    // Placeholder for actual form handling
-    const handleUpdateProfile = async (e: React.FormEvent) => {
+    const handleUpdateProfile = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setIsLoading(false);
-        toast.success("Profile updated successfully");
+
+        const formData = new FormData(e.currentTarget);
+        const data = {
+            email: formData.get("email"),
+            dob: formData.get("dob") ? new Date(formData.get("dob") as string).toISOString() : null,
+            state: selectedState,
+            district: formData.get("district"),
+        };
+
+        try {
+            const res = await fetch("/api/member/profile", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+
+            if (!res.ok) throw new Error("Failed to update profile");
+
+            toast.success("Profile updated successfully");
+            // Ideally force session refresh here, but toast is good feedback for now
+        } catch (error) {
+            toast.error("Failed to update profile");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleChangePassword = async (e: React.FormEvent) => {
@@ -75,49 +97,95 @@ export function MemberSettingsClient() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="username">Username</Label>
-                                    <div className="relative">
-                                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="username">Username</Label>
                                         <Input
                                             id="username"
                                             defaultValue={user?.username}
                                             disabled
-                                            className="pl-9 bg-muted/20 border-white/5 text-muted-foreground"
+                                            className="bg-muted/20 border-white/5 text-muted-foreground"
                                         />
                                     </div>
-                                    <p className="text-[10px] text-muted-foreground">Username cannot be changed.</p>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
-                                    <div className="relative">
-                                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                        <Input
-                                            id="email"
-                                            defaultValue={user?.email || ""}
-                                            className="pl-9 bg-background/50 border-white/10 focus:border-primary/50 transition-colors"
-                                            placeholder="Enter your email"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="phone">Phone Number</Label>
-                                    <div className="relative">
-                                        <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                    <div className="space-y-2">
+                                        <Label htmlFor="phone">Phone</Label>
                                         <Input
                                             id="phone"
                                             defaultValue={user?.phone || ""}
                                             disabled
-                                            className="pl-9 bg-muted/20 border-white/5 text-muted-foreground"
+                                            className="bg-muted/20 border-white/5 text-muted-foreground"
                                         />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="email">Email Address</Label>
+                                    <Input
+                                        id="email"
+                                        name="email"
+                                        defaultValue={user?.email || ""}
+                                        className="bg-background/50 border-white/10 focus:border-primary/50"
+                                        placeholder="Enter your email"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="dob">Date of Birth</Label>
+                                    <Input
+                                        id="dob"
+                                        name="dob"
+                                        type="date"
+                                        defaultValue={user?.dob ? new Date(user.dob).toISOString().split('T')[0] : ""}
+                                        className="bg-background/50 border-white/10 focus:border-primary/50"
+                                        required
+                                    />
+                                    <p className="text-[10px] text-muted-foreground">Used for age-restricted task eligibility.</p>
+                                </div>
+
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="state">State</Label>
+                                        <Select
+                                            name="state"
+                                            defaultValue={user?.state || ""}
+                                            onValueChange={(val) => setSelectedState(val)}
+                                        >
+                                            <SelectTrigger className="bg-background/50 border-white/10">
+                                                <SelectValue placeholder="Select State" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {Object.keys(IndianStates).map((state) => (
+                                                    <SelectItem key={state} value={state}>{state}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="district">District</Label>
+                                        <Select name="district" defaultValue={user?.district || ""} disabled={!selectedState}>
+                                            <SelectTrigger className="bg-background/50 border-white/10">
+                                                <SelectValue placeholder="Select District" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {(selectedState && IndianStates[selectedState as keyof typeof IndianStates])?.map((district) => (
+                                                    <SelectItem key={district} value={district}>{district}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     </div>
                                 </div>
 
                                 <div className="pt-4">
                                     <Button type="submit" disabled={isLoading} className="w-full bg-primary/90 hover:bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-                                        {isLoading ? "Saving..." : "Save Changes"}
+                                        {isLoading ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Saving...
+                                            </>
+                                        ) : (
+                                            "Save Changes"
+                                        )}
                                     </Button>
                                 </div>
                             </form>
