@@ -1,4 +1,3 @@
-```typescript
 import { DefaultSession } from "next-auth"
 
 declare module "next-auth" {
@@ -30,5 +29,8 @@ declare module "next-auth/jwt" {
         id: string
         username?: string | null
         role?: string | null
+        dob?: Date | null
+        state?: string | null
+        district?: string | null
     }
 }

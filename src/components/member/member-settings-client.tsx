@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 export function MemberSettingsClient() {
     const { user } = useSession();
     const [selectedState, setSelectedState] = useState<string>(user?.state || "");
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleUpdateProfile = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -168,7 +169,7 @@ export function MemberSettingsClient() {
                                                 <SelectValue placeholder="Select District" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {(selectedState && IndianStates[selectedState as keyof typeof IndianStates])?.map((district) => (
+                                                {(IndianStates[selectedState as keyof typeof IndianStates] as string[])?.map((district: string) => (
                                                     <SelectItem key={district} value={district}>{district}</SelectItem>
                                                 ))}
                                             </SelectContent>
