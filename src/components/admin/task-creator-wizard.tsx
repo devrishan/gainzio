@@ -176,7 +176,7 @@ export function TaskCreatorWizard() {
                     />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase text-zinc-500">Task Type</Label>
                         <Select onValueChange={(v) => setFormData({ ...formData, taskType: v })} value={formData.taskType}>
@@ -208,7 +208,7 @@ export function TaskCreatorWizard() {
                         </div>
 
                         {/* Location Hierarchy */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label className="text-xs text-zinc-400">Target State</Label>
                                 <Select
@@ -238,7 +238,7 @@ export function TaskCreatorWizard() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label className="text-xs text-zinc-400">Min Age (Years)</Label>
                                 <Input
@@ -250,7 +250,7 @@ export function TaskCreatorWizard() {
                                 />
                                 <p className="text-[10px] text-zinc-500">System enforces this strictly.</p>
                             </div>
-                            <div className="flex flex-col gap-2 pt-6">
+                            <div className="flex flex-col gap-2 pt-2 md:pt-6">
                                 <div className="flex items-center gap-2">
                                     <Switch
                                         checked={formData.targeting.verifiedOnly}
@@ -265,7 +265,7 @@ export function TaskCreatorWizard() {
                     </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase text-zinc-500">Category</Label>
                         <Select onValueChange={(v) => setFormData({ ...formData, categoryId: v })} value={formData.categoryId}>
@@ -287,7 +287,7 @@ export function TaskCreatorWizard() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 p-4 bg-white/5 rounded-lg border border-white/5">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white/5 rounded-lg border border-white/5">
                     <div className="space-y-2">
                         <Label className="text-[10px] font-bold uppercase text-zinc-400 flex items-center gap-1"><Coins className="w-3 h-3" /> Cash Reward (₹)</Label>
                         <Input type="number" value={formData.rewardAmount} onChange={(e) => setFormData({ ...formData, rewardAmount: e.target.value })} className="bg-black/50 border-white/10 text-emerald-400 font-bold" />
