@@ -227,8 +227,8 @@ export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDas
                 ))}
             </div>
 
-            </div>
-            
+
+
             <ReferralList
                 referrals={referrals.slice(0, 6).map((r) => ({
                     id: r.id,
@@ -240,161 +240,161 @@ export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDas
                 }))}
             />
 
-            {/* NEW: Leaderboard Section (Mobile-First) */ }
-    <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="glass-morphism border-white/5 order-2 lg:order-1">
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <CardTitle className="text-xl font-bold flex items-center gap-2">
-                            <TrendingUp className="h-5 w-5 text-primary" />
-                            Referral Momentum
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">Verification success rate over time</p>
-                    </div>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <div className="h-[300px] w-full mt-4">
-                    <ChartContainer config={chartConfig}>
-                        <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                            <CartesianGrid vertical={false} strokeOpacity={0.1} strokeDasharray="4 4" />
-                            <XAxis
-                                dataKey="name"
-                                axisLine={false}
-                                tickLine={false}
-                                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                                dy={10}
-                            />
-                            <YAxis
-                                axisLine={false}
-                                tickLine={false}
-                                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                            />
-                            <ChartTooltip
-                                cursor={{ fill: "hsl(var(--muted)/0.2)", radius: 8 }}
-                                content={<ChartTooltipContent className="glass-morphism border-white/10" />}
-                            />
-                            <ChartLegend content={<ChartLegendContent />} />
-                            <Bar
-                                dataKey="verified"
-                                stackId="a"
-                                radius={[0, 0, 4, 4]}
-                                fill="var(--color-verified)"
-                                animationDuration={1500}
-                            />
-                            <Bar
-                                dataKey="pending"
-                                stackId="a"
-                                radius={[4, 4, 0, 0]}
-                                fill="var(--color-pending)"
-                                animationDuration={1500}
-                            />
-                        </BarChart>
-                    </ChartContainer>
-                </div>
-            </CardContent>
-        </Card>
-
-        <Card className="glass-morphism border-white/5 order-1 lg:order-2">
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <CardTitle className="text-xl font-bold flex items-center gap-2">
-                            <Crown className="h-5 w-5 text-amber-500" />
-                            Top Performers
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">Weekly champions</p>
-                    </div>
-                </div>
-            </CardHeader>
-            <CardContent className="p-0">
-                {/* Mobile List View */}
-                <div className="block sm:hidden">
-                    {topReferrers.length === 0 ? (
-                        <div className="p-8 text-center text-sm text-muted-foreground">
-                            No leaderboard entries yet. Be the first!
+            {/* NEW: Leaderboard Section (Mobile-First) */}
+            <div className="grid gap-6 lg:grid-cols-2">
+                <Card className="glass-morphism border-white/5 order-2 lg:order-1">
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle className="text-xl font-bold flex items-center gap-2">
+                                    <TrendingUp className="h-5 w-5 text-primary" />
+                                    Referral Momentum
+                                </CardTitle>
+                                <p className="text-sm text-muted-foreground mt-1">Verification success rate over time</p>
+                            </div>
                         </div>
-                    ) : (
-                        <div className="divide-y divide-white/5">
-                            {topReferrers.map((referrer, idx) => (
-                                <div key={referrer.referral_code} className="p-4 flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`
+                    </CardHeader>
+                    <CardContent>
+                        <div className="h-[300px] w-full mt-4">
+                            <ChartContainer config={chartConfig}>
+                                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                    <CartesianGrid vertical={false} strokeOpacity={0.1} strokeDasharray="4 4" />
+                                    <XAxis
+                                        dataKey="name"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                                        dy={10}
+                                    />
+                                    <YAxis
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                                    />
+                                    <ChartTooltip
+                                        cursor={{ fill: "hsl(var(--muted)/0.2)", radius: 8 }}
+                                        content={<ChartTooltipContent className="glass-morphism border-white/10" />}
+                                    />
+                                    <ChartLegend content={<ChartLegendContent />} />
+                                    <Bar
+                                        dataKey="verified"
+                                        stackId="a"
+                                        radius={[0, 0, 4, 4]}
+                                        fill="var(--color-verified)"
+                                        animationDuration={1500}
+                                    />
+                                    <Bar
+                                        dataKey="pending"
+                                        stackId="a"
+                                        radius={[4, 4, 0, 0]}
+                                        fill="var(--color-pending)"
+                                        animationDuration={1500}
+                                    />
+                                </BarChart>
+                            </ChartContainer>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card className="glass-morphism border-white/5 order-1 lg:order-2">
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle className="text-xl font-bold flex items-center gap-2">
+                                    <Crown className="h-5 w-5 text-amber-500" />
+                                    Top Performers
+                                </CardTitle>
+                                <p className="text-sm text-muted-foreground mt-1">Weekly champions</p>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        {/* Mobile List View */}
+                        <div className="block sm:hidden">
+                            {topReferrers.length === 0 ? (
+                                <div className="p-8 text-center text-sm text-muted-foreground">
+                                    No leaderboard entries yet. Be the first!
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-white/5">
+                                    {topReferrers.map((referrer, idx) => (
+                                        <div key={referrer.referral_code} className="p-4 flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`
                                                     w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold
                                                     ${idx === 0 ? 'bg-amber-100 text-amber-600 ring-2 ring-amber-500/20' : ''}
                                                     ${idx === 1 ? 'bg-slate-200 text-slate-600' : ''}
                                                     ${idx === 2 ? 'bg-orange-100 text-orange-600' : ''}
                                                     ${idx > 2 ? 'bg-muted text-muted-foreground' : ''}
                                                 `}>
-                                            #{idx + 1}
+                                                    #{idx + 1}
+                                                </div>
+                                                <div>
+                                                    <div className="font-medium text-sm text-foreground">{referrer.username}</div>
+                                                    <div className="text-xs text-muted-foreground">{referrer.verified_referrals} verified</div>
+                                                </div>
+                                            </div>
+                                            <div className="font-bold text-primary text-sm">
+                                                {referrer.total_earned.toFixed(0)} <span className="text-[10px] font-normal text-muted-foreground">Pts</span>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div className="font-medium text-sm text-foreground">{referrer.username}</div>
-                                            <div className="text-xs text-muted-foreground">{referrer.verified_referrals} verified</div>
-                                        </div>
-                                    </div>
-                                    <div className="font-bold text-primary text-sm">
-                                        {referrer.total_earned.toFixed(0)} <span className="text-[10px] font-normal text-muted-foreground">Pts</span>
-                                    </div>
+                                    ))}
                                 </div>
-                            ))}
+                            )}
                         </div>
-                    )}
-                </div>
 
-                {/* Desktop Table View */}
-                <div className="hidden sm:block overflow-x-auto">
-                    <Table className="min-w-[400px]">
-                        <TableHeader>
-                            <TableRow className="hover:bg-transparent border-white/10">
-                                <TableHead>User</TableHead>
-                                <TableHead className="text-right">Verified</TableHead>
-                                <TableHead className="text-right">Earned</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {topReferrers.length === 0 ? (
-                                <TableRow className="hover:bg-transparent border-white/5">
-                                    <TableCell className="text-sm text-muted-foreground h-24 text-center" colSpan={3}>
-                                        No leaderboard entries yet. Be the first!
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                topReferrers.map((referrer, idx) => (
-                                    <TableRow key={referrer.referral_code} className="hover:bg-muted/50 border-white/5 transition-colors">
-                                        <TableCell>
-                                            <div className="flex items-center gap-3">
-                                                <div className={`
+                        {/* Desktop Table View */}
+                        <div className="hidden sm:block overflow-x-auto">
+                            <Table className="min-w-[400px]">
+                                <TableHeader>
+                                    <TableRow className="hover:bg-transparent border-white/10">
+                                        <TableHead>User</TableHead>
+                                        <TableHead className="text-right">Verified</TableHead>
+                                        <TableHead className="text-right">Earned</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {topReferrers.length === 0 ? (
+                                        <TableRow className="hover:bg-transparent border-white/5">
+                                            <TableCell className="text-sm text-muted-foreground h-24 text-center" colSpan={3}>
+                                                No leaderboard entries yet. Be the first!
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : (
+                                        topReferrers.map((referrer, idx) => (
+                                            <TableRow key={referrer.referral_code} className="hover:bg-muted/50 border-white/5 transition-colors">
+                                                <TableCell>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`
                                                             w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold
                                                             ${idx === 0 ? 'bg-amber-100 text-amber-600 ring-2 ring-amber-500/20' : ''}
                                                             ${idx === 1 ? 'bg-slate-200 text-slate-600' : ''}
                                                             ${idx === 2 ? 'bg-orange-100 text-orange-600' : ''}
                                                             ${idx > 2 ? 'bg-muted text-muted-foreground' : ''}
                                                         `}>
-                                                    #{idx + 1}
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="font-medium text-foreground">{referrer.username}</span>
-                                                    <span className="text-xs text-muted-foreground">{referrer.referral_code}</span>
-                                                </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="text-right font-mono">
-                                            {referrer.verified_referrals}
-                                        </TableCell>
-                                        <TableCell className="text-right font-bold text-primary">
-                                            {referrer.total_earned.toFixed(0)} <span className="text-xs font-normal text-muted-foreground">Pts</span>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-            </CardContent>
-        </Card>
-    </div>
+                                                            #{idx + 1}
+                                                        </div>
+                                                        <div className="flex flex-col">
+                                                            <span className="font-medium text-foreground">{referrer.username}</span>
+                                                            <span className="text-xs text-muted-foreground">{referrer.referral_code}</span>
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="text-right font-mono">
+                                                    {referrer.verified_referrals}
+                                                </TableCell>
+                                                <TableCell className="text-right font-bold text-primary">
+                                                    {referrer.total_earned.toFixed(0)} <span className="text-xs font-normal text-muted-foreground">Pts</span>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </div >
     );
 }
