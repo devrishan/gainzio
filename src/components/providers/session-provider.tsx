@@ -10,6 +10,7 @@ type UserSession = {
   email: string;
   role: "member" | "admin";
   referral_code: string;
+  phone: string | null;
 };
 
 type SessionContextValue = {
