@@ -74,7 +74,8 @@ export function AdminDashboardClient({ metrics, pendingWithdrawals }: AdminDashb
             { label: "Tasks", desc: "Missions & Levels", path: "/admin/tasks", color: "from-blue-600/20", border: "hover:border-blue-500/50" },
             { label: "Users", desc: "Ranks & Accounts", path: "/admin/members", color: "from-purple-600/20", border: "hover:border-purple-500/50" },
             { label: "Config", desc: "Engine Tuning", path: "/admin/maintenance", color: "from-orange-600/20", border: "hover:border-orange-500/50" },
-            { label: "Payouts", desc: `${metrics.pending_withdrawals.count} Pending`, path: "/admin/withdrawals", color: "from-emerald-600/20", border: "hover:border-emerald-500/50" }
+            { label: "Payouts", desc: `${metrics.pending_withdrawals.count} Pending`, path: "/admin/withdrawals", color: "from-emerald-600/20", border: "hover:border-emerald-500/50" },
+            { label: "Shop", desc: "Gamification Items", path: "/admin/gamification", color: "from-pink-600/20", border: "hover:border-pink-500/50" }
           ].map((action) => (
             <Card
               key={action.label}
