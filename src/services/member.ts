@@ -40,7 +40,7 @@ export interface MemberReferral {
     id: string;
     username: string | null;
     email: string | null;
-    phone: string;
+    phone: string | null;
     created_at: string;
   };
   level: number;
