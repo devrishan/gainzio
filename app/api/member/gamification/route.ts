@@ -1,32 +1,35 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
-export const dynamic = 'force-dynamic';
-import { getUserGamificationStats } from '@/lib/gamification';
-import { getAuthenticatedUser } from '@/lib/api-auth';
+﻿import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/session";
+import { getGamificationProfile, calculateSmartScore } from "@/services/gamification";
+import { prisma as db } from "@/lib/prisma";
 
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    const authUser = await getAuthenticatedUser(request);
-
-    if (!authUser) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthenticated' },
-        { status: 401 },
-      );
+    const user = await getCurrentUser();
+    if (!user) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
-    const userId = authUser.userId;
 
-    const stats = await getUserGamificationStats(userId);
+    // Ensure profile exists and get it
+    const profile = await getGamificationProfile(user.id);
+
+    // Recalculate Smart Score on load (or could be a background job)
+    const smartScore = await calculateSmartScore(user.id);
+
+    // Get Wallet for coins display
+    const wallet = await db.wallet.findUnique({
+      where: { userId: user.id },
+      select: { coins: true }
+    });
 
     return NextResponse.json({
-      success: true,
-      stats,
+      ...profile,
+      smartScore, // Return the fresh calc
+      coins: wallet?.coins || 0
     });
+
   } catch (error) {
-    console.error('Error fetching gamification stats:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch gamification stats' },
-      { status: 500 },
-    );
+    console.error("[GAMIFICATION_GET]", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }
-
