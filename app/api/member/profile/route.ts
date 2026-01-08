@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/api-auth";
+import { getAuthenticatedUser } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 
 export async function PUT(req: Request) {
     try {
-        const user = await getCurrentUser();
+        const user = await getAuthenticatedUser();
         if (!user) return new NextResponse("Unauthorized", { status: 401 });
 
         const body = await req.json();
@@ -34,9 +34,7 @@ export async function PUT(req: Request) {
                 email,
                 dob: birthDate,
                 state,
-                district,
                 country: "India", // Defaulting to India for now as per IndianStates logic
-                isProfileComplete: true
             },
         });
 
