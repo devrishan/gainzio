@@ -60,7 +60,7 @@ export const authOptions: NextAuthOptions = {
                     email: user.email,
                     name: user.name,
                     role: user.role,
-                    username: user.username,
+                    username: user.username || user.email?.split("@")[0] || "Admin",
                     image: user.image,
                 };
             }
@@ -148,9 +148,9 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token }) {
             if (session.user && token.sub) {
                 session.user.id = token.sub;
-                session.user.username = token.username;
-                session.user.role = token.role;
-                session.user.dob = token.dob ? new Date(token.dob as string).toISOString() : null;
+                session.user.username = token.username || "";
+                session.user.role = (token.role as "ADMIN" | "USER") || "USER";
+                session.user.dob = token.dob ? new Date(token.dob as any).toISOString() : null;
                 session.user.state = token.state as string | null;
                 session.user.district = token.district as string | null;
             }
