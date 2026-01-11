@@ -28,7 +28,7 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
   const [open, setOpen] = React.useState(false);
 
   return (
-    <div className="grid h-screen w-full grid-cols-1 lg:grid-cols-[280px_1fr] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-background via-background to-secondary/20 overflow-hidden">
+    <div className="grid h-[100dvh] w-full grid-cols-1 lg:grid-cols-[280px_1fr] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-background via-background to-secondary/20 overflow-hidden">
       <aside className={`hidden border-r p-6 lg:block transition-all duration-300 h-full overflow-y-auto no-scrollbar ${role === "admin"
         ? "bg-zinc-950 border-white/10"
         : "glass-morphism border-white/5"
@@ -72,7 +72,7 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
           </div>
         </header>
 
-        <main className={`flex-1 overflow-y-auto p-4 pb-20 lg:p-8 lg:pb-8 relative z-10 scrollbar-thin scrollbar-thumb-primary/10 scrollbar-track-transparent transition-colors duration-500 ${role === "admin" ? "bg-black text-white" : "bg-transparent"}`}>
+        <main className={`flex-1 overflow-y-auto p-4 pb-20 lg:p-8 lg:pb-8 relative z-10 scrollbar-thin scrollbar-thumb-primary/10 scrollbar-track-transparent transition-colors duration-500 overscroll-y-contain ${role === "admin" ? "bg-black text-white" : "bg-transparent"}`}>
           {children}
         </main>
 
