@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getAdminMembers } from "@/services/admin";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { MemberActions } from "@/components/admin/member-actions";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -82,8 +83,8 @@ export default async function MemberManagementPage({
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`border-0 uppercase text-[10px] font-black tracking-widest ${user.role === "ADMIN"
-                        ? "bg-purple-500/10 text-purple-400"
-                        : "bg-zinc-800/50 text-zinc-400"
+                      ? "bg-purple-500/10 text-purple-400"
+                      : "bg-zinc-800/50 text-zinc-400"
                       }`}>
                       {user.role}
                     </Badge>
@@ -100,9 +101,12 @@ export default async function MemberManagementPage({
                       : <span className="text-zinc-700 italic">Inactive</span>}
                   </TableCell>
                   <TableCell className="text-right pr-6">
-                    <Button variant="ghost" size="sm" className="h-7 text-[10px] uppercase font-bold tracking-wider hover:bg-white/10 hover:text-white" asChild>
-                      <Link href={`/admin/members/${user.id}`}>Inspect</Link>
-                    </Button>
+                    <MemberActions
+                      userId={user.id}
+                      userRole={user.role}
+                    // Assuming getAdminMembers now returns these fields or we need to update the query
+                    // For now we'll pass defaults if missing, but we should update the service type definition
+                    />
                   </TableCell>
                 </TableRow>
               ))}

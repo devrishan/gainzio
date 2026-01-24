@@ -140,6 +140,13 @@ model User {
   // Product suggestions
   productSuggestions ProductSuggestion[]
 
+  // Support
+  supportTickets   SupportTicket[]
+  supportMessages  SupportMessage[]
+  
+  // Trading
+  futurePositions  FuturePosition[]
+
   @@index([referredById])
   @@index([role])
   @@index([phone])
@@ -289,6 +296,7 @@ model Withdrawal {
   upiId       String
   upiQrUrl    String?
   requestedAt DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
   processedAt DateTime?
   txId        String?
   receiptUrl  String?
@@ -598,13 +606,36 @@ model ActivityLog {
   entityType String?
   entityId   String?
   metadata   Json?
-  ipAddress  String?
-  userAgent  String?
-  createdAt  DateTime @default(now())
-
-  @@index([userId, createdAt])
-  @@index([entityType, entityId])
 }
+
+model SupportTicket {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   String
+  status    String           @default("OPEN") // OPEN, ANSWERED, CLOSED
+  priority  String           @default("NORMAL")
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  messages  SupportMessage[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model SupportMessage {
+  id        String        @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  message   String        @db.Text
+  createdAt DateTime      @default(now())
+
+  @@index([ticketId])
+}
+
+
 
 // Leaderboard
 model Leaderboard {
@@ -678,4 +709,32 @@ model SystemConfig {
   updatedAt   DateTime @updatedAt
 
   @@index([key])
+}
+
+model AssetPrice {
+  id          String   @id @default(cuid())
+  symbol      String   @unique
+  price       Decimal  @db.Decimal(10, 2)
+  lastUpdated DateTime @default(now())
+
+  @@index([symbol])
+}
+
+model FuturePosition {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symbol     String
+  type       String    // LONG, SHORT
+  leverage   Int
+  margin     Int       // Uses XP
+  entryPrice Decimal   @db.Decimal(10, 2)
+  volume     Int
+  status     String    // OPEN, CLOSED
+  pnl        Int?
+  createdAt  DateTime  @default(now())
+  closedAt   DateTime?
+
+  @@index([userId])
+  @@index([status])
 }

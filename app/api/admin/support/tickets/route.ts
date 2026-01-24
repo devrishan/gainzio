@@ -1,75 +1,48 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getAuthenticatedUser } from '@/lib/api-auth';
-export const dynamic = 'force-dynamic';
-import { prisma } from '@/lib/prisma';
-import { Role } from '@prisma/client';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getAuthenticatedUser } from "@/lib/api-auth";
 
-export async function GET(request: NextRequest) {
-    const authUser = await getAuthenticatedUser(request);
-    if (!authUser || authUser.role !== Role.ADMIN) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+export const dynamic = "force-dynamic";
 
-    // Fetch existing "tickets" stored as SparkEvents
-    const tickets = await prisma.sparkEvent.findMany({
-        where: { type: "SUPPORT_TICKET" },
-        orderBy: { createdAt: 'desc' },
-        // include: { user: { select: { username: true, email: true } } } // REMOVED: SparkEvent has no user relation
-        // Schema: SparkEvent does NOT have userId relation! It has only userId INT or String?
-        // Wait, I checked schema: SparkEvent: `id, type, message, data, isPublic, createdAt`. NO userId field in SparkEvent model!
-        // CORRECTION: User's previous manual fix in `chat/route.ts` showed storing user info in `data`.
-        // I must rely on `data` JSON for user details.
-    });
-
-    return NextResponse.json({
-        success: true,
-        tickets: tickets.map(t => ({
-            id: t.id,
-            message: t.message,
-            ...((t.data as any) || {}), // Spread status, subject, user info
-            createdAt: t.createdAt
-        }))
-    });
-}
-
-// Admin replying to a ticket
-export async function POST(request: NextRequest) {
+export async function GET(req: NextRequest) {
     try {
-        const authUser = await getAuthenticatedUser(request);
-        if (!authUser || authUser.role !== Role.ADMIN) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-
-        const body = await request.json();
-        const { ticketId, reply, status } = body;
-
-        const ticket = await prisma.sparkEvent.findUnique({ where: { id: ticketId } });
-        if (!ticket) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-
-        const currentData = (ticket.data as any) || { replies: [] };
-        const newReplies = [...(currentData.replies || [])];
-
-        if (reply) {
-            newReplies.push({
-                sender: "ADMIN",
-                name: authUser.username || "Staff",
-                message: reply,
-                at: new Date()
-            });
+        const user = await getAuthenticatedUser(req);
+        if (!user || user.role !== "ADMIN") {
+            return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        // Update ticket
-        await prisma.sparkEvent.update({
-            where: { id: ticketId },
-            data: {
-                data: {
-                    ...currentData,
-                    replies: newReplies,
-                    status: status || currentData.status
+        const { searchParams } = new URL(req.url);
+        const status = searchParams.get("status");
+
+        const where: any = {};
+        if (status && status !== "ALL") {
+            where.status = status;
+        }
+
+        const tickets = await prisma.supportTicket.findMany({
+            where,
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true,
+                        email: true,
+                        image: true
+                    }
+                },
+                messages: {
+                    orderBy: { createdAt: "asc" },
+                    take: 1 // Get first message for preview
                 }
+            },
+            orderBy: {
+                updatedAt: "desc"
             }
         });
 
-        return NextResponse.json({ success: true });
-
+        return NextResponse.json(tickets);
     } catch (error) {
-        console.error(error);
-        return NextResponse.json({ error: 'Failed' }, { status: 500 });
+        console.error("Fetch tickets error:", error);
+        return new NextResponse("Internal Server Error", { status: 500 });
     }
 }

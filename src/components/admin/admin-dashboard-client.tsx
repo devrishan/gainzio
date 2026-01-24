@@ -88,7 +88,8 @@ export function AdminDashboardClient({ metrics, pendingWithdrawals }: AdminDashb
                 { label: "Users", desc: "Ranks & Accounts", path: "/admin/members", color: "from-purple-600/20", border: "border-purple-500/20" },
                 { label: "Config", desc: "Engine Tuning", path: "/admin/maintenance", color: "from-orange-600/20", border: "border-orange-500/20" },
                 { label: "Payouts", desc: `${metrics.pending_withdrawals.count} Pending`, path: "/admin/withdrawals", color: "from-emerald-600/20", border: "border-emerald-500/20" },
-                { label: "Shop", desc: "Gamification Items", path: "/admin/gamification", color: "from-pink-600/20", border: "border-pink-500/20" }
+                { label: "Shop", desc: "Gamification Items", path: "/admin/gamification", color: "from-pink-600/20", border: "border-pink-500/20" },
+                { label: "Comms", desc: "Broadcast Center", path: "/admin/communications", color: "from-blue-600/20", border: "border-blue-500/20" }
               ].map((action) => (
                 <Card
                   key={action.label}
@@ -200,7 +201,7 @@ function AnalyticsWrapper() {
 
   return (
     <div className="space-y-6">
-      <AIInsightCard stats={data || []} />
+      <AIInsightCard />
       <AnalyticsCharts data={data || []} />
     </div>
   );

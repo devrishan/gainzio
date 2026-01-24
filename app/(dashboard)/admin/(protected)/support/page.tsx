@@ -1,32 +1,27 @@
-"use client";
-
-import { motion } from "framer-motion";
+import { AdminSupportDesk } from "@/components/admin/admin-support-desk";
 import { LifeBuoy } from "lucide-react";
-import { SupportDesk } from "@/components/admin/support/support-desk";
+
+export const metadata = {
+    title: "Support Desk | Admin",
+    description: "Manage member inquiries and tickets",
+};
 
 export default function SupportPage() {
     return (
-        <div className="max-w-6xl space-y-8">
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-            >
-                <div className="flex items-center gap-2 mb-1">
-                    <LifeBuoy className="w-5 h-5 text-indigo-400" />
-                    <h1 className="text-3xl font-black italic tracking-tight uppercase text-white">
-                        Support
-                    </h1>
-                </div>
-                <p className="text-neutral-400">Help desk and user ticket management.</p>
-            </motion.div>
+        <div className="space-y-8 relative">
+            <div className="absolute top-0 right-0 h-[500px] w-[500px] rounded-full bg-indigo-900/10 blur-[120px] pointer-events-none" />
 
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-            >
-                <SupportDesk />
-            </motion.div>
+            <header className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                    <LifeBuoy className="h-6 w-6 text-indigo-500" />
+                    <h1 className="text-3xl font-black italic tracking-tight uppercase text-white/90">Support Desk</h1>
+                </div>
+                <p className="text-zinc-500 font-medium">Resolving member issues and tracking inquiries.</p>
+            </header>
+
+            <div className="relative z-10">
+                <AdminSupportDesk />
+            </div>
         </div>
     );
 }
