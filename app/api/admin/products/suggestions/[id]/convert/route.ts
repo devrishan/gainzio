@@ -133,7 +133,7 @@ export async function POST(
           title: "Suggestion Approved!",
           body: `Your product suggestion "${suggestion.productName}" has been converted into a task. You earned ${XP_REWARDS.PRODUCT_SUGGESTION_CONVERTED} XP!`,
           type: "TASK_APPROVED",
-          metadata: {
+          data: {
             suggestionId: suggestion.id,
             taskId: task.id,
             xp: XP_REWARDS.PRODUCT_SUGGESTION_CONVERTED

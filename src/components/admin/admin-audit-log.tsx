@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
     Table,
     TableBody,
@@ -45,7 +45,7 @@ export function AdminAuditLog() {
             if (!res.ok) throw new Error("Failed to fetch logs");
             return await res.json();
         },
-        keepPreviousData: true,
+        placeholderData: keepPreviousData,
     });
 
     const logs: AuditLog[] = data?.logs || [];

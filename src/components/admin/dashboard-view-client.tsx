@@ -1,8 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, DollarSign, Users, Activity, CreditCard, ShieldAlert } from "lucide-react";
+import { ArrowUpRight, DollarSign, Users, Activity, CreditCard, ShieldAlert, MessageSquare } from "lucide-react";
 import { DashboardCharts } from "@/components/admin/dashboard-charts";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
 
 interface DashboardViewClientProps {
     metrics: {
@@ -17,11 +20,27 @@ interface DashboardViewClientProps {
 }
 
 export function DashboardViewClient({ metrics }: DashboardViewClientProps) {
+    const { data: logsData } = useQuery({
+        queryKey: ["admin-security-logs-recent"],
+        queryFn: async () => {
+            const res = await fetch("/api/admin/security/logs?per_page=5");
+            return res.json();
+        }
+    });
+
+    const { data: ticketsData } = useQuery({
+        queryKey: ["admin-support-tickets-open"],
+        queryFn: async () => {
+            const res = await fetch("/api/admin/support/tickets?status=OPEN");
+            return res.json();
+        }
+    });
+
     const stats = [
         { title: "Total Users", value: metrics?.total_users?.toLocaleString() || "0", change: "+12%", icon: Users, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
         { title: "Revenue", value: `₹${metrics?.total_earnings_paid?.toLocaleString() || "0"}`, change: "+8.2%", icon: DollarSign, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
         { title: "Pending Payouts", value: metrics?.pending_withdrawals?.count?.toString() || "0", change: "-2%", icon: CreditCard, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
-        { title: "System Load", value: "Normal", change: "+1.2%", icon: Activity, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
+        { title: "Open Tickets", value: ticketsData?.length?.toString() || "0", change: "Active", icon: MessageSquare, color: "text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/20" },
     ];
 
     return (
@@ -83,29 +102,33 @@ export function DashboardViewClient({ metrics }: DashboardViewClientProps) {
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="p-5 rounded-xl border border-white/5 bg-gradient-to-br from-neutral-900/50 to-neutral-950/50 hover:from-purple-900/20 hover:to-neutral-900/50 transition-all cursor-pointer group">
-                            <div className="flex items-center gap-4">
-                                <div className="h-10 w-10 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20 group-hover:border-purple-500/50 transition-colors">
-                                    <Users className="w-5 h-5 text-purple-400" />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-white group-hover:text-purple-300 transition-colors">Review New Members</h4>
-                                    <p className="text-xs text-neutral-500 mt-1">12 accounts pending verification</p>
+                        <Link href="/admin/members">
+                            <div className="p-5 rounded-xl border border-white/5 bg-gradient-to-br from-neutral-900/50 to-neutral-950/50 hover:from-purple-900/20 hover:to-neutral-900/50 transition-all cursor-pointer group h-full">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-10 w-10 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20 group-hover:border-purple-500/50 transition-colors">
+                                        <Users className="w-5 h-5 text-purple-400" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-white group-hover:text-purple-300 transition-colors">Review New Members</h4>
+                                        <p className="text-xs text-neutral-500 mt-1">{metrics?.total_users || 0} total members</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
 
-                        <div className="p-5 rounded-xl border border-white/5 bg-gradient-to-br from-neutral-900/50 to-neutral-950/50 hover:from-amber-900/20 hover:to-neutral-900/50 transition-all cursor-pointer group">
-                            <div className="flex items-center gap-4">
-                                <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/20 group-hover:border-amber-500/50 transition-colors">
-                                    <CreditCard className="w-5 h-5 text-amber-400" />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-white group-hover:text-amber-300 transition-colors">Process Payouts</h4>
-                                    <p className="text-xs text-neutral-500 mt-1">₹45,200 waiting to be released</p>
+                        <Link href="/admin/withdrawals">
+                            <div className="p-5 rounded-xl border border-white/5 bg-gradient-to-br from-neutral-900/50 to-neutral-950/50 hover:from-amber-900/20 hover:to-neutral-900/50 transition-all cursor-pointer group h-full">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/20 group-hover:border-amber-500/50 transition-colors">
+                                        <CreditCard className="w-5 h-5 text-amber-400" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-white group-hover:text-amber-300 transition-colors">Process Payouts</h4>
+                                        <p className="text-xs text-neutral-500 mt-1">₹{metrics?.total_earnings_paid?.toLocaleString() || 0} paid out</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     </div>
 
                     {/* Real Analytics Chart */}
@@ -131,24 +154,26 @@ export function DashboardViewClient({ metrics }: DashboardViewClientProps) {
                     </div>
 
                     <div className="space-y-6 relative before:absolute before:inset-0 before:h-full before:w-[1px] before:bg-gradient-to-b before:from-transparent before:via-neutral-800 before:to-transparent before:left-[19px]">
-                        {[
-                            { time: "Just now", msg: "New withdrawal request: ₹500", type: "warn" },
-                            { time: "2 min ago", msg: "User registered: 'crypto_king'", type: "success" },
-                            { time: "15 min ago", msg: "System backup completed", type: "info" },
-                            { time: "1 hr ago", msg: "Failed login attempt (IP: 192.168...)", type: "error" },
-                            { time: "2 hrs ago", msg: "Weekly payout processing started", type: "info" },
-                        ].map((log, i) => (
-                            <div key={i} className="flex gap-4 relative">
-                                <div className={`mt-1.5 h-2.5 w-2.5 rounded-full border-2 border-neutral-950 shrink-0 z-10 ${log.type === 'error' ? 'bg-red-500' :
-                                    log.type === 'warn' ? 'bg-amber-500' :
-                                        log.type === 'success' ? 'bg-emerald-500' : 'bg-blue-500'
+                        {logsData?.logs?.map((log: any, i: number) => (
+                            <div key={log.id} className="flex gap-4 relative">
+                                <div className={`mt-1.5 h-2.5 w-2.5 rounded-full border-2 border-neutral-950 shrink-0 z-10 ${log.action.includes('LOGIN') ? 'bg-blue-500' :
+                                        log.action.includes('UPDATE') ? 'bg-amber-500' :
+                                            log.action.includes('DELETE') ? 'bg-red-500' : 'bg-emerald-500'
                                     }`} />
                                 <div>
-                                    <p className="text-xs text-neutral-500 font-mono mb-0.5">{log.time}</p>
-                                    <p className="text-sm font-medium text-neutral-300">{log.msg}</p>
+                                    <p className="text-xs text-neutral-500 font-mono mb-0.5">
+                                        {formatDistanceToNow(new Date(log.createdAt), { addSuffix: true })}
+                                    </p>
+                                    <p className="text-sm font-medium text-neutral-300">
+                                        <span className="text-white font-bold">{log.user.username}</span> {log.action.toLowerCase()}
+                                    </p>
+                                    <p className="text-[10px] text-neutral-600 font-mono mt-0.5">{log.details}</p>
                                 </div>
                             </div>
                         ))}
+                        {(!logsData?.logs || logsData.logs.length === 0) && (
+                            <div className="text-center py-4 text-xs text-neutral-500">No recent activity logs</div>
+                        )}
                     </div>
 
                     <button className="w-full mt-6 py-2 text-xs font-bold text-neutral-500 uppercase tracking-widest hover:text-white transition-colors border-t border-white/5">
