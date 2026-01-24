@@ -23,6 +23,8 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 
 import { SquadHUD } from "@/components/member/squad-hud";
 import { CoinShopCard } from "@/components/member/coin-shop-card";
 import { UnifiedProgress } from "@/components/member/unified-progress";
+import { SparkWall } from "@/components/member/spark-wall";
+import { BadgesList } from "@/components/member/badges-list";
 
 interface MemberDashboardClientProps {
     dashboard: MemberDashboardPayload;
@@ -239,6 +241,16 @@ export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDas
                     created_at: r.created_at,
                 }))}
             />
+
+            {/* 5. Social & Achievements Layer */}
+            <div className="grid gap-6 md:grid-cols-12">
+                <div className="md:col-span-8">
+                    <BadgesList />
+                </div>
+                <div className="md:col-span-4 h-full">
+                    <SparkWall />
+                </div>
+            </div>
 
             {/* NEW: Leaderboard Section (Mobile-First) */}
             <div className="grid gap-6 lg:grid-cols-2">
