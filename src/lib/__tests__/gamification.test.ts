@@ -13,6 +13,23 @@ describe('Gamification', () => {
     vi.clearAllMocks();
   });
 
+  // Mock Prisma client
+  vi.mock('@/lib/prisma', () => ({
+    prisma: {
+      gamificationState: {
+        findUnique: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+      },
+      activityLog: {
+        create: vi.fn(),
+      },
+      userInventory: {
+        findFirst: vi.fn(),
+      },
+    },
+  }));
+
   describe('calculateRank', () => {
     it('should return NEWBIE for 0 XP', () => {
       expect(calculateRank(0)).toBe(Rank.NEWBIE);
@@ -57,7 +74,13 @@ describe('Gamification', () => {
         rank: Rank.NEWBIE,
         streakDays: 0,
         lastLoginAt: null,
+        smartScore: 0,
+        lastScoreUpdate: new Date(),
       });
+      // Explicitly return null to simulate no active boost
+      const findFirstMock = vi.mocked(prisma.userInventory.findFirst);
+      findFirstMock.mockResolvedValue(null);
+
       vi.mocked(prisma.activityLog.create).mockResolvedValue({} as any);
 
       const result = await addXP('user-1', 100, 'Test XP', { test: true });
@@ -76,6 +99,8 @@ describe('Gamification', () => {
         rank: Rank.NEWBIE,
         streakDays: 0,
         lastLoginAt: null,
+        smartScore: 0,
+        lastScoreUpdate: new Date(),
       });
       vi.mocked(prisma.gamificationState.update).mockResolvedValue({
         id: 'gamification-1',
@@ -84,6 +109,8 @@ describe('Gamification', () => {
         rank: Rank.NEWBIE,
         streakDays: 0,
         lastLoginAt: null,
+        smartScore: 0,
+        lastScoreUpdate: new Date(),
       });
       vi.mocked(prisma.activityLog.create).mockResolvedValue({} as any);
 
@@ -101,6 +128,8 @@ describe('Gamification', () => {
         rank: Rank.NEWBIE,
         streakDays: 0,
         lastLoginAt: null,
+        smartScore: 0,
+        lastScoreUpdate: new Date(),
       });
       vi.mocked(prisma.gamificationState.update).mockResolvedValue({
         id: 'gamification-1',
@@ -109,6 +138,8 @@ describe('Gamification', () => {
         rank: Rank.PRO,
         streakDays: 0,
         lastLoginAt: null,
+        smartScore: 0,
+        lastScoreUpdate: new Date(),
       });
       vi.mocked(prisma.activityLog.create).mockResolvedValue({} as any);
 

@@ -1,20 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { checkRateLimit, getClientIp } from '../rate-limit';
 
-// Mock Redis
-const mockRedis = {
-  zremrangebyscore: vi.fn(),
-  zcard: vi.fn(),
-  zrange: vi.fn(),
-  zadd: vi.fn(),
-  expire: vi.fn(),
-};
-
-vi.mock('../redis', () => ({
-  getRedis: () => mockRedis,
-}));
+vi.mock('@/lib/redis', () => {
+  const mockRedis = {
+    zremrangebyscore: vi.fn(),
+    zcard: vi.fn(),
+    zrange: vi.fn(),
+    zadd: vi.fn(),
+    expire: vi.fn(),
+  };
+  return {
+    getRedis: () => mockRedis,
+  };
+});
 
 describe('Rate Limiting', () => {
+  const mockRedis = getRedis() as any;
+
   beforeEach(() => {
     vi.clearAllMocks();
   });

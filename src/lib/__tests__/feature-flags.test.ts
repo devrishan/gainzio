@@ -7,19 +7,30 @@ import {
   deleteFeatureFlag,
 } from '../feature-flags';
 
-// Mock Redis
-const mockRedis = {
-  get: vi.fn(),
-  set: vi.fn(),
-  del: vi.fn(),
-  keys: vi.fn(),
-};
+vi.mock('@/lib/redis', () => {
+  const mockRedis = {
+    get: vi.fn(),
+    set: vi.fn(),
+    del: vi.fn(),
+    keys: vi.fn(),
+  };
+  return {
+    getRedis: () => mockRedis,
+  };
+});
 
-vi.mock('../redis', () => ({
-  getRedis: () => mockRedis,
-}));
+// We don't need to mock getRedis anymore if we mock ioredis, 
+// unless we want to bypass redis.ts logic. 
+// However, redis.ts logic checks env vars.
+// Let's rely on standard redis.ts behavior but with mocked ioredis.
+
+// But wait, redis.ts exports getRedis.
+// If we verify that getRedis logic works with mocked ioredis.
+// The test uses standard imports.
 
 describe('Feature Flags', () => {
+  const mockRedis = getRedis() as any;
+
   beforeEach(() => {
     vi.clearAllMocks();
   });

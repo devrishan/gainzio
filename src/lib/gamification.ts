@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from '@/lib/prisma';
 import { Rank } from '@prisma/client';
 import { updateLeaderboardScore } from './leaderboards';
 
