@@ -5,7 +5,7 @@
 
 @layer base {
   html {
-    scroll-behavior: smooth;
+    /* scroll-behavior: smooth; - Removed to fix sticky/delayed scroll feel */
   }
 
   :root {
