@@ -112,33 +112,38 @@ export function AdminDashboardClient({ metrics, pendingWithdrawals }: AdminDashb
           </div>
 
           {/* Live Feed: Pending Withdrawals */}
-          <Card className="relative z-10 border-white/5 bg-zinc-950/40 backdrop-blur-2xl p-6 overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+          <Card className="relative z-10 border-white/5 bg-black/40 backdrop-blur-xl p-6 overflow-hidden hover:border-emerald-500/20 transition-colors duration-500 group">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute -left-10 bottom-0 h-40 w-40 bg-emerald-500/5 blur-[80px] pointer-events-none" />
 
             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
               <div>
-                <h3 className="text-lg font-black italic uppercase tracking-tight text-white/90">Payout Pipeline</h3>
-                <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">
-                  Live monitoring of outbound transactions
+                <h3 className="text-lg font-black italic uppercase tracking-tight text-white/90 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Payout Pipeline
+                </h3>
+                <p className="text-xs font-bold text-zinc-600 uppercase tracking-[0.2em] ml-4">
+                  Real-time transaction stream
                 </p>
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                className="rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-[10px] font-bold uppercase tracking-widest"
+                className="rounded-full border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 hover:border-emerald-500/40 text-[10px] font-black uppercase tracking-widest text-emerald-400 transition-all"
                 onClick={() => router.push("/admin/withdrawals")}
               >
-                Open Queue
+                Open Console
               </Button>
             </div>
 
-            <div className="rounded-2xl border border-white/5 overflow-hidden">
+            <div className="rounded-xl border border-white/5 overflow-hidden bg-white/5 backdrop-blur-sm">
               <Table>
                 <TableHeader className="bg-white/5">
                   <TableRow className="hover:bg-transparent border-white/5">
-                    <TableHead className="text-[10px] font-black uppercase text-zinc-500 tracking-widest">Operator</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase text-zinc-500 tracking-widest pl-4">Operator</TableHead>
                     <TableHead className="text-[10px] font-black uppercase text-zinc-500 tracking-widest">Gateway ID</TableHead>
                     <TableHead className="text-right text-[10px] font-black uppercase text-zinc-500 tracking-widest">Volume</TableHead>
+
                     <TableHead className="text-right text-[10px] font-black uppercase text-zinc-500 tracking-widest hidden sm:table-cell">Timestamp</TableHead>
                   </TableRow>
                 </TableHeader>

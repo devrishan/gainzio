@@ -40,42 +40,51 @@ const columns = [
 export function SiteFooter() {
   return (
     <motion.footer
-      className="border-t border-white/5 bg-background px-6 py-12 lg:px-12"
+      className="border-t border-white/5 bg-black relative overflow-hidden"
       initial="hidden"
       whileInView="visible"
       viewport={viewport}
       variants={fadeInUp}
     >
-      <div className="mx-auto max-w-6xl">
-        <div className="flex flex-col lg:flex-row lg:justify-between gap-12">
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+      <div className="mx-auto max-w-7xl px-6 py-16 lg:px-12 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
           {/* Brand Section */}
-          <div className="flex flex-col items-center gap-6 text-center md:items-start md:text-left lg:max-w-sm">
-            <GainzioLogo size="sm" />
-            <div className="flex flex-col gap-4">
-              <p className="text-sm leading-relaxed text-muted-foreground md:pr-4">
-                Gainzio<br />
-                Earn rewards by completing verified tasks and referring friends.
-                Fast payouts, transparent tracking, and a compliance-first earning experience.
-              </p>
-              <p className="text-xs font-medium text-muted-foreground/60">
-                UPI-based payouts • Secure verification • Fraud-protected
-              </p>
+          <div className="lg:col-span-4 flex flex-col gap-6">
+            <div className="flex items-center gap-2">
+              <GainzioLogo size="sm" />
+              <span className="text-xs font-mono text-zinc-500 bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded">v2.0.4</span>
+            </div>
+
+            <p className="text-sm leading-relaxed text-zinc-400 max-w-sm">
+              Next-generation earning infrastructure. Verified tasks, instant UPI payouts, and a fraud-proof ecosystem built for the modern internet.
+            </p>
+
+            <div className="flex items-center gap-2 mt-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-500/80">
+                All Systems Operational
+              </span>
             </div>
           </div>
 
-          {/* Desktop Links (Hidden on Mobile) */}
-          <div className="hidden md:grid flex-1 grid-cols-3 gap-8">
+          {/* Links Grid */}
+          <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-8">
             {columns.map((column) => (
-              <div key={column.title} className="flex flex-col items-start space-y-3">
-                <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              <div key={column.title} className="flex flex-col items-start space-y-4">
+                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-600">
                   {column.title}
-                </p>
-                <ul className="flex flex-col space-y-2">
+                </h4>
+                <ul className="flex flex-col space-y-2.5">
                   {column.links.map((link) => (
                     <li key={link.label}>
                       <Link
                         href={link.href}
-                        className="text-sm text-muted-foreground transition-colors hover:text-foreground hover:underline"
+                        className="text-sm text-zinc-400 transition-all hover:text-primary hover:pl-1 duration-300"
                       >
                         {link.label}
                       </Link>
@@ -85,38 +94,15 @@ export function SiteFooter() {
               </div>
             ))}
           </div>
-
-          {/* Mobile Links (Accordion) */}
-          <div className="md:hidden w-full">
-            <Accordion type="single" collapsible className="w-full">
-              {columns.map((column) => (
-                <AccordionItem key={column.title} value={column.title} className="border-white/5">
-                  <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">
-                    {column.title}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="flex flex-col space-y-3 pt-2 pb-4">
-                      {column.links.map((link) => (
-                        <li key={link.label}>
-                          <Link
-                            href={link.href}
-                            className="block text-base text-muted-foreground transition-colors hover:text-foreground"
-                          >
-                            {link.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
         </div>
 
-        <p className="mt-12 text-center text-xs text-muted-foreground md:mt-10 md:text-left border-t border-white/5 pt-8 md:border-none md:pt-0">
-          © {new Date().getFullYear()} Gainzio. All rights reserved. Made for India 🇮🇳.
-        </p>
+        <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-600">
+          <p>© {new Date().getFullYear()} Gainzio Network. Engineered in India 🇮🇳.</p>
+          <div className="flex gap-6 font-mono opacity-50">
+            <span>Server Time: {new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })} UTC</span>
+            <span>Latency: 24ms</span>
+          </div>
+        </div>
       </div>
     </motion.footer>
   );

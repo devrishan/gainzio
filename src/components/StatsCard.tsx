@@ -17,27 +17,28 @@ export const StatsCard = ({ title, value, subtitle, icon: Icon, trend }: StatsCa
   };
 
   return (
-    <Card className="relative overflow-hidden border-white/5 bg-zinc-950/40 p-4 transition-all duration-300 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 group">
+    <Card className="relative overflow-hidden border-white/5 bg-black/40 backdrop-blur-xl p-4 transition-all duration-500 hover:border-primary/50 hover:shadow-[0_0_30px_-5px_hsl(var(--primary)/0.3)] group">
       {/* Dynamic Background Glow */}
-      <div className="absolute -right-4 -top-4 h-16 w-16 bg-primary/10 blur-2xl transition-opacity group-hover:opacity-100 opacity-0" />
+      <div className="absolute -right-10 -top-10 h-32 w-32 bg-primary/20 blur-[50px] transition-all duration-500 group-hover:scale-150 group-hover:opacity-100 opacity-50" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       <div className="flex items-start justify-between gap-3 relative z-10">
         <div className="space-y-1.5 min-w-0">
-          <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-zinc-500">{title}</p>
-          <p className="text-2xl sm:text-3xl font-black tracking-tight text-white italic">
+          <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-primary/80 transition-colors">{title}</p>
+          <p className="text-2xl sm:text-4xl font-black tracking-tight text-white italic drop-shadow-lg">
             {value}
           </p>
           {subtitle && (
             <div className="flex items-center gap-1.5">
-              <p className={`text-[10px] sm:text-[11px] font-semibold ${trend ? trendColors[trend] : 'text-zinc-400'} flex items-center gap-1`}>
-                {trend === "up" && <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />}
+              <p className={`text-[10px] sm:text-[11px] font-bold ${trend ? trendColors[trend] : 'text-zinc-400'} flex items-center gap-1 uppercase tracking-wider`}>
+                {trend === "up" && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]" />}
                 {subtitle}
               </p>
             </div>
           )}
         </div>
-        <div className="rounded-xl bg-white/5 border border-white/10 p-2.5 flex-shrink-0 shadow-inner group-hover:bg-primary/20 transition-colors">
-          <Icon className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+        <div className="rounded-2xl bg-white/5 border border-white/10 p-3 flex-shrink-0 shadow-inner group-hover:bg-primary/20 group-hover:border-primary/30 transition-all duration-300">
+          <Icon className="h-5 w-5 text-zinc-400 group-hover:text-white group-hover:scale-110 transition-all duration-300" />
         </div>
       </div>
     </Card>
