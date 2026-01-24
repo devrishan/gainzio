@@ -1,5 +1,6 @@
 import { AdminShopManager } from "@/components/admin/admin-shop-manager";
 import { AdminBadgeManager } from "@/components/admin/admin-badge-manager";
+import { TaskCreatorWizard } from "@/components/admin/task-creator-wizard";
 
 export const metadata = {
     title: "Gamification Console | Admin",
@@ -17,6 +18,7 @@ export default function GamificationPage() {
             </div>
 
             <div className="grid gap-6">
+                <TaskCreatorWizard />
                 <AdminBadgeManager />
                 <AdminShopManager />
             </div>

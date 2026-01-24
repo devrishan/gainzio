@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { calculateSmartScore } from "@/services/gamification";
+import { calculateSmartScore } from "@/lib/gamification";
 
 interface AIResponse {
     text: string;

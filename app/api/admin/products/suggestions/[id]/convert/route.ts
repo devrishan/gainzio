@@ -3,6 +3,7 @@ import { getAuthenticatedUser } from '@/lib/api-auth';
 import { prisma } from '@/lib/prisma';
 import { Role } from '@prisma/client';
 import { z } from 'zod';
+import { addXP, checkAndAwardBadges, XP_REWARDS } from '@/lib/gamification';
 
 const convertSchema = z.object({
   taskTitle: z.string().min(1).max(255),
@@ -108,6 +109,42 @@ export async function POST(
 
       return newTask;
     });
+
+    // Award XP and check for badges (outside transaction to avoid locking, or inside if critical? 
+    // Gamification state determines rank, so better independent or after success)
+    // We'll do it after the transaction to prevent holding locks too long, 
+    // but typically we want it atomic. For now, let's do it here. 
+    // Actually, `addXP` uses its own db calls. Best to run it after `term` succeeds.
+
+    // 1. Award XP
+    try {
+      await addXP(suggestion.userId, XP_REWARDS.PRODUCT_SUGGESTION_CONVERTED, 'PRODUCT_SUGGESTION_CONVERTED', {
+        suggestionId: suggestion.id,
+        taskId: task.id
+      });
+
+      // 2. Check for badges (e.g. "Idea Machine")
+      await checkAndAwardBadges(suggestion.userId);
+
+      // 3. Notify User
+      await prisma.notification.create({
+        data: {
+          userId: suggestion.userId,
+          title: "Suggestion Approved!",
+          body: `Your product suggestion "${suggestion.productName}" has been converted into a task. You earned ${XP_REWARDS.PRODUCT_SUGGESTION_CONVERTED} XP!`,
+          type: "TASK_APPROVED",
+          metadata: {
+            suggestionId: suggestion.id,
+            taskId: task.id,
+            xp: XP_REWARDS.PRODUCT_SUGGESTION_CONVERTED
+          }
+        }
+      });
+
+    } catch (err) {
+      console.error("Failed to award gamification rewards for suggestion conversion:", err);
+      // Don't fail the request, just log error
+    }
 
     return NextResponse.json({
       success: true,

@@ -58,7 +58,7 @@ export function CoinShopCard({ coins }: CoinShopCardProps) {
 
         setLoadingItem(itemId);
         try {
-            const res = await fetch("/api/gamification/shop/buy", {
+            const res = await fetch("/api/gamification/shop", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ itemId }),

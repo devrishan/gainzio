@@ -1,7 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 export const dynamic = 'force-dynamic';
 import { getAuthenticatedUser } from "@/lib/api-auth";
-import { getGamificationProfile, calculateSmartScore } from "@/services/gamification";
+import { getGamificationProfile, calculateSmartScore } from "@/lib/gamification";
 import { prisma as db } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {

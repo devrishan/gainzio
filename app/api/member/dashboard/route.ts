@@ -2,7 +2,7 @@
 import { getAuthenticatedUser } from '@/lib/api-auth';
 export const dynamic = 'force-dynamic';
 import { prisma } from '@/lib/prisma';
-import { calculateSmartScore } from '@/services/gamification';
+import { calculateSmartScore } from '@/lib/gamification';
 
 export async function GET(request: NextRequest) {
   try {

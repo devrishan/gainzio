@@ -61,15 +61,37 @@ export async function addXP(
         rank: calculateRank(amount),
       },
     });
+    // Check for Double XP Boost
+    const activeBoost = await prisma.userInventory.findFirst({
+      where: {
+        userId,
+        shopItem: { name: "Double XP Boost" },
+        expiresAt: { gt: new Date() }
+      }
+    });
+
+    const finalAmount = activeBoost ? amount * 2 : amount;
+
     return {
-      newXP: newGamification.xp,
+      newXP: newGamification.xp + finalAmount, // Initialize with first amount
       newRank: newGamification.rank,
       rankUpgraded: false,
     };
   }
 
+  // Check for Double XP Boost (for existing users)
+  const activeBoost = await prisma.userInventory.findFirst({
+    where: {
+      userId,
+      shopItem: { name: "Double XP Boost" },
+      expiresAt: { gt: new Date() }
+    }
+  });
+
+  const finalAmount = activeBoost ? amount * 2 : amount;
+
   const oldRank = gamification.rank;
-  const newXP = gamification.xp + amount;
+  const newXP = gamification.xp + finalAmount;
   const newRank = calculateRank(newXP);
   const rankUpgraded = oldRank !== newRank;
 
@@ -80,6 +102,14 @@ export async function addXP(
       rank: newRank,
     },
   });
+
+  // Create XP log with multiplier info
+  if (finalAmount !== amount) {
+    if (!metadata) metadata = {};
+    metadata.originalAmount = amount;
+    metadata.multiplier = 2;
+    metadata.boostActive = true;
+  }
 
   try {
     await updateLeaderboardScore(userId, 'xp', newXP);
@@ -472,10 +502,10 @@ export async function getUserGamificationStats(userId: string) {
 
 /**
  * Calculate "Smart Score" for leaderboard
- * Score = TotalEarned + (StreakDays * 10) + (ReferralCount * 50)
+ * Score = TotalEarned + (StreakDays * 10) + (ReferralCount * 50) + (Tasks * 5)
  */
 export async function calculateSmartScore(userId: string): Promise<number> {
-  const [wallet, gamification, referralCount] = await Promise.all([
+  const [wallet, gamification, referralCount, taskCount] = await Promise.all([
     prisma.wallet.findUnique({
       where: { userId },
       select: { totalEarned: true },
@@ -487,12 +517,133 @@ export async function calculateSmartScore(userId: string): Promise<number> {
     prisma.referral.count({
       where: { referrerId: userId, status: 'verified' },
     }),
+    prisma.taskSubmission.count({
+      where: { userId, status: 'APPROVED' }
+    })
   ]);
 
   const totalEarned = Number(wallet?.totalEarned || 0);
   const streakDays = gamification?.streakDays || 0;
 
-  // Weights can be adjusted here
-  const score = totalEarned + (streakDays * 10) + (referralCount * 50);
-  return Math.floor(score);
+  // New Weighted Formula
+  const score = Math.floor(
+    totalEarned +
+    (streakDays * 10) +
+    (referralCount * 50) +
+    (taskCount * 5)
+  );
+
+  // Update DB State
+  await prisma.gamificationState.update({
+    where: { userId },
+    data: {
+      smartScore: score,
+      lastScoreUpdate: new Date()
+    }
+  });
+
+  return score;
 }
+
+/**
+ * Get full gamification profile for Dashboard
+ */
+export const getGamificationProfile = async (userId: string) => {
+  const profile = await prisma.gamificationState.findUnique({
+    where: { userId },
+    include: {
+      inventory: {
+        include: {
+          shopItem: true
+        }
+      },
+      badges: {
+        include: {
+          badge: true
+        }
+      }
+    }
+  });
+
+  if (!profile) {
+    // Auto-create if missing
+    return await prisma.gamificationState.create({
+      data: { userId }
+    });
+  }
+
+  return profile;
+};
+
+/**
+ * Get active shop items
+ */
+export const getShopItems = async () => {
+  return await prisma.shopItem.findMany({
+    where: { isActive: true },
+    orderBy: { cost: 'asc' }
+  });
+};
+
+/**
+ * Purchase an item from the shop
+ */
+export const purchaseItem = async (userId: string, itemId: string) => {
+  // Transaction to ensure atomic coin deduction + item add
+  return await prisma.$transaction(async (tx) => {
+    const item = await tx.shopItem.findUnique({ where: { id: itemId } });
+    if (!item) throw new Error("Item not found");
+
+    const wallet = await tx.wallet.findUnique({ where: { userId } });
+    if (!wallet || wallet.coins < item.cost) {
+      throw new Error("Insufficient coins");
+    }
+
+    // Deduct coins
+    await tx.wallet.update({
+      where: { userId },
+      data: { coins: { decrement: item.cost } }
+    });
+
+    // Add to Inventory
+    const existing = await tx.userInventory.findUnique({
+      where: {
+        gamificationId_shopItemId: {
+          gamificationId: (await tx.gamificationState.findUniqueOrThrow({ where: { userId } })).id,
+          shopItemId: itemId
+        }
+      }
+    });
+
+    if (existing) {
+      await tx.userInventory.update({
+        where: { id: existing.id },
+        data: { quantity: { increment: 1 } }
+      });
+    } else {
+      const gamification = await tx.gamificationState.findUniqueOrThrow({ where: { userId } });
+      await tx.userInventory.create({
+        data: {
+          userId,
+          gamificationId: gamification.id,
+          shopItemId: itemId,
+          quantity: 1,
+          remainingUses: item.type === 'CONSUMABLE' ? 1 : null
+        }
+      });
+    }
+
+    // Log Transaction
+    await tx.coinTransaction.create({
+      data: {
+        userId,
+        amount: -item.cost,
+        type: 'SPEND',
+        description: `Purchased ${item.name}`,
+        source: 'SHOP'
+      }
+    });
+
+    return { success: true, newBalance: wallet.coins - item.cost };
+  });
+};

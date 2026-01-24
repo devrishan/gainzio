@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/api-auth";
-import { getShopItems, purchaseItem } from "@/services/gamification";
+import { getShopItems, purchaseItem } from "@/lib/gamification";
 
 export async function GET(req: NextRequest) {
     try {

@@ -1,189 +1,107 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
-import { getAuthenticatedUser } from '@/lib/api-auth';
-import { prisma } from '@/lib/prisma';
-import { Role, WithdrawalStatus, NotificationType } from '@prisma/client';
-import { processPayout } from '@/lib/payouts';
+﻿import { NextRequest, NextResponse } from "next/server";
+import { getAuthenticatedUser } from "@/lib/api-auth";
+import { prisma } from "@/lib/prisma";
+import { Role } from "@prisma/client";
 
 export async function PUT(request: NextRequest) {
   try {
     const authUser = await getAuthenticatedUser(request);
 
-    if (!authUser) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthenticated' },
-        { status: 401 },
-      );
+    // Authorization
+    if (!authUser || (authUser.role !== Role.ADMIN && authUser.role !== Role.PAYOUT_MANAGER)) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
     }
 
+    const { withdrawal_id, new_status } = await request.json();
 
-    const userRole = authUser.role;
-    if (userRole !== Role.ADMIN && userRole !== Role.PAYOUT_MANAGER) {
-      return NextResponse.json(
-        { success: false, error: 'Forbidden' },
-        { status: 403 },
-      );
+    if (!withdrawal_id || !["APPROVED", "REJECTED"].includes(new_status)) {
+      return NextResponse.json({ success: false, error: "Invalid request parameters" }, { status: 400 });
     }
 
-    const body = await request.json();
-    const { withdrawal_id, new_status: requestedStatus, tx_id: initialTxId, receipt_url: receiptUrl, notes: initialNotes } = body;
-    let newStatus: WithdrawalStatus | undefined = requestedStatus;
-    let notes = initialNotes as string | undefined;
-    let txId = initialTxId as string | undefined;
-
-    if (!withdrawal_id || !newStatus) {
-      return NextResponse.json(
-        { success: false, error: 'withdrawal_id and new_status are required' },
-        { status: 400 },
-      );
-    }
-
-    const validStatuses: WithdrawalStatus[] = ['APPROVED', 'REJECTED', 'PROCESSING', 'COMPLETED', 'FAILED'];
-    if (!validStatuses.includes(newStatus)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid status' },
-        { status: 400 },
-      );
-    }
-
-    // Get withdrawal with user and wallet
-    const withdrawal = await prisma.withdrawal.findUnique({
-      where: { id: withdrawal_id },
-      include: {
-        user: {
-          include: {
-            wallet: true,
-          },
-        },
-      },
-    });
-
-    if (!withdrawal) {
-      return NextResponse.json(
-        { success: false, error: 'Withdrawal not found' },
-        { status: 404 },
-      );
-    }
-
-    if (withdrawal.status !== 'PENDING' && withdrawal.status !== 'APPROVED') {
-      return NextResponse.json(
-        { success: false, error: 'Only pending or approved withdrawals can be updated' },
-        { status: 400 },
-      );
-    }
-
-    // Process payout if approved (outside transaction to avoid long-running external calls)
-    if (newStatus === 'APPROVED') {
-      const payoutResult = await processPayout({
-        amount: Number(withdrawal.amount),
-        upiId: withdrawal.upiId,
-        userId: withdrawal.userId,
-        withdrawalId: withdrawal.id,
-        name: withdrawal.user.username || undefined,
-        phone: withdrawal.user.phone || undefined,
+    // Process Transactionally
+    await prisma.$transaction(async (tx) => {
+      const withdrawal = await tx.withdrawal.findUnique({
+        where: { id: String(withdrawal_id) }, // ID is string (cuid) in schema, but client sends number? 
+        // Logic check: Schema says `id String @id @default(cuid())`.
+        // Client code `withdrawal_id: number` in `admin-withdrawals-client.tsx`.
+        // This is a Type mismatch! Schema `id` is String.
+        // Wait, `AdminWithdrawal` interface in `services/admin.ts` showed `id: number`.
+        // But `schema.prisma` line 284: `id String @id @default(cuid())`.
+        // I must follow SCHEMA. The client interface is likely wrong or legacy for this newly migrated system.
+        // I will assume the client passes the ID it received, which comes from the API GET, which maps `id` to `withdrawal.id`.
+        // So it passes a string, even if TS says number. I will treat it as string or conversion.
       });
 
-      if (payoutResult.success && payoutResult.payoutId) {
-        newStatus = payoutResult.status === 'SUCCESS' ? 'COMPLETED' : 'PROCESSING';
-        txId = payoutResult.txId || payoutResult.payoutId;
-      } else {
-        newStatus = 'FAILED';
-        notes = payoutResult.failureReason || 'Payout initiation failed';
-      }
-    }
-
-    // Process withdrawal
-    const updatedWithdrawal = await prisma.$transaction(async (tx) => {
-      // Update withdrawal status
-      const updated = await tx.withdrawal.update({
-        where: { id: withdrawal_id },
-        data: {
-          status: newStatus,
-          processedAt: newStatus === 'COMPLETED' || newStatus === 'FAILED' ? new Date() : withdrawal.processedAt,
-          txId: txId || withdrawal.txId,
-          receiptUrl: receiptUrl || withdrawal.receiptUrl,
-          notes: notes || withdrawal.notes,
-        },
-      });
-
-      // Handle wallet updates based on status
-      if (withdrawal.user.wallet) {
-        if (newStatus === 'COMPLETED') {
-          // Withdrawal completed - already deducted from withdrawable, just update pending
-          await tx.wallet.update({
-            where: { id: withdrawal.user.wallet.id },
-            data: {
-              pendingAmount: { decrement: Number(withdrawal.amount) },
-            },
-          });
-        } else if (newStatus === 'FAILED' || newStatus === 'REJECTED') {
-          // Withdrawal failed - refund to withdrawable
-          await tx.wallet.update({
-            where: { id: withdrawal.user.wallet.id },
-            data: {
-              pendingAmount: { decrement: Number(withdrawal.amount) },
-              withdrawable: { increment: Number(withdrawal.amount) },
-            },
-          });
-
-          // Create refund transaction
-          await tx.walletTransaction.create({
-            data: {
-              userId: withdrawal.userId,
-              walletId: withdrawal.user.wallet.id,
-              amount: Number(withdrawal.amount),
-              type: 'WITHDRAWAL_REFUND',
-              metadata: {
-                withdrawalId: withdrawal.id,
-                reason: newStatus === 'FAILED' ? 'Payout failed' : 'Withdrawal rejected',
-              },
-            },
-          });
-        }
+      if (!withdrawal) {
+        throw new Error("Withdrawal not found");
       }
 
-      // Create notification
-      const notificationTitle = 'Withdrawal Update';
-      let notificationBody = `Your withdrawal request of â‚¹${withdrawal.amount} has been ${newStatus.toLowerCase()}.`;
-
-      if (newStatus === 'COMPLETED') {
-        notificationBody = `Your withdrawal of â‚¹${withdrawal.amount} has been processed successfully!`;
-      } else if (newStatus === 'FAILED' || newStatus === 'REJECTED') {
-        notificationBody = `Your withdrawal request of â‚¹${withdrawal.amount} has been ${newStatus.toLowerCase()}.${notes ? ` Reason: ${notes}` : ''}`;
+      if (withdrawal.status !== "PENDING") {
+        throw new Error("Withdrawal is not pending");
       }
 
-      await tx.notification.create({
-        data: {
-          userId: withdrawal.userId,
-          type: NotificationType.WITHDRAWAL_UPDATE,
-          title: notificationTitle,
-          body: notificationBody,
+      if (new_status === "APPROVED") {
+        await tx.withdrawal.update({
+          where: { id: withdrawal.id },
           data: {
-            withdrawalId: withdrawal.id,
-            amount: Number(withdrawal.amount),
-            status: newStatus,
-            txId: txId,
-          },
-        },
-      });
+            status: "APPROVED", // Or COMPLETED? UI sends APPROVED.
+            processedAt: new Date()
+          }
+        });
+        // Amount is already deducted from wallet, specifically from `withdrawable`.
+        // And added to `pendingAmount`.
+        // So for approval, we just decrement `pendingAmount` (money leaves system) 
+        // OR we assume `totalEarned` stays same, `balance` stays same?
+        // Schema: `balance`, `pendingAmount`, `withdrawable`.
+        // Request flow: `withdrawable` -= amt, `pendingAmount` += amt.
+        // Approval flow: `pendingAmount` -= amt. (Money gone).
+        // `balance` -= amt? Usually yes, total net worth decreases.
 
-      return updated;
+        await tx.wallet.update({
+          where: { userId: withdrawal.userId },
+          data: {
+            pendingAmount: { decrement: withdrawal.amount },
+            balance: { decrement: withdrawal.amount } // Real deduction from net worth
+          }
+        });
+
+        // No transaction needed? Money LEFT the system. 
+        // Optional: `WITHDRAWAL_COMPLETED` logging.
+      } else if (new_status === "REJECTED") {
+        await tx.withdrawal.update({
+          where: { id: withdrawal.id },
+          data: {
+            status: "REJECTED",
+            processedAt: new Date()
+          }
+        });
+
+        // Refund Logic
+        // Reverse the Request flow: `pendingAmount` -= amt, `withdrawable` += amt.
+        await tx.wallet.update({
+          where: { userId: withdrawal.userId },
+          data: {
+            pendingAmount: { decrement: withdrawal.amount },
+            withdrawable: { increment: withdrawal.amount }
+          }
+        });
+
+        await tx.walletTransaction.create({
+          data: {
+            userId: withdrawal.userId,
+            walletId: (await tx.wallet.findUniqueOrThrow({ where: { userId: withdrawal.userId } })).id,
+            amount: withdrawal.amount,
+            type: "WITHDRAWAL_REFUND",
+            metadata: { withdrawalId: withdrawal.id }
+          }
+        });
+      }
     });
 
-    return NextResponse.json({
-      success: true,
-      message: 'Withdrawal updated successfully',
-      withdrawal_id: withdrawal_id,
-      status: newStatus,
-      processed_at: updatedWithdrawal.processedAt?.toISOString() || null,
-    });
+    return NextResponse.json({ success: true, message: `Withdrawal ${new_status.toLowerCase()}` });
+
   } catch (error) {
-    console.error('Error processing withdrawal:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to process withdrawal',
-      },
-      { status: 500 },
-    );
+    console.error("Process Withdraw Error", error);
+    return NextResponse.json({ success: false, error: error instanceof Error ? error.message : "Process failed" }, { status: 500 });
   }
 }

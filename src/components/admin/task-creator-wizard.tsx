@@ -46,6 +46,9 @@ export function TaskCreatorWizard() {
         priority: "0",
         isActive: true,
         taskType: "STANDARD",
+        minRank: "NEWBIE", // NEW
+        maxSubmissions: "", // NEW (empty = unlimited)
+        expiresAt: "", // NEW
         targeting: {
             minAge: 10,
             state: "",
@@ -106,6 +109,9 @@ export function TaskCreatorWizard() {
                 priority: "0",
                 isActive: true,
                 taskType: "STANDARD",
+                minRank: "NEWBIE",
+                maxSubmissions: "",
+                expiresAt: "",
                 targeting: { minAge: 10, state: "", district: "", verifiedOnly: true, startScreenshot: true, endScreenshot: true }
             });
         }
@@ -299,6 +305,40 @@ export function TaskCreatorWizard() {
                     <div className="space-y-2">
                         <Label className="text-[10px] font-bold uppercase text-zinc-400">Priority</Label>
                         <Input type="number" value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value })} className="bg-black/50 border-white/10" />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase text-zinc-500">Min Rank</Label>
+                        <Select onValueChange={(v) => setFormData({ ...formData, minRank: v })} value={formData.minRank}>
+                            <SelectTrigger className="bg-zinc-900/50 border-white/10"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="NEWBIE">Newbie</SelectItem>
+                                <SelectItem value="PRO">Pro</SelectItem>
+                                <SelectItem value="ELITE">Elite</SelectItem>
+                                <SelectItem value="MASTER">Master</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase text-zinc-500">Max Submissions</Label>
+                        <Input
+                            type="number"
+                            placeholder="Unlimited"
+                            value={formData.maxSubmissions}
+                            onChange={(e) => setFormData({ ...formData, maxSubmissions: e.target.value })}
+                            className="bg-zinc-900/50 border-white/10"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase text-zinc-500">Expires At</Label>
+                        <Input
+                            type="datetime-local"
+                            value={formData.expiresAt}
+                            onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
+                            className="bg-zinc-900/50 border-white/10"
+                        />
                     </div>
                 </div>
 
