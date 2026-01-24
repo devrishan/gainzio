@@ -7,24 +7,48 @@ export function LoginForm() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col items-center gap-4 text-center">
-        <GainzioLogo href="/" />
+      <div className="flex flex-col items-center gap-6 text-center">
+        <div className="relative">
+          <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
+          <GainzioLogo href="/" size="lg" className="relative z-10" />
+        </div>
+
         <div className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-            Sign in to Gainzio
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 mb-2">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
+            </span>
+            <span className="text-[10px] font-bold text-primary tracking-widest uppercase">Restricted Area</span>
+          </div>
+
+          <h1 className="text-2xl font-black tracking-tight text-white uppercase font-sans">
+            Authentication Required
           </h1>
-          <p className="text-base text-muted-foreground">
-            Track tasks, referrals, and withdrawals in one place.
+          <p className="text-xs text-zinc-400 font-mono tracking-wide">
+            Biometric verification active. Credentials required for access.
           </p>
         </div>
       </div>
 
       {/* LOGIN VIEW */}
-      <div className="w-full space-y-4">
-        <GoogleLoginButton />
+      <div className="w-full space-y-6">
+        <div className="relative group">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-purple-600/50 rounded-lg blur opacity-20 group-hover:opacity-60 transition duration-500"></div>
+          <div className="relative">
+            <GoogleLoginButton />
+          </div>
+        </div>
 
-        <p className="text-center text-sm text-muted-foreground pt-2">
-          We use Google Sign-In for secure access. <br className="hidden sm:block" /> No passwords required.
+        <div className="flex items-center gap-3 opacity-50">
+          <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Secure Handshake</p>
+          <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        </div>
+
+        <p className="text-center text-[10px] text-zinc-600 font-mono">
+          System Access Level: RESTRICTED <br />
+          By authenticating, you agree to surveillance monitoring.
         </p>
       </div>
     </div>

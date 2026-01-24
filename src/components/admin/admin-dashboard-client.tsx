@@ -84,27 +84,27 @@ export function AdminDashboardClient({ metrics, pendingWithdrawals }: AdminDashb
 
             <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
               {[
-                { label: "Tasks", desc: "Missions & Levels", path: "/admin/tasks", color: "from-blue-600/20", border: "border-blue-500/20" },
-                { label: "Users", desc: "Ranks & Accounts", path: "/admin/members", color: "from-purple-600/20", border: "border-purple-500/20" },
-                { label: "Config", desc: "Engine Tuning", path: "/admin/maintenance", color: "from-orange-600/20", border: "border-orange-500/20" },
-                { label: "Payouts", desc: `${metrics.pending_withdrawals.count} Pending`, path: "/admin/withdrawals", color: "from-emerald-600/20", border: "border-emerald-500/20" },
-                { label: "Shop", desc: "Gamification Items", path: "/admin/gamification", color: "from-pink-600/20", border: "border-pink-500/20" },
-                { label: "Comms", desc: "Broadcast Center", path: "/admin/communications", color: "from-blue-600/20", border: "border-blue-500/20" }
+                { label: "Tasks", desc: "Missions & Levels", path: "/admin/tasks", color: "from-primary/20", border: "border-primary/20" },
+                { label: "Users", desc: "Ranks & Accounts", path: "/admin/members", color: "from-primary/10", border: "border-primary/10" },
+                { label: "Config", desc: "Engine Tuning", path: "/admin/maintenance", color: "from-primary/5", border: "border-primary/5" },
+                { label: "Payouts", desc: `${metrics.pending_withdrawals.count} Pending`, path: "/admin/withdrawals", color: "from-primary/20", border: "border-primary/20" },
+                { label: "Shop", desc: "Gamification Items", path: "/admin/gamification", color: "from-primary/10", border: "border-primary/10" },
+                { label: "Comms", desc: "Broadcast Center", path: "/admin/communications", color: "from-primary/5", border: "border-primary/5" }
               ].map((action) => (
                 <Card
                   key={action.label}
-                  className={`relative overflow-hidden bg-gradient-to-br ${action.color} to-transparent backdrop-blur-md border ${action.border} transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(0,0,0,0.5)] group cursor-pointer`}
+                  className={`relative overflow-hidden bg-gradient-to-br ${action.color} to-transparent backdrop-blur-md border ${action.border} transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_20px_-5px_hsl(var(--primary)/0.5)] group cursor-pointer`}
                   onClick={() => router.push(action.path)}
                 >
                   <div className={`absolute inset-0 bg-gradient-to-r ${action.color.replace('/20', '/10')} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                   <div className="p-6 relative z-10">
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-2 group-hover:translate-x-0">
-                      <Zap className="h-4 w-4 text-white/40" />
+                      <Zap className="h-4 w-4 text-primary" />
                     </div>
-                    <h3 className="font-black text-white uppercase tracking-tighter text-lg mb-1 drop-shadow-md">
+                    <h3 className="font-black text-white uppercase tracking-tighter text-lg mb-1 drop-shadow-md group-hover:text-primary transition-colors">
                       {action.label}
                     </h3>
-                    <p className="text-xs font-bold text-white/50 uppercase tracking-widest">{action.desc}</p>
+                    <p className="text-xs font-bold text-white/50 uppercase tracking-widest group-hover:text-primary/70 transition-colors">{action.desc}</p>
                   </div>
                 </Card>
               ))}

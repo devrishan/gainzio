@@ -11,9 +11,9 @@ interface StatsCardProps {
 
 export const StatsCard = ({ title, value, subtitle, icon: Icon, trend }: StatsCardProps) => {
   const trendColors = {
-    up: "text-emerald-500",
-    down: "text-rose-500",
-    neutral: "text-zinc-500",
+    up: "text-success",
+    down: "text-destructive",
+    neutral: "text-muted-foreground",
   };
 
   return (
@@ -31,7 +31,7 @@ export const StatsCard = ({ title, value, subtitle, icon: Icon, trend }: StatsCa
           {subtitle && (
             <div className="flex items-center gap-1.5">
               <p className={`text-[10px] sm:text-[11px] font-bold ${trend ? trendColors[trend] : 'text-zinc-400'} flex items-center gap-1 uppercase tracking-wider`}>
-                {trend === "up" && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]" />}
+                {trend === "up" && <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse shadow-[0_0_10px_hsl(var(--success))]" />}
                 {subtitle}
               </p>
             </div>
