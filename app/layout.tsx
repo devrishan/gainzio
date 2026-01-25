@@ -10,6 +10,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { ReferralTracker } from "@/components/auth/referral-tracker";
+import { SmoothScroll } from "@/components/providers/smooth-scroll";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -78,7 +79,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Suspense>
                   <ReferralTracker />
                 </Suspense>
-                {children}
+                <SmoothScroll>
+                  {children}
+                </SmoothScroll>
                 <Toaster position="top-right" />
               </SessionProvider>
             </QueryProvider>

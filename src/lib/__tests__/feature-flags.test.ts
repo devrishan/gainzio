@@ -6,6 +6,7 @@ import {
   getAllFeatureFlags,
   deleteFeatureFlag,
 } from '../feature-flags';
+import { getRedis } from '../redis';
 
 vi.mock('@/lib/redis', () => {
   const mockRedis = {

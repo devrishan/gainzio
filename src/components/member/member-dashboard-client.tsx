@@ -102,7 +102,7 @@ export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDas
                 {/* 1. Main Progress / Hero (Large Block) */}
                 <div className="md:col-span-8 space-y-6">
                     <div className="glass-morphism rounded-2xl p-1 shadow-lg dark:shadow-blue-900/10">
-                        <UnifiedProgress />
+                        <UnifiedProgress gamification={gamification} />
                     </div>
 
                     {/* Squad HUD */}

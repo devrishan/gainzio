@@ -1,21 +1,19 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Award, Flame, Zap } from "lucide-react";
+import type { MemberDashboardPayload } from "@/services/member";
 
-export function UnifiedProgress() {
-    const { data, isLoading } = useQuery({
-        queryKey: ["progress"],
-        queryFn: async () => {
-            const res = await fetch("/api/member/progress");
-            if (!res.ok) throw new Error("Failed to fetch progress");
-            return res.json();
-        },
-    });
+interface UnifiedProgressProps {
+    gamification: MemberDashboardPayload['gamification'];
+}
 
-    if (isLoading || !data) return null; // Or skeleton
+export function UnifiedProgress({ gamification }: UnifiedProgressProps) {
+    if (!gamification) return null;
+
+    // Calculate target XP (current XP + remaining XP)
+    const nextRankXP = gamification.xp + gamification.xp_to_next;
 
     return (
         <Card className="border-2 border-primary/10 overflow-hidden relative">
@@ -27,26 +25,26 @@ export function UnifiedProgress() {
                     <div className="flex flex-col">
                         <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Current Rank</CardTitle>
                         <div className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                            {data.rank}
+                            {gamification.rank}
                             <Award className="h-5 w-5 text-primary" />
                         </div>
                     </div>
                     <div className="flex items-center gap-1 text-orange-500 font-bold self-start sm:self-auto">
                         <Flame className="h-4 w-4 sm:h-5 sm:w-5 fill-orange-500" />
-                        {data.streakDays} Day Streak
+                        {gamification.streak} Day Streak
                     </div>
                 </div>
             </CardHeader>
             <CardContent>
                 <div className="space-y-2">
                     <div className="flex justify-between text-xs font-medium">
-                        <span>{data.xp.toLocaleString()} XP</span>
-                        <span className="text-muted-foreground">Next: {data.nextRankXP.toLocaleString()} XP</span>
+                        <span>{gamification.xp.toLocaleString()} XP</span>
+                        <span className="text-muted-foreground">Next: {nextRankXP.toLocaleString()} XP</span>
                     </div>
-                    <Progress value={data.progress} className="h-3 bg-muted" indicatorClassName="bg-gradient-to-r from-primary to-primary/80" />
+                    <Progress value={gamification.progress} className="h-3 bg-muted" indicatorClassName="bg-gradient-to-r from-primary to-primary/80" />
                     <div className="pt-2 flex justify-between items-center">
                         <div className="text-xs text-muted-foreground">
-                            Keep going! You are {Math.round(100 - data.progress)}% away from leveling up.
+                            Keep going! You are {Math.round(100 - gamification.progress)}% away from leveling up.
                         </div>
                     </div>
                 </div>
@@ -54,7 +52,7 @@ export function UnifiedProgress() {
                 {/* Smart Score Mini-Display */}
                 <div className="mt-4 pt-4 border-t flex items-center gap-2 justify-center bg-muted/20 -mx-6 -mb-6 p-3">
                     <Zap className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">Smart Score: {data.smartScore.toLocaleString()}</span>
+                    <span className="text-sm font-medium">Smart Score: {gamification.smartScore.toLocaleString()}</span>
                 </div>
             </CardContent>
         </Card>

@@ -2,6 +2,10 @@
 
 import { GainzioLogo } from "@/components/shared/logo";
 import { GoogleLoginButton } from "./GoogleLoginButton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { ShieldCheck, Lock } from "lucide-react";
 
 export function LoginForm() {
   return (

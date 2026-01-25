@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { checkRateLimit, getClientIp } from '../rate-limit';
+import { getRedis } from '../redis';
 
 vi.mock('@/lib/redis', () => {
   const mockRedis = {

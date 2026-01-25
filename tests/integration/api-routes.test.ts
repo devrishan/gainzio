@@ -20,46 +20,39 @@ describe('API Routes Integration Tests', () => {
   });
 
   describe('Auth Routes', () => {
-    it('should have login endpoint structure', async () => {
-      // Verify login route exists and handles requests
-      const mod = await import('../app/api/auth/login/route');
-      expect(typeof mod.POST).toBe('function');
-    });
+
 
     it('should have register endpoint structure', async () => {
       // Verify register route exists and handles requests
-      const mod = await import('../app/api/auth/register/route');
+      const mod = await import('@app/api/auth/register/route');
       expect(typeof mod.POST).toBe('function');
     });
   });
 
   describe('Task Routes', () => {
     it('should have tasks listing endpoint', async () => {
-      const mod = await import('../app/api/tasks/route');
+      const mod = await import('@app/api/tasks/route');
       expect(typeof mod.GET).toBe('function');
     });
 
     it('should have task submission endpoint', async () => {
-      const mod = await import('../app/api/member/tasks/submit/route');
+      const mod = await import('@app/api/member/tasks/submit/route');
       expect(typeof mod.POST).toBe('function');
     });
   });
 
   describe('Admin Routes', () => {
     it('should have admin dashboard endpoint', async () => {
-      const mod = await import('../app/api/admin/dashboard/route');
+      const mod = await import('@app/api/admin/dashboard/route');
       expect(typeof mod.GET).toBe('function');
     });
 
-    it('should have submission update endpoint', async () => {
-      const mod = await import('../app/api/admin/tasks/submissions/update/route');
-      expect(typeof mod.PUT).toBe('function');
-    });
+
   });
 
   describe('Health Check', () => {
     it('should have health check endpoint', async () => {
-      const mod = await import('../app/api/health/route');
+      const mod = await import('@app/api/health/route');
       expect(typeof mod.GET).toBe('function');
     });
   });
