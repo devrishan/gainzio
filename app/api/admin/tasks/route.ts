@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
                 difficulty: difficulty || "EASY",
                 priority: Number(priority) || 0,
                 isActive: isActive ?? false,
-                minRank: (minRank as Rank) || Rank.NEWBIE,
+                minRank: (!minRank || minRank === "ALL") ? Rank.NEWBIE : (minRank as Rank),
                 taskType: taskType || "STANDARD",
                 targeting: targeting || {},
                 proofConfig: proofConfig || {},

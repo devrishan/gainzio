@@ -314,6 +314,7 @@ export function TaskCreatorWizard() {
                         <Select onValueChange={(v) => setFormData({ ...formData, minRank: v })} value={formData.minRank}>
                             <SelectTrigger className="bg-zinc-900/50 border-white/10"><SelectValue /></SelectTrigger>
                             <SelectContent>
+                                <SelectItem value="ALL">All Ranks</SelectItem>
                                 <SelectItem value="NEWBIE">Newbie</SelectItem>
                                 <SelectItem value="PRO">Pro</SelectItem>
                                 <SelectItem value="ELITE">Elite</SelectItem>

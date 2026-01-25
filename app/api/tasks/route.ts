@@ -127,11 +127,8 @@ export async function GET(request: NextRequest) {
 
     const filteredTasks = tasks.map((task) => {
       const t = task as any;
-      // Derive minRank from difficulty
-      let minRank = 'NEWBIE';
-      if (t.difficulty === 'MEDIUM') minRank = 'PRO';
-      if (t.difficulty === 'HARD') minRank = 'ELITE';
-      if (t.difficulty === 'EXPERT') minRank = 'MASTER';
+      // Use stored minRank
+      const minRank = t.minRank || 'NEWBIE';
 
       const taskRankValue = RANK_VALUES[minRank as keyof typeof RANK_VALUES] || 0;
       const isLocked = taskRankValue > userRankValue;
