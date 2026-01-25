@@ -7,9 +7,27 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, Lock } from "lucide-react";
 
+import { useSearchParams } from "next/navigation";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+
 export function LoginForm() {
+  const searchParams = useSearchParams();
+  const error = searchParams?.get("error");
+
   return (
     <div className="space-y-8">
+      {error && (
+        <Alert variant="destructive" className="animate-in fade-in slide-in-from-top-4 duration-500 bg-red-500/10 border-red-500/20 text-red-500">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Authentication Error</AlertTitle>
+          <AlertDescription>
+            {error === "OAuthAccountNotLinked"
+              ? "This email is already associated with another account. Please sign in with your original method."
+              : "An error occurred during authentication. Please try again."}
+          </AlertDescription>
+        </Alert>
+      )}
       {/* Header */}
       <div className="flex flex-col items-center gap-6 text-center">
         <div className="relative">

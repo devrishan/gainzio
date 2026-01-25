@@ -25,6 +25,7 @@ export const authOptions: NextAuthOptions = {
                     emailVerified: profile.email_verified ? new Date() : null,
                 };
             },
+            allowDangerousEmailAccountLinking: true,
         }),
         CredentialsProvider({
             name: "Admin Login",
