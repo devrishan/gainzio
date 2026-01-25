@@ -534,11 +534,19 @@ export async function calculateSmartScore(userId: string): Promise<number> {
   );
 
   // Update DB State
-  await prisma.gamificationState.update({
+  await prisma.gamificationState.upsert({
     where: { userId },
-    data: {
+    update: {
       smartScore: score,
       lastScoreUpdate: new Date()
+    },
+    create: {
+      userId,
+      smartScore: score,
+      lastScoreUpdate: new Date(),
+      xp: 0,
+      rank: 'NEWBIE', // Default rank
+      streakDays: 0
     }
   });
 
