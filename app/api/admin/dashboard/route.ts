@@ -24,21 +24,51 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
         const [
             totalUsers,
+            newUsers24h,
+            activeUsers24h,
             pendingWithdrawals,
-            totalEarningsPaid
+            totalEarningsPaid,
+            revenue24h
         ] = await Promise.all([
+            // 1. Total Users
             prisma.user.count({
                 where: { role: Role.USER }
             }),
+            // 2. New Users (24h)
+            prisma.user.count({
+                where: {
+                    role: Role.USER,
+                    createdAt: { gte: oneDayAgo }
+                }
+            }),
+            // 3. Active Users (24h) - based on last_login_at
+            prisma.user.count({
+                where: {
+                    role: Role.USER,
+                    last_login_at: { gte: oneDayAgo }
+                }
+            }),
+            // 4. Pending Withdrawals
             prisma.withdrawal.aggregate({
                 where: { status: WithdrawalStatus.PENDING },
                 _count: true,
                 _sum: { amount: true }
             }),
+            // 5. Total Earnings Paid
             prisma.withdrawal.aggregate({
                 where: { status: WithdrawalStatus.COMPLETED },
+                _sum: { amount: true }
+            }),
+            // 6. Revenue/Payouts (24h)
+            prisma.withdrawal.aggregate({
+                where: {
+                    status: WithdrawalStatus.COMPLETED,
+                    processedAt: { gte: oneDayAgo }
+                },
                 _sum: { amount: true }
             })
         ]);
@@ -47,11 +77,14 @@ export async function GET(request: NextRequest) {
             success: true,
             metrics: {
                 total_users: totalUsers,
+                new_users_24h: newUsers24h,
+                active_users_24h: activeUsers24h,
                 pending_withdrawals: {
                     count: pendingWithdrawals._count,
                     amount: Number(pendingWithdrawals._sum.amount || 0)
                 },
-                total_earnings_paid: Number(totalEarningsPaid._sum.amount || 0)
+                total_earnings_paid: Number(totalEarningsPaid._sum.amount || 0),
+                revenue_24h: Number(revenue24h._sum.amount || 0)
             }
         });
 

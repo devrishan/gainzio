@@ -5,11 +5,14 @@ import { serverFetch } from "@/lib/server-api";
 export interface AdminDashboardMetrics {
   metrics: {
     total_users: number;
+    new_users_24h: number;
+    active_users_24h: number;
     pending_withdrawals: {
       count: number;
       amount: number;
     };
     total_earnings_paid: number;
+    revenue_24h: number;
   };
 }
 

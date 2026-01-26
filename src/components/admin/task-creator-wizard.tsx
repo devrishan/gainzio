@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, List, Trophy, Coins, Star, Loader2, Save, MapPin } from "lucide-react";
+import { Plus, List, Trophy, Coins, Star, Loader2, Save, MapPin, Target, ShieldCheck, Zap, LayoutDashboard, Globe } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,8 +11,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
 
-// Strict Location Data (Sample for strict enforcement)
+// Strict Location Data
 const INDIA_LOCATIONS: Record<string, string[]> = {
     "Kerala": ["Kochi", "Thiruvananthapuram", "Kozhikode", "Thrissur", "Malappuram"],
     "Karnataka": ["Bangalore", "Mysore", "Mangalore", "Hubli"],
@@ -46,20 +47,20 @@ export function TaskCreatorWizard() {
         priority: "0",
         isActive: true,
         taskType: "STANDARD",
-        minRank: "NEWBIE", // NEW
-        maxSubmissions: "", // NEW (empty = unlimited)
-        expiresAt: "", // NEW
+        minRank: "NEWBIE",
+        maxSubmissions: "",
+        expiresAt: "",
         targeting: {
             minAge: 10,
             state: "",
             district: "",
-            verifiedOnly: true, // AUTO-TICKED: Admin Defaults
-            startScreenshot: true, // AUTO-TICKED
-            endScreenshot: true, // AUTO-TICKED
+            verifiedOnly: true,
+            startScreenshot: true,
+            endScreenshot: true,
         }
     });
 
-    // Auto-populate for WhatsApp / Social Media
+    // Auto-populate for Social Media
     useEffect(() => {
         if (formData.taskType === "SOCIAL_MEDIA") {
             setFormData(prev => ({
@@ -68,7 +69,7 @@ export function TaskCreatorWizard() {
                 description: WHATSAPP_TEMPLATE,
                 targeting: {
                     ...prev.targeting,
-                    minAge: 18, // Default for paid tasks often 18, but spec says 10. Keeping 18 as safe default, user can lower.
+                    minAge: 18,
                     verifiedOnly: true
                 }
             }));
@@ -97,7 +98,7 @@ export function TaskCreatorWizard() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["admin-tasks"] });
-            toast.success("Task Published!");
+            toast.success("Mission Deployed Successfully!");
             setMode("LIST");
             setFormData({
                 title: "",
@@ -119,35 +120,81 @@ export function TaskCreatorWizard() {
 
     if (mode === "LIST") {
         return (
-            <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-bold text-white uppercase tracking-tight">Task Library</h2>
-                    <Button onClick={() => setMode("CREATE")} className="bg-blue-600 hover:bg-blue-700">
-                        <Plus className="w-4 h-4 mr-2" /> New Task
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="flex justify-between items-end border-b border-white/5 pb-6">
+                    <div className="space-y-1">
+                        <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50 uppercase tracking-tighter">
+                            Mission Control
+                        </h2>
+                        <p className="text-sm text-zinc-500 font-mono uppercase tracking-widest">
+                            Manage & Deploy Earning Operations
+                        </p>
+                    </div>
+                    <Button
+                        onClick={() => setMode("CREATE")}
+                        className="bg-indigo-600 hover:bg-indigo-500 text-white border-0 shadow-[0_0_20px_-5px_rgba(79,70,229,0.5)] transition-all hover:scale-105"
+                    >
+                        <Plus className="w-4 h-4 mr-2" /> CREATE MISSION
                     </Button>
                 </div>
 
                 <div className="grid gap-4">
-                    {isLoading ? <Loader2 className="animate-spin text-zinc-500" /> : tasks?.map((task: any) => (
-                        <Card key={task.id} className="bg-zinc-950/40 border-white/5 hover:border-white/10 transition px-4 py-3 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className={`w-2 h-12 rounded-full ${task.isActive ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                                <div>
-                                    <h3 className="font-bold text-white max-w-[200px] truncate">{task.title}</h3>
-                                    <p className="text-xs text-zinc-500 flex items-center gap-2">
-                                        <span className="bg-white/5 px-2 py-0.5 rounded text-zinc-400">{task.category?.name}</span>
-                                        <span>•</span>
-                                        <span>₹{task.rewardAmount}</span>
-                                    </p>
+                    {isLoading ? (
+                        <div className="flex flex-col items-center justify-center py-20 gap-4 text-zinc-600">
+                            <Loader2 className="animate-spin w-8 h-8 text-indigo-500" />
+                            <p className="text-xs font-mono uppercase tracking-widest">Loading Intel...</p>
+                        </div>
+                    ) : tasks?.map((task: any) => (
+                        <div
+                            key={task.id}
+                            className="group relative overflow-hidden rounded-xl border border-white/5 bg-zinc-950/40 p-1 transition-all hover:border-indigo-500/30"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/5 to-indigo-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                            <div className="relative flex items-center justify-between gap-6 rounded-lg bg-black/40 p-4 backdrop-blur-sm">
+                                <div className="flex items-center gap-5">
+                                    <div className={`flex h-12 w-12 items-center justify-center rounded-lg border border-white/5 ${task.isActive ? 'bg-emerald-500/10 text-emerald-500 shadow-[0_0_15px_-5px_rgba(16,185,129,0.3)]' : 'bg-red-500/10 text-red-500'}`}>
+                                        <Trophy className="h-6 w-6" />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-3">
+                                            <h3 className="font-bold text-white text-lg tracking-tight">{task.title}</h3>
+                                            <Badge variant="outline" className="bg-white/5 border-white/10 text-[10px] text-zinc-400 uppercase tracking-wider">
+                                                {task.category?.name}
+                                            </Badge>
+                                            {task.task_type === "SOCIAL_MEDIA" && (
+                                                <Badge variant="outline" className="bg-blue-500/10 border-blue-500/20 text-[10px] text-blue-400 uppercase tracking-wider">
+                                                    Social Partner
+                                                </Badge>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-4 text-xs font-medium text-zinc-500">
+                                            <span className="flex items-center gap-1.5 text-emerald-400">
+                                                <Coins className="w-3.5 h-3.5" /> ₹{task.rewardAmount}
+                                            </span>
+                                            <span className="w-1 h-1 rounded-full bg-zinc-700" />
+                                            <span className="flex items-center gap-1.5 text-amber-400">
+                                                <Star className="w-3.5 h-3.5" /> {task.rewardCoins} XP
+                                            </span>
+                                            <span className="w-1 h-1 rounded-full bg-zinc-700" />
+                                            <span className="uppercase tracking-widest">{task.difficulty}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col items-end gap-2">
+                                    <div className={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-widest border ${task.isActive ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-500' : 'border-red-500/20 bg-red-500/5 text-red-500'}`}>
+                                        {task.isActive ? 'Active' : 'Offline'}
+                                    </div>
+                                    <div className="text-[10px] text-zinc-600 font-mono">
+                                        Priority: {task.priority}
+                                    </div>
                                 </div>
                             </div>
-                            <div className="text-right">
-                                <div className="text-xs text-zinc-500">{task.task_type}</div>
-                                {task.task_type === "SOCIAL_MEDIA" && <div className="text-[10px] text-blue-400">Verified Only</div>}
-                            </div>
-                        </Card>
+                        </div>
                     ))}
-                    {tasks?.length === 0 && <p className="text-zinc-500 text-sm">No tasks found.</p>}
+                    {tasks?.length === 0 && <p className="text-zinc-500 text-sm text-center py-10">No missions deployed.</p>}
                 </div>
             </div>
         );
@@ -155,204 +202,233 @@ export function TaskCreatorWizard() {
 
     // CREATE MODE
     return (
-        <Card className="bg-zinc-950/40 border-white/5 backdrop-blur-md">
-            <CardHeader className="border-b border-white/5 pb-4">
-                <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
-                            <List className="h-5 w-5 text-indigo-400" />
-                        </div>
-                        <div>
-                            <CardTitle className="text-base font-black uppercase text-white tracking-wide">Task Wizard</CardTitle>
-                            <CardDescription className="text-xs">Create a new earning opportunity.</CardDescription>
-                        </div>
+        <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in zoom-in-95 duration-300">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 shadow-[0_0_20px_-5px_rgba(99,102,241,0.3)]">
+                        <Zap className="h-6 w-6 text-indigo-400" />
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => setMode("LIST")}>Cancel</Button>
-                </div>
-            </CardHeader>
-            <CardContent className="pt-6 space-y-6">
-
-                <div className="space-y-2">
-                    <Label className="text-xs font-bold uppercase text-zinc-500">Title</Label>
-                    <Input
-                        placeholder="e.g. Subscribe to YouTube"
-                        value={formData.title}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        className="bg-zinc-900/50 border-white/10"
-                    />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase text-zinc-500">Task Type</Label>
-                        <Select onValueChange={(v) => setFormData({ ...formData, taskType: v })} value={formData.taskType}>
-                            <SelectTrigger className="bg-zinc-900/50 border-white/10"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="STANDARD">Standard</SelectItem>
-                                <SelectItem value="SOCIAL_MEDIA">Social Media (Partner)</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase text-zinc-500">Difficulty</Label>
-                        <Select onValueChange={(v) => setFormData({ ...formData, difficulty: v })} value={formData.difficulty}>
-                            <SelectTrigger className="bg-zinc-900/50 border-white/10"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="EASY">Easy</SelectItem>
-                                <SelectItem value="MEDIUM">Medium</SelectItem>
-                                <SelectItem value="HARD">Hard</SelectItem>
-                            </SelectContent>
-                        </Select>
+                    <div>
+                        <h2 className="text-2xl font-black text-white uppercase tracking-tight">Mission Wizard</h2>
+                        <p className="text-xs text-indigo-300/60 font-mono uppercase tracking-widest">
+                            Configure & Launch New Operation
+                        </p>
                     </div>
                 </div>
+                <Button variant="ghost" size="sm" onClick={() => setMode("LIST")} className="text-zinc-400 hover:text-white hover:bg-white/5">
+                    Cancel Operation
+                </Button>
+            </div>
 
-                {formData.taskType === "SOCIAL_MEDIA" && (
-                    <div className="space-y-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg animate-in fade-in slide-in-from-top-2">
-                        <div className="flex items-center gap-2 mb-2">
-                            <MapPin className="w-4 h-4 text-blue-400" />
-                            <h4 className="text-sm font-bold text-blue-300 uppercase">Strict Targeting Rules</h4>
-                        </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                        {/* Location Hierarchy */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Main Configuration */}
+                <div className="lg:col-span-2 space-y-6">
+
+                    {/* Basic Info Card */}
+                    <Card className="bg-zinc-950/40 border-white/5 backdrop-blur-xl overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-zinc-400">
+                                <LayoutDashboard className="w-4 h-4" /> Mission Intel
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label className="text-xs text-zinc-400">Target State</Label>
-                                <Select
-                                    value={formData.targeting.state}
-                                    onValueChange={(v) => setFormData({ ...formData, targeting: { ...formData.targeting, state: v, district: "" } })}
-                                >
-                                    <SelectTrigger className="bg-black/40 border-white/10"><SelectValue placeholder="Select State" /></SelectTrigger>
+                                <Label className="text-xs text-zinc-500 uppercase font-bold">Mission Title</Label>
+                                <Input
+                                    placeholder="e.g. Subscribe to Official Channel"
+                                    value={formData.title}
+                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                    className="bg-black/20 border-white/10 focus:border-indigo-500/50 h-12 text-lg font-medium"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-xs text-zinc-500 uppercase font-bold">Category</Label>
+                                    <Select onValueChange={(v) => setFormData({ ...formData, categoryId: v })} value={formData.categoryId}>
+                                        <SelectTrigger className="bg-black/20 border-white/10 h-10"><SelectValue placeholder="Select Sector" /></SelectTrigger>
+                                        <SelectContent>
+                                            {categories?.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-xs text-zinc-500 uppercase font-bold">Operation Type</Label>
+                                    <Select onValueChange={(v) => setFormData({ ...formData, taskType: v })} value={formData.taskType}>
+                                        <SelectTrigger className="bg-black/20 border-white/10 h-10"><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="STANDARD">Standard Protocol</SelectItem>
+                                            <SelectItem value="SOCIAL_MEDIA">Social Partner Protocol</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-xs text-zinc-500 uppercase font-bold">Briefing / Instructions</Label>
+                                <Textarea
+                                    placeholder="Detailed steps for the agent..."
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    className="bg-black/20 border-white/10 min-h-[150px] font-mono text-sm leading-relaxed resize-none focus:border-indigo-500/50"
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Social Media Targeting Module */}
+                    {formData.taskType === "SOCIAL_MEDIA" && (
+                        <Card className="bg-blue-500/5 border-blue-500/20 backdrop-blur-xl relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-3 opacity-20"><Globe className="w-24 h-24 text-blue-500" /></div>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-blue-400">
+                                    <Target className="w-4 h-4" /> Geo-Targeting Matrix
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-6 relative z-10">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-xs text-blue-300/70">Target State</Label>
+                                        <Select
+                                            value={formData.targeting.state}
+                                            onValueChange={(v) => setFormData({ ...formData, targeting: { ...formData.targeting, state: v, district: "" } })}
+                                        >
+                                            <SelectTrigger className="bg-black/20 border-blue-500/20 text-blue-100"><SelectValue placeholder="All Regions" /></SelectTrigger>
+                                            <SelectContent>{Object.keys(INDIA_LOCATIONS).map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs text-blue-300/70">Target District</Label>
+                                        <Select
+                                            value={formData.targeting.district}
+                                            disabled={!formData.targeting.state}
+                                            onValueChange={(v) => setFormData({ ...formData, targeting: { ...formData.targeting, district: v } })}
+                                        >
+                                            <SelectTrigger className="bg-black/20 border-blue-500/20 text-blue-100"><SelectValue placeholder={formData.targeting.state ? "Select District" : "State Required"} /></SelectTrigger>
+                                            <SelectContent>{formData.targeting.state && INDIA_LOCATIONS[formData.targeting.state]?.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-4 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                                    <ShieldCheck className="w-5 h-5 text-blue-400" />
+                                    <div className="flex-1">
+                                        <h4 className="text-sm font-bold text-blue-300">Verified Agents Only</h4>
+                                        <p className="text-[10px] text-blue-300/60">Strict enforcement: KYC + Location + Phone verified users only.</p>
+                                    </div>
+                                    <Switch checked={formData.targeting.verifiedOnly} disabled />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+                </div>
+
+                {/* Sidebar Configuration */}
+                <div className="space-y-6">
+
+                    {/* Rewards Card */}
+                    <Card className="bg-zinc-950/40 border-white/5 backdrop-blur-xl">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-zinc-400">
+                                <Coins className="w-4 h-4" /> Bounty Config
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-bold uppercase text-zinc-500">Cash Reward (INR)</Label>
+                                <div className="relative">
+                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500 font-bold">₹</div>
+                                    <Input
+                                        type="number"
+                                        value={formData.rewardAmount}
+                                        onChange={(e) => setFormData({ ...formData, rewardAmount: e.target.value })}
+                                        className="bg-black/20 border-white/10 pl-8 text-emerald-400 font-bold font-mono text-lg"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-bold uppercase text-zinc-500">XP Reward</Label>
+                                <div className="relative">
+                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-500"><Star className="w-3 h-3 fill-amber-500" /></div>
+                                    <Input
+                                        type="number"
+                                        value={formData.rewardCoins}
+                                        onChange={(e) => setFormData({ ...formData, rewardCoins: e.target.value })}
+                                        className="bg-black/20 border-white/10 pl-8 text-amber-400 font-bold font-mono"
+                                    />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Meta Data Card */}
+                    <Card className="bg-zinc-950/40 border-white/5 backdrop-blur-xl">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-zinc-400">
+                                <List className="w-4 h-4" /> Parameters
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-bold uppercase text-zinc-500">Difficulty Class</Label>
+                                <Select onValueChange={(v) => setFormData({ ...formData, difficulty: v })} value={formData.difficulty}>
+                                    <SelectTrigger className="bg-black/20 border-white/10"><SelectValue /></SelectTrigger>
                                     <SelectContent>
-                                        {Object.keys(INDIA_LOCATIONS).map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                                        <SelectItem value="EASY">Class: Easy</SelectItem>
+                                        <SelectItem value="MEDIUM">Class: Medium</SelectItem>
+                                        <SelectItem value="HARD">Class: Hard</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-xs text-zinc-400">Target District</Label>
-                                <Select
-                                    value={formData.targeting.district}
-                                    disabled={!formData.targeting.state}
-                                    onValueChange={(v) => setFormData({ ...formData, targeting: { ...formData.targeting, district: v } })}
-                                >
-                                    <SelectTrigger className="bg-black/40 border-white/10"><SelectValue placeholder={formData.targeting.state ? "Select District" : "Select State First"} /></SelectTrigger>
+                                <Label className="text-[10px] font-bold uppercase text-zinc-500">Clearance Level</Label>
+                                <Select onValueChange={(v) => setFormData({ ...formData, minRank: v })} value={formData.minRank}>
+                                    <SelectTrigger className="bg-black/20 border-white/10"><SelectValue /></SelectTrigger>
                                     <SelectContent>
-                                        {formData.targeting.state && INDIA_LOCATIONS[formData.targeting.state]?.map(d => (
-                                            <SelectItem key={d} value={d}>{d}</SelectItem>
-                                        ))}
+                                        <SelectItem value="ALL">All Ranks</SelectItem>
+                                        <SelectItem value="NEWBIE">Newbie</SelectItem>
+                                        <SelectItem value="PRO">Pro</SelectItem>
+                                        <SelectItem value="ELITE">Elite</SelectItem>
+                                        <SelectItem value="MASTER">Master</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label className="text-xs text-zinc-400">Min Age (Years)</Label>
+                                <Label className="text-[10px] font-bold uppercase text-zinc-500">Priority Index</Label>
                                 <Input
                                     type="number"
-                                    value={formData.targeting.minAge}
-                                    min={10}
-                                    onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, minAge: parseInt(e.target.value) } })}
-                                    className="bg-black/40 border-white/10"
+                                    value={formData.priority}
+                                    onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                                    className="bg-black/20 border-white/10"
                                 />
-                                <p className="text-[10px] text-zinc-500">System enforces this strictly.</p>
                             </div>
-                            <div className="flex flex-col gap-2 pt-2 md:pt-6">
-                                <div className="flex items-center gap-2">
-                                    <Switch
-                                        checked={formData.targeting.verifiedOnly}
-                                        disabled // Enforced by default
-                                        onCheckedChange={(c) => setFormData({ ...formData, targeting: { ...formData.targeting, verifiedOnly: c } })}
-                                    />
-                                    <Label className="text-xs text-blue-200">Verified Profile Required</Label>
-                                </div>
-                                <p className="text-[10px] text-zinc-500 pl-10">OTP + Profile + Location Verified</p>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-bold uppercase text-zinc-500">Submission Cap</Label>
+                                <Input
+                                    type="number"
+                                    placeholder="∞ Unlimited"
+                                    value={formData.maxSubmissions}
+                                    onChange={(e) => setFormData({ ...formData, maxSubmissions: e.target.value })}
+                                    className="bg-black/20 border-white/10"
+                                />
                             </div>
-                        </div>
-                    </div>
-                )}
+                        </CardContent>
+                    </Card>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase text-zinc-500">Category</Label>
-                        <Select onValueChange={(v) => setFormData({ ...formData, categoryId: v })} value={formData.categoryId}>
-                            <SelectTrigger className="bg-zinc-900/50 border-white/10"><SelectValue placeholder="Select..." /></SelectTrigger>
-                            <SelectContent>
-                                {categories?.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    <Button
+                        onClick={() => createMutation.mutate(formData)}
+                        className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-black tracking-widest h-14 shadow-[0_0_20px_-5px_rgba(79,70,229,0.5)] border border-white/10"
+                        disabled={createMutation.isPending || !formData.title || !formData.categoryId}
+                    >
+                        {createMutation.isPending ? <Loader2 className="animate-spin w-5 h-5 mr-2" /> : <Save className="w-5 h-5 mr-2" />}
+                        {createMutation.isPending ? "INITIALIZING..." : "LAUNCH MISSION"}
+                    </Button>
 
-                    <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase text-zinc-500">Description / Instructions</Label>
-                        <Textarea
-                            placeholder="Steps to complete..."
-                            value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="bg-zinc-900/50 border-white/10 min-h-[120px] font-mono text-sm leading-relaxed"
-                        />
-                    </div>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white/5 rounded-lg border border-white/5">
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase text-zinc-400 flex items-center gap-1"><Coins className="w-3 h-3" /> Cash Reward (₹)</Label>
-                        <Input type="number" value={formData.rewardAmount} onChange={(e) => setFormData({ ...formData, rewardAmount: e.target.value })} className="bg-black/50 border-white/10 text-emerald-400 font-bold" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase text-zinc-400 flex items-center gap-1"><Star className="w-3 h-3" /> XP Reward</Label>
-                        <Input type="number" value={formData.rewardCoins} onChange={(e) => setFormData({ ...formData, rewardCoins: e.target.value })} className="bg-black/50 border-white/10 text-amber-400 font-bold" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase text-zinc-400">Priority</Label>
-                        <Input type="number" value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value })} className="bg-black/50 border-white/10" />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase text-zinc-500">Min Rank</Label>
-                        <Select onValueChange={(v) => setFormData({ ...formData, minRank: v })} value={formData.minRank}>
-                            <SelectTrigger className="bg-zinc-900/50 border-white/10"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="ALL">All Ranks</SelectItem>
-                                <SelectItem value="NEWBIE">Newbie</SelectItem>
-                                <SelectItem value="PRO">Pro</SelectItem>
-                                <SelectItem value="ELITE">Elite</SelectItem>
-                                <SelectItem value="MASTER">Master</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase text-zinc-500">Max Submissions</Label>
-                        <Input
-                            type="number"
-                            placeholder="Unlimited"
-                            value={formData.maxSubmissions}
-                            onChange={(e) => setFormData({ ...formData, maxSubmissions: e.target.value })}
-                            className="bg-zinc-900/50 border-white/10"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase text-zinc-500">Expires At</Label>
-                        <Input
-                            type="datetime-local"
-                            value={formData.expiresAt}
-                            onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
-                            className="bg-zinc-900/50 border-white/10"
-                        />
-                    </div>
-                </div>
-
-                <Button
-                    onClick={() => createMutation.mutate(formData)}
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 font-bold h-12"
-                    disabled={createMutation.isPending || !formData.title || !formData.categoryId}
-                >
-                    {createMutation.isPending ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                    PUBLISH TASK
-                </Button>
-
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     );
 }

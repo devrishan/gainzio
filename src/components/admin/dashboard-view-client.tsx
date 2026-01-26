@@ -14,6 +14,9 @@ interface DashboardViewClientProps {
         pending_withdrawals: {
             count: number;
         };
+        new_users_24h: number;
+        active_users_24h: number;
+        revenue_24h: number;
         // Add other metrics types if used, but these are the ones used in the component
         [key: string]: any;
     };
@@ -28,19 +31,43 @@ export function DashboardViewClient({ metrics }: DashboardViewClientProps) {
         }
     });
 
-    const { data: ticketsData } = useQuery({
-        queryKey: ["admin-support-tickets-open"],
-        queryFn: async () => {
-            const res = await fetch("/api/admin/support/tickets?status=OPEN");
-            return res.json();
-        }
-    });
-
     const stats = [
-        { title: "Total Users", value: metrics?.total_users?.toLocaleString() || "0", change: "+12%", icon: Users, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
-        { title: "Revenue", value: `₹${metrics?.total_earnings_paid?.toLocaleString() || "0"}`, change: "+8.2%", icon: DollarSign, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
-        { title: "Pending Payouts", value: metrics?.pending_withdrawals?.count?.toString() || "0", change: "-2%", icon: CreditCard, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
-        { title: "Open Tickets", value: ticketsData?.length?.toString() || "0", change: "Active", icon: MessageSquare, color: "text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/20" },
+        {
+            title: "Total Users",
+            value: metrics?.total_users?.toLocaleString() || "0",
+            change: `+${metrics?.new_users_24h || 0} today`,
+            icon: Users,
+            color: "text-blue-400",
+            bg: "bg-blue-500/10",
+            border: "border-blue-500/20"
+        },
+        {
+            title: "Active Users (24h)",
+            value: metrics?.active_users_24h?.toLocaleString() || "0",
+            change: "Active Now",
+            icon: Activity,
+            color: "text-purple-400",
+            bg: "bg-purple-500/10",
+            border: "border-purple-500/20"
+        },
+        {
+            title: "Revenue",
+            value: `₹${metrics?.total_earnings_paid?.toLocaleString() || "0"}`,
+            change: `+₹${metrics?.revenue_24h?.toLocaleString() || 0} today`,
+            icon: DollarSign,
+            color: "text-emerald-400",
+            bg: "bg-emerald-500/10",
+            border: "border-emerald-500/20"
+        },
+        {
+            title: "Pending Payouts",
+            value: metrics?.pending_withdrawals?.count?.toString() || "0",
+            change: "Action Req",
+            icon: CreditCard,
+            color: "text-amber-400",
+            bg: "bg-amber-500/10",
+            border: "border-amber-500/20"
+        },
     ];
 
     return (
@@ -157,8 +184,8 @@ export function DashboardViewClient({ metrics }: DashboardViewClientProps) {
                         {logsData?.logs?.map((log: any, i: number) => (
                             <div key={log.id} className="flex gap-4 relative">
                                 <div className={`mt-1.5 h-2.5 w-2.5 rounded-full border-2 border-neutral-950 shrink-0 z-10 ${log.action.includes('LOGIN') ? 'bg-blue-500' :
-                                        log.action.includes('UPDATE') ? 'bg-amber-500' :
-                                            log.action.includes('DELETE') ? 'bg-red-500' : 'bg-emerald-500'
+                                    log.action.includes('UPDATE') ? 'bg-amber-500' :
+                                        log.action.includes('DELETE') ? 'bg-red-500' : 'bg-emerald-500'
                                     }`} />
                                 <div>
                                     <p className="text-xs text-neutral-500 font-mono mb-0.5">
