@@ -147,6 +147,10 @@ model User {
   // Trading
   futurePositions  FuturePosition[]
 
+  // Ads
+  adImpressions    AdImpression[]
+  adClicks         AdClick[]
+
   @@index([referredById])
   @@index([role])
   @@index([phone])
@@ -689,16 +693,73 @@ model ProductSuggestion {
   @@index([status, createdAt])
 }
 
-model Ad {
-  id            String   @id @default(cuid())
-  name          String
-  adPlacementId String
-  adCodeSnippet String   @db.Text
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+model AdZone {
+  id          String       @id @default(cuid())
+  name        String       @unique // e.g. "dashboard_sidebar", "mobile_footer"
+  slug        String       @unique
+  width       Int
+  height      Int
+  description String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  campaigns   AdCampaign[]
+}
+
+model AdCampaign {
+  id          String   @id @default(cuid())
+  name        String
+  advertiser  String?
+  imageUrl    String
+  targetUrl   String
+  zones       AdZone[]
+  
+  // Scheduling & Budgets
+  startDate   DateTime @default(now())
+  endDate     DateTime?
+  dailyBudget Int?     // Max impressions/day
+  totalBudget Int?     // Max impressions total
+  
+  // Stats
+  views       Int      @default(0)
+  clicks      Int      @default(0)
+  
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  impressions AdImpression[]
+  adClicks    AdClick[]
 
   @@index([isActive])
+}
+
+model AdImpression {
+  id         String     @id @default(uuid())
+  campaignId String
+  campaign   AdCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime   @default(now())
+
+  @@index([campaignId])
+  @@index([createdAt])
+}
+
+model AdClick {
+  id         String     @id @default(uuid())
+  campaignId String
+  campaign   AdCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime   @default(now())
+
+  @@index([campaignId])
+  @@index([createdAt])
 }
 
 model SystemConfig {

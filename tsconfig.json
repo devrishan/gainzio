@@ -24,7 +24,7 @@
         "./src/*"
       ],
       "@app/*": [
-        "./app/*"
+        "./src/app/*"
       ]
     },
     "noEmit": true,

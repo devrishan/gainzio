@@ -4,15 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
     LayoutDashboard,
-    CheckSquare,
-    Users,
+    ClipboardCheck,
+    Users2,
     Wallet,
-    Menu,
-    Shield,
-    FileText,
-    Hammer,
+    Megaphone,
+    UserCog,
+    ShieldCheck,
+    Wrench,
     User,
-    HelpCircle
+    HelpCircle,
+    FileText
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavigationItem } from "@/config/navigation";
@@ -21,36 +22,28 @@ interface BottomNavProps {
     items: NavigationItem[];
 }
 
+const iconMap: Record<string, any> = {
+    dashboard: LayoutDashboard,
+    referrals: Users2,
+    withdraw: Wallet,
+    ads: Megaphone,
+    admins: UserCog,
+    members: Users2,
+    security: ShieldCheck,
+    submissions: ClipboardCheck,
+    maintenance: Wrench,
+    profile: User,
+    support: HelpCircle,
+    // Add missing mappings if any
+    tasks: FileText,
+};
+
 export function BottomNav({ items }: BottomNavProps) {
     const pathname = usePathname();
 
+    // Helper to get icon safely
     const getIcon = (iconName: string) => {
-        switch (iconName) {
-            case "dashboard":
-                return LayoutDashboard;
-            case "referrals":
-                return Users;
-            case "withdraw":
-                return Wallet;
-            case "ads":
-                return FileText;
-            case "admins":
-                return Shield;
-            case "members":
-                return Users;
-            case "security":
-                return Shield;
-            case "submissions":
-                return CheckSquare;
-            case "maintenance":
-                return Hammer;
-            case "profile":
-                return User;
-            case "support":
-                return HelpCircle;
-            default:
-                return LayoutDashboard;
-        }
+        return iconMap[iconName] || LayoutDashboard;
     };
 
     return (

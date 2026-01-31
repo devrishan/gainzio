@@ -1,4 +1,4 @@
-import { getRedis } from '@/lib/redis';
+import { getRedis } from './redis';
 
 export interface RateLimitOptions {
   identifier: string; // phone, email, IP, userId

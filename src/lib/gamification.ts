@@ -53,14 +53,6 @@ export async function addXP(
   });
 
   if (!gamification) {
-    // Create gamification state if it doesn't exist
-    const newGamification = await prisma.gamificationState.create({
-      data: {
-        userId,
-        xp: amount,
-        rank: calculateRank(amount),
-      },
-    });
     // Check for Double XP Boost
     const activeBoost = await prisma.userInventory.findFirst({
       where: {
@@ -72,8 +64,17 @@ export async function addXP(
 
     const finalAmount = activeBoost ? amount * 2 : amount;
 
+    // Create gamification state if it doesn't exist
+    const newGamification = await prisma.gamificationState.create({
+      data: {
+        userId,
+        xp: finalAmount,
+        rank: calculateRank(finalAmount),
+      },
+    });
+
     return {
-      newXP: newGamification.xp + finalAmount, // Initialize with first amount
+      newXP: newGamification.xp,
       newRank: newGamification.rank,
       rankUpgraded: false,
     };

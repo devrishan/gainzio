@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   getFeatureFlag,
   setFeatureFlag,
@@ -6,34 +6,22 @@ import {
   getAllFeatureFlags,
   deleteFeatureFlag,
 } from '../feature-flags';
-import { getRedis } from '../redis';
+import * as RedisLib from '../redis';
 
-vi.mock('@/lib/redis', () => {
+describe('Feature Flags', () => {
   const mockRedis = {
     get: vi.fn(),
     set: vi.fn(),
     del: vi.fn(),
     keys: vi.fn(),
-  };
-  return {
-    getRedis: () => mockRedis,
-  };
-});
-
-// We don't need to mock getRedis anymore if we mock ioredis, 
-// unless we want to bypass redis.ts logic. 
-// However, redis.ts logic checks env vars.
-// Let's rely on standard redis.ts behavior but with mocked ioredis.
-
-// But wait, redis.ts exports getRedis.
-// If we verify that getRedis logic works with mocked ioredis.
-// The test uses standard imports.
-
-describe('Feature Flags', () => {
-  const mockRedis = getRedis() as any;
+  } as any;
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.spyOn(RedisLib, 'getRedis').mockReturnValue(mockRedis);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('getFeatureFlag', () => {
@@ -52,13 +40,15 @@ describe('Feature Flags', () => {
 
       const result = await getFeatureFlag('NON_EXISTENT');
 
-      expect(result).toBeNull();
+      expect(result).toEqual({
+        key: 'NON_EXISTENT',
+        enabled: false,
+        rolloutPercentage: 100,
+      });
     });
 
     it('should fallback to environment variable if Redis unavailable', async () => {
-      vi.mock('../redis', () => ({
-        getRedis: () => null,
-      }));
+      vi.spyOn(RedisLib, 'getRedis').mockReturnValue(null);
 
       process.env.FEATURE_TEST_FLAG = 'true';
       const result = await getFeatureFlag('TEST_FLAG');

@@ -1,25 +1,22 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { checkRateLimit, getClientIp } from '../rate-limit';
-import { getRedis } from '../redis';
+import * as RedisLib from '../redis';
 
-vi.mock('@/lib/redis', () => {
+describe('Rate Limiting', () => {
   const mockRedis = {
     zremrangebyscore: vi.fn(),
     zcard: vi.fn(),
     zrange: vi.fn(),
     zadd: vi.fn(),
     expire: vi.fn(),
-  };
-  return {
-    getRedis: () => mockRedis,
-  };
-});
-
-describe('Rate Limiting', () => {
-  const mockRedis = getRedis() as any;
+  } as any;
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.spyOn(RedisLib, 'getRedis').mockReturnValue(mockRedis);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('checkRateLimit', () => {
@@ -57,9 +54,7 @@ describe('Rate Limiting', () => {
     });
 
     it('should fallback gracefully when Redis unavailable', async () => {
-      vi.mock('../redis', () => ({
-        getRedis: () => null,
-      }));
+      vi.spyOn(RedisLib, 'getRedis').mockReturnValue(null);
 
       const result = await checkRateLimit({
         identifier: 'test-user',

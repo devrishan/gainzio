@@ -1,5 +1,5 @@
 @tailwind base;
-/* Force rebuild */
+/* Force rebuild - linter refresh */
 @tailwind components;
 @tailwind utilities;
 
@@ -127,7 +127,10 @@
 
   .no-scrollbar {
     -ms-overflow-style: none;
-    scrollbar-width: none;
+
+    @supports (scrollbar-width: none) {
+      scrollbar-width: none;
+    }
   }
 }
 
@@ -223,8 +226,9 @@
 
 .glass-morphism {
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  /* Ordered for cross-browser compatibility */
+  backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 

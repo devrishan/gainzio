@@ -25,6 +25,7 @@ import { CoinShopCard } from "@/components/member/coin-shop-card";
 import { UnifiedProgress } from "@/components/member/unified-progress";
 import { SparkWall } from "@/components/member/spark-wall";
 import { BadgesList } from "@/components/member/badges-list";
+import { AdUnit } from "@/components/ads/ad-unit";
 
 interface MemberDashboardClientProps {
     dashboard: MemberDashboardPayload;
@@ -107,6 +108,9 @@ export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDas
 
                     {/* Squad HUD */}
                     <SquadHUD squad={squad} />
+
+                    {/* Native Banner Ad */}
+                    <AdUnit zoneSlug="dashboard_main_banner" className="w-full h-32 rounded-xl shadow-sm border border-white/5" />
                 </div>
 
                 {/* 2. Wallet & Shop (Side Column) */}
@@ -119,6 +123,9 @@ export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDas
                             onWithdraw={() => router.push("/member/withdraw")}
                         />
                     </div>
+
+                    {/* Sidebar Ad */}
+                    <AdUnit zoneSlug="dashboard_sidebar_square" className="w-full aspect-square rounded-xl shadow-sm border border-white/5" />
 
                     <div className="animate-float">
                         <CoinShopCard coins={dashboard.wallet.coins || 0} />

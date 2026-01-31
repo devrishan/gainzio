@@ -1,4 +1,4 @@
-import { getRedis } from '@/lib/redis';
+import { getRedis } from './redis';
 
 export type FeatureFlag = {
   key: string;
