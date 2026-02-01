@@ -43,6 +43,7 @@ export async function middleware(request: NextRequest) {
   const isMemberRoute = pathname.startsWith("/member");
   const isApiMemberRoute = pathname.startsWith("/api/member");
   const isApiAdminRoute = pathname.startsWith("/api/admin");
+  const isDesignerRoute = pathname.startsWith("/designer");
 
   // Public Auth Pages (User Login)
   const isUserAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/register");
@@ -144,6 +145,21 @@ export async function middleware(request: NextRequest) {
     // Usually Admins can access everything, but if we want strict separation:
     // if (token.role === 'ADMIN') return NextResponse.redirect(new URL('/admin/dashboard', request.url));
     // For now, allowing Admins to view member dashboard might be useful for support.
+  }
+
+  // -----------------------------------------------------------------------------
+  // RULE 5: PROTECTED DESIGNER ROUTES (/designer/*)
+  // -----------------------------------------------------------------------------
+  if (isDesignerRoute) {
+    if (!isAuth) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    const role = token.role as string;
+    if (!["DESIGNER", "SUPER_ADMIN"].includes(role)) {
+      // Not a designer? Redirect them to their appropriate home
+      if (["ADMIN", "SUPPORT"].includes(role)) return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+      return NextResponse.redirect(new URL("/member/dashboard", request.url));
+    }
   }
 
   // Preserve the referral cookie if we set it

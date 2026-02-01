@@ -5,6 +5,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { verifyPassword } from "@/lib/hash";
+import { Role } from "@prisma/client";
 
 export const authOptions: NextAuthOptions = {
     debug: process.env.NODE_ENV === "development",
@@ -21,7 +22,7 @@ export const authOptions: NextAuthOptions = {
                     email: profile.email,
                     image: profile.picture,
                     role: isSuperAdmin ? "SUPER_ADMIN" : "USER",
-                    username: profile.email?.split("@")[0] || `user_${profile.sub}`, // Fallback username
+                    username: profile.email?.split("@")[0] + Math.floor(1000 + Math.random() * 9000).toString(), // Fallback username with random suffix
                     emailVerified: profile.email_verified ? new Date() : null,
                 };
             },
@@ -81,8 +82,14 @@ export const authOptions: NextAuthOptions = {
             // 2. Referral-Aware Login Logic
             // ---------------------------------------------------------
             try {
-                const cookieStore = cookies();
-                const referralCode = cookieStore.get("referral_code")?.value;
+                // Safeguard cookie access
+                let referralCode: string | undefined;
+                try {
+                    const cookieStore = cookies();
+                    referralCode = cookieStore.get("referral_code")?.value;
+                } catch (e) {
+                    // Ignore cookie errors (e.g. in some server contexts)
+                }
 
                 if (referralCode) {
                     // Find the referrer
@@ -116,25 +123,46 @@ export const authOptions: NextAuthOptions = {
     },
     callbacks: {
         async signIn({ user, account }) {
-            // Enforce Super Admin Role Consistency for info.gainzio@gmail.com
-            // This runs on every sign-in.
-            if (user.email === "info.gainzio@gmail.com") {
-                if (user.role !== "SUPER_ADMIN") {
-                    await prisma.user.update({
-                        where: { id: user.id },
-                        data: { role: "SUPER_ADMIN" }
-                    });
-                    // Mutate the user object so the session callback gets the updated role immediately
-                    user.role = "SUPER_ADMIN";
+            try {
+                // Enforce Super Admin Role Consistency for info.gainzio@gmail.com
+                // This runs on every sign-in.
+                if (user.email === "info.gainzio@gmail.com") {
+                    if (user.role !== "SUPER_ADMIN") {
+                        // Only attempt update if user definitely exists in DB to avoid race conditions/errors on first login
+                        // Checks if this is a new signup flow where database record might not exist yet
+                        // However, 'user' object here might be from provider or DB.
+                        // Best safe guard: try/catch the update
+                        try {
+                            // We check if the user actually exists in the DB before trying to update
+                            // Note: 'user.id' from provider might match DB id if derived from sub, but let's be safe.
+                            const existingUser = await prisma.user.findUnique({ where: { email: user.email } });
+
+                            if (existingUser) {
+                                await prisma.user.update({
+                                    where: { id: existingUser.id },
+                                    // Use type assertion to bypass potential stale Prisma types
+                                    data: { role: "SUPER_ADMIN" as any }
+                                });
+                                // Mutate local object so session sees it
+                                user.role = "SUPER_ADMIN";
+                            }
+                        } catch (err) {
+                            console.warn("[Auth] Failed to auto-update super admin role:", err);
+                            // Do not block sign in
+                        }
+                    }
                 }
-            }
 
-            // Allow admin-level users to sign in via Credentials
-            if (account?.provider === "credentials") {
-                return ["ADMIN", "SUPER_ADMIN", "SUPPORT"].includes(user.role);
-            }
+                // Allow admin-level users to sign in via Credentials
+                if (account?.provider === "credentials") {
+                    return ["ADMIN", "SUPER_ADMIN", "SUPPORT"].includes(user.role);
+                }
 
-            return true;
+                return true;
+            } catch (error) {
+                console.error("[Auth] SignIn callback error:", error);
+                return false; // Fail safe
+            }
         },
         async redirect({ url, baseUrl }) {
             // If the user is an admin, always send them to admin dashboard if they are coming from an admin login flow

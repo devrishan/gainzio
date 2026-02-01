@@ -18,6 +18,7 @@ enum Role {
   PAYOUT_MANAGER
   SUPER_ADMIN
   SUPPORT
+  DESIGNER
 }
 
 enum SubmissionStatus {
