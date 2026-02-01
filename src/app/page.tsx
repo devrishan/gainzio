@@ -14,7 +14,7 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
-      <main className="flex min-h-screen flex-col gap-0 bg-background text-foreground overflow-x-hidden" suppressHydrationWarning>
+      <main className="flex min-h-screen flex-col gap-0 bg-background text-foreground" suppressHydrationWarning>
         <Hero />
         <HowItWorks />
         <EarningStreams />
