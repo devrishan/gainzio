@@ -50,7 +50,7 @@ export class AIService {
             rank: gamification?.rank || "Newbie",
             xp: gamification?.xp || 0,
             streak: gamification?.streakDays || 0,
-            pendingTasks: activeTasks.map(t => t.task.title)
+            pendingTasks: activeTasks.map((t: any) => t.task.title)
         };
     }
 

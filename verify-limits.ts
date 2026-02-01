@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { settingsService } from './src/services/settings-service';
+import * as fs from 'fs';
 
 const prisma = new PrismaClient();
 
@@ -30,7 +31,8 @@ async function runVerification() {
                 maxTasksPerDay: 2,
                 maxWithdrawalsPerWeek: 1,
                 maxAiRequestsPerDay: 3,
-                cooldownDays: 0
+                cooldownDays: 0,
+                minPayoutAmount: 50
             }
         });
         console.log("✅ Limits Updated: MaxTasks=2, MaxWithdrawals=1");
@@ -49,7 +51,7 @@ async function runVerification() {
 
         // Create 2 submissions (should be allowed)
         for (let i = 0; i < 2; i++) {
-            // @ts-ignore
+
             await prisma.taskSubmission.create({
                 data: {
                     userId: user.id,
@@ -111,7 +113,6 @@ async function runVerification() {
         }
 
         console.log("\n✨ ALL TESTS PASSED SUCCESSFULLY ✨");
-        const fs = require('fs');
         fs.writeFileSync('verification_success.txt', 'SUCCESS');
 
     } catch (e) {

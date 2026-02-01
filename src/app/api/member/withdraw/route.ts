@@ -1,6 +1,7 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
 import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { getAuthenticatedUser } from '@/lib/api-auth';
 import { settingsService } from '@/services/settings-service';
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Atomic Transaction to Prevent Race Conditions
-    const withdrawal = await prisma.$transaction(async (tx) => {
+    const withdrawal = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // A. Attempt to deduct balance ATOMICALLY
       // This ensures that even if 2 requests come in parallel, only one will successfully find
       // a wallet with enough balance in this specific query snapshot.
