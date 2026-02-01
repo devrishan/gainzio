@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { RoleGuard } from "@/components/admin/RoleGuard";
 import { useMutation } from "@tanstack/react-query";
 import { Check, X } from "lucide-react";
 
@@ -104,15 +105,17 @@ export function AdminWithdrawalsClient({ withdrawals }: AdminWithdrawalsClientPr
           <p className="text-sm text-muted-foreground">Confirm or decline payout requests submitted by members.</p>
         </div>
         {selectedIds.length > 0 && (
-          <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-5">
-            <span className="text-sm text-muted-foreground mr-2">{selectedIds.length} selected</span>
-            <Button size="sm" onClick={() => handleBatchAction("PROCESSING")} disabled={isBatchProcessing} className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 hover:bg-yellow-500/20">
-              Mark Processing
-            </Button>
-            <Button size="sm" onClick={() => handleBatchAction("APPROVED")} disabled={isBatchProcessing} className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20">
-              Approve All
-            </Button>
-          </div>
+          <RoleGuard minRole="SUPER_ADMIN">
+            <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-5">
+              <span className="text-sm text-muted-foreground mr-2">{selectedIds.length} selected</span>
+              <Button size="sm" onClick={() => handleBatchAction("PROCESSING")} disabled={isBatchProcessing} className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 hover:bg-yellow-500/20">
+                Mark Processing
+              </Button>
+              <Button size="sm" onClick={() => handleBatchAction("APPROVED")} disabled={isBatchProcessing} className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20">
+                Approve All
+              </Button>
+            </div>
+          </RoleGuard>
         )}
       </div>
       <div className="overflow-x-auto">
@@ -166,22 +169,24 @@ export function AdminWithdrawalsClient({ withdrawals }: AdminWithdrawalsClientPr
                     </Badge>
                   </TableCell>
                   <TableCell className="flex justify-end gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      disabled={withdrawal.status !== "pending" || mutation.isPending}
-                      onClick={() => mutation.mutate({ withdrawal_id: withdrawal.id, new_status: "APPROVED" })}
-                    >
-                      <Check className="h-4 w-4 text-success" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      disabled={withdrawal.status !== "pending" || mutation.isPending}
-                      onClick={() => mutation.mutate({ withdrawal_id: withdrawal.id, new_status: "REJECTED" })}
-                    >
-                      <X className="h-4 w-4 text-destructive" />
-                    </Button>
+                    <RoleGuard minRole="SUPER_ADMIN">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        disabled={withdrawal.status !== "pending" || mutation.isPending}
+                        onClick={() => mutation.mutate({ withdrawal_id: withdrawal.id, new_status: "APPROVED" })}
+                      >
+                        <Check className="h-4 w-4 text-success" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        disabled={withdrawal.status !== "pending" || mutation.isPending}
+                        onClick={() => mutation.mutate({ withdrawal_id: withdrawal.id, new_status: "REJECTED" })}
+                      >
+                        <X className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </RoleGuard>
                   </TableCell>
                 </TableRow>
               ))

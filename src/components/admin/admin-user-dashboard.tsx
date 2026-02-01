@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminMemberDetail } from "@/services/admin";
 import { Loader2 } from "lucide-react";
+import { RoleGuard } from "@/components/admin/RoleGuard";
 
 interface AdminUserDashboardProps {
     user: AdminMemberDetail;
@@ -62,15 +63,17 @@ export function AdminUserDashboard({ user }: AdminUserDashboardProps) {
                     <Button variant="outline" className="border-white/10 hover:bg-white/5">
                         Reset Password
                     </Button>
-                    {user.status === "Active" ? (
-                        <Button variant="destructive" className="font-bold">
-                            <Ban className="w-4 h-4 mr-2" /> Suspend
-                        </Button>
-                    ) : (
-                        <Button variant="outline" className="font-bold border-emerald-500/50 text-emerald-400 hover:bg-emerald-950/30">
-                            <CheckCircle className="w-4 h-4 mr-2" /> Activate
-                        </Button>
-                    )}
+                    <RoleGuard minRole="SUPER_ADMIN" fallback={<span className="text-xs text-zinc-500 self-center">Read Only</span>}>
+                        {user.status === "Active" ? (
+                            <Button variant="destructive" className="font-bold">
+                                <Ban className="w-4 h-4 mr-2" /> Suspend
+                            </Button>
+                        ) : (
+                            <Button variant="outline" className="font-bold border-emerald-500/50 text-emerald-400 hover:bg-emerald-950/30">
+                                <CheckCircle className="w-4 h-4 mr-2" /> Activate
+                            </Button>
+                        )}
+                    </RoleGuard>
                 </div>
             </div>
 

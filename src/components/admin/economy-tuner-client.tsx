@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Settings2, Coins, TrendingUp, Zap, CheckCircle, Loader2 } from "lucide-react";
+import { RoleGuard } from "@/components/admin/RoleGuard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -135,19 +136,21 @@ export function EconomyTunerClient() {
                     </div>
 
                     <div className="pt-6 border-t border-white/5">
-                        <Button
-                            onClick={handleSave}
-                            className="group relative w-full overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 font-bold tracking-wide transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/25"
-                            disabled={mutation.isPending}
-                        >
-                            <div className="absolute inset-0 bg-white/20 translate-y-full transition-transform group-hover:translate-y-0" />
-                            {mutation.isPending ? (
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            ) : (
-                                <Zap className="mr-2 h-4 w-4 fill-current" />
-                            )}
-                            UPDATE ECONOMY
-                        </Button>
+                        <RoleGuard minRole="SUPER_ADMIN" fallback={<Button disabled className="w-full bg-zinc-800 text-zinc-500 cursor-not-allowed">View Only Permission</Button>}>
+                            <Button
+                                onClick={handleSave}
+                                className="group relative w-full overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 font-bold tracking-wide transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/25"
+                                disabled={mutation.isPending}
+                            >
+                                <div className="absolute inset-0 bg-white/20 translate-y-full transition-transform group-hover:translate-y-0" />
+                                {mutation.isPending ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Zap className="mr-2 h-4 w-4 fill-current" />
+                                )}
+                                UPDATE ECONOMY
+                            </Button>
+                        </RoleGuard>
                     </div>
 
                 </CardContent>
