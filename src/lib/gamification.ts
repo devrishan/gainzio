@@ -431,12 +431,48 @@ export async function handleTaskApproval(userId: string, taskId: string): Promis
 }
 
 /**
- * Handle referral verification - award XP
+ * Handle referral verification - award XP and Coins (Navi Model: 5000 Coins)
  */
 export async function handleReferralVerification(userId: string, referralId: string): Promise<void> {
+  const REFERRAL_COIN_REWARD = 5000;
+
+  // Award XP
   await addXP(userId, XP_REWARDS.REFERRAL_VERIFIED, 'Referral verified', {
     referralId,
   });
+
+  // Award Coins (Locked)
+  try {
+    const unlockTime = new Date();
+    unlockTime.setHours(unlockTime.getHours() + 24);
+
+    await prisma.$transaction(async (tx) => {
+      let wallet = await tx.wallet.findUnique({ where: { userId } });
+      if (!wallet) {
+        wallet = await tx.wallet.create({ data: { userId } });
+      }
+
+      await tx.wallet.update({
+        where: { id: wallet.id },
+        data: { lockedCoins: { increment: REFERRAL_COIN_REWARD } }
+      });
+
+      await tx.coinTransaction.create({
+        data: {
+          userId,
+          amount: REFERRAL_COIN_REWARD,
+          type: "EARN",
+          status: "LOCKED",
+          unlocksAt: unlockTime,
+          description: `Referral Bonus (Verified)`,
+          source: "REFERRAL_BONUS",
+          metadata: { referralId }
+        }
+      });
+    });
+  } catch (err) {
+    console.error("Failed to award Referral Coins", err);
+  }
 
   // Check and award badges
   await checkAndAwardBadges(userId);
