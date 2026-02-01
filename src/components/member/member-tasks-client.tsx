@@ -244,12 +244,35 @@ export function MemberTasksClient() {
         </div>
       )}
 
+      {/* Featured Task Banner (Mobile Only) */}
+      <div className="lg:hidden relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 p-6 text-white shadow-lg">
+        <div className="relative z-10 flex flex-col items-start gap-4">
+          <div>
+            <Badge className="bg-white/20 hover:bg-white/30 text-white border-none mb-2">Featured</Badge>
+            <h3 className="text-xl font-bold">Watch & Earn Premium</h3>
+            <p className="text-sm text-white/80 mt-1 max-w-[80%]">Watch high-value ads and earn 2x rewards for the next hour.</p>
+          </div>
+          <Button size="sm" className="bg-white text-purple-600 hover:bg-white/90 font-semibold border-none">
+            Start Earning <ArrowUpRight className="ml-1 h-3 w-3" />
+          </Button>
+        </div>
+        {/* Decorative Circles */}
+        <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+        <div className="absolute -right-2 bottom-0 h-24 w-24 rounded-full bg-blue-500/30 blur-xl" />
+      </div>
+
       <Tabs defaultValue="daily" className="w-full">
-        <TabsList className="w-full grid grid-cols-3 bg-muted/20 p-1">
-          <TabsTrigger value="daily">Daily Tasks</TabsTrigger>
-          <TabsTrigger value="dirpadi">DIRPADI</TabsTrigger>
-          <TabsTrigger value="special">Special</TabsTrigger>
-        </TabsList>
+        <div className="relative">
+          <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-background to-transparent z-10 lg:hidden pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-background to-transparent z-10 lg:hidden pointer-events-none" />
+          <div className="overflow-x-auto pb-2 -mx-4 px-4 lg:mx-0 lg:px-0 scrollbar-hide">
+            <TabsList className="w-auto inline-flex min-w-full lg:w-full lg:grid lg:grid-cols-3 bg-muted/20 p-1">
+              <TabsTrigger value="daily" className="px-6 lg:px-3">Daily Tasks</TabsTrigger>
+              <TabsTrigger value="dirpadi" className="px-6 lg:px-3">DIRPADI</TabsTrigger>
+              <TabsTrigger value="special" className="px-6 lg:px-3">Special</TabsTrigger>
+            </TabsList>
+          </div>
+        </div>
         <div className="mt-6 min-h-[50vh]">
           <TabsContent value="daily">
             <TaskGrid data={dailyTasks} />

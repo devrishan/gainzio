@@ -144,11 +144,11 @@ export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDas
                     </Button>
                 </div>
 
-                <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible no-scrollbar">
+                <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible no-scrollbar snap-x snap-mandatory">
                     {/* Watch Tasks Opportunity */}
                     <div
                         onClick={() => router.push('/member/tasks')}
-                        className="min-w-[280px] sm:min-w-0 group relative cursor-pointer spark-border rounded-xl overflow-hidden glass-morphism hover:bg-accent/5 transition-all duration-300"
+                        className="min-w-[280px] sm:min-w-0 group relative cursor-pointer spark-border rounded-xl overflow-hidden glass-morphism hover:bg-accent/5 transition-all duration-300 snap-center"
                     >
                         {/* Image Placeholder */}
                         <div className="h-32 bg-gradient-to-br from-blue-500/20 to-purple-600/20 flex items-center justify-center relative">
@@ -183,7 +183,7 @@ export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDas
                     {/* Referral Opportunity */}
                     <div
                         onClick={() => router.push('/member/referrals')}
-                        className="min-w-[280px] sm:min-w-0 group relative cursor-pointer spark-border rounded-xl overflow-hidden glass-morphism hover:bg-accent/5 transition-all duration-300"
+                        className="min-w-[280px] sm:min-w-0 group relative cursor-pointer spark-border rounded-xl overflow-hidden glass-morphism hover:bg-accent/5 transition-all duration-300 snap-center"
                     >
                         <div className="h-32 bg-gradient-to-br from-green-500/20 to-emerald-600/20 flex items-center justify-center relative">
                             <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-medium text-white flex items-center gap-1 border border-white/10">
@@ -217,7 +217,7 @@ export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDas
                     {/* Leaderboard Opportunity */}
                     <div
                         onClick={() => router.push('/member/leaderboard')}
-                        className="min-w-[280px] sm:min-w-0 group relative cursor-pointer spark-border rounded-xl overflow-hidden glass-morphism hover:bg-accent/5 transition-all duration-300"
+                        className="min-w-[280px] sm:min-w-0 group relative cursor-pointer spark-border rounded-xl overflow-hidden glass-morphism hover:bg-accent/5 transition-all duration-300 snap-center"
                     >
                         <div className="h-32 bg-gradient-to-br from-purple-500/20 to-violet-600/20 flex items-center justify-center relative">
                             <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-medium text-white flex items-center gap-1 border border-white/10">

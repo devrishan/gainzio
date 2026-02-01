@@ -47,8 +47,8 @@ export function BottomNav({ items }: BottomNavProps) {
     };
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 block border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:hidden">
-            <nav className="flex h-16 items-center justify-around px-2">
+        <div className="fixed bottom-4 left-4 right-4 z-50 lg:hidden">
+            <nav className="flex items-center justify-around p-2 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
                 {items.slice(0, 5).map((item) => {
                     const Icon = getIcon(item.icon);
                     const isActive = pathname === item.href;
@@ -58,14 +58,24 @@ export function BottomNav({ items }: BottomNavProps) {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "flex flex-col items-center justify-center gap-1 rounded-lg p-2 transition-colors duration-200",
+                                "relative flex flex-col items-center justify-center gap-1 rounded-xl w-full py-2 transition-all duration-300",
                                 isActive
-                                    ? "text-primary hover:text-primary/80"
-                                    : "text-muted-foreground hover:text-foreground"
+                                    ? "text-white"
+                                    : "text-white/40 hover:text-white/70"
                             )}
                         >
-                            <Icon className={cn("h-5 w-5", isActive && "fill-current")} />
-                            <span className="text-[10px] font-medium">{item.label}</span>
+                            {/* Active Indicator Background */}
+                            {isActive && (
+                                <div className="absolute inset-0 bg-white/10 rounded-xl -z-10 animate-in fade-in zoom-in duration-200" />
+                            )}
+
+                            <Icon className={cn("h-5 w-5 transition-transform duration-300", isActive && "scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]")} />
+                            <span className={cn(
+                                "text-[10px] font-medium transition-all duration-300",
+                                isActive ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 hidden"
+                            )}>
+                                {item.label}
+                            </span>
                         </Link>
                     );
                 })}

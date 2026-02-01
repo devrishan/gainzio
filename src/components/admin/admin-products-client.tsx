@@ -2,16 +2,25 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Package, CheckCircle2, XCircle, Clock, ShoppingBag,
+  ExternalLink, Filter, RotateCcw, ArrowRight, Layers
+} from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Clock, CheckCircle2, XCircle, Package } from "lucide-react";
+import {
+  Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger
+} from "@/components/ui/sheet";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from "@/components/ui/select";
 import { ConvertSuggestionDialog } from "./convert-suggestion-dialog";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface ProductSuggestion {
   id: string;
@@ -64,41 +73,6 @@ async function fetchSuggestions(filters: {
   return response.json();
 }
 
-function getStatusBadge(status: string) {
-  switch (status) {
-    case "pending":
-      return (
-        <Badge variant="outline" className="gap-1">
-          <Clock className="h-3 w-3" />
-          Pending
-        </Badge>
-      );
-    case "approved":
-      return (
-        <Badge variant="default" className="gap-1 bg-green-600">
-          <CheckCircle2 className="h-3 w-3" />
-          Approved
-        </Badge>
-      );
-    case "rejected":
-      return (
-        <Badge variant="destructive" className="gap-1">
-          <XCircle className="h-3 w-3" />
-          Rejected
-        </Badge>
-      );
-    case "converted":
-      return (
-        <Badge variant="secondary" className="gap-1">
-          <Package className="h-3 w-3" />
-          Converted
-        </Badge>
-      );
-    default:
-      return <Badge variant="outline">{status}</Badge>;
-  }
-}
-
 export function AdminProductsClient() {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [platformFilter, setPlatformFilter] = useState<string>("");
@@ -132,207 +106,209 @@ export function AdminProductsClient() {
       queryClient.invalidateQueries({ queryKey: ["admin-product-suggestions"] });
       setSelectedSuggestion(null);
       toast({
-        title: "Suggestion converted",
-        description: "The product suggestion has been converted to a task.",
+        title: "Success",
+        description: "Review conversion complete",
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Conversion failed",
+        title: "Conversion Failed",
         description: error.message,
         variant: "destructive",
       });
     },
   });
 
-  if (isLoading) {
-    return <LoadingSkeleton className="h-96" />;
-  }
+  if (isLoading) return <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><LoadingSkeleton className="h-[300px] w-full" /><LoadingSkeleton className="h-[300px] w-full" /><LoadingSkeleton className="h-[300px] w-full" /></div>;
 
-  if (error) {
-    return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <XCircle className="h-12 w-12 text-destructive mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Failed to load suggestions</h3>
-          <p className="text-sm text-muted-foreground">
-            {error instanceof Error ? error.message : "An error occurred"}
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
+  if (error) return (
+    <div className="h-[400px] flex flex-col items-center justify-center border border-white/5 bg-white/5 rounded-xl text-neutral-500">
+      <XCircle className="w-12 h-12 mb-4 opacity-50" />
+      <p>Failed to retrieve material data.</p>
+    </div>
+  );
 
   const suggestions = data?.data || [];
   const pagination = data?.pagination;
 
   return (
-    <div className="space-y-6">
-      {/* Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Filters</CardTitle>
-          <CardDescription>Filter product suggestions by status and platform</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="status-filter">Status</Label>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger id="status-filter">
-                  <SelectValue placeholder="All statuses" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
-                  <SelectItem value="converted">Converted</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+    <div className="space-y-8">
+      {/* Header and Filter Control */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 bg-gradient-to-r from-pink-500/10 to-transparent border border-white/5 rounded-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/10 blur-[80px] pointer-events-none" />
 
-            <div className="space-y-2">
-              <Label htmlFor="platform-filter">Platform</Label>
-              <Select value={platformFilter} onValueChange={setPlatformFilter}>
-                <SelectTrigger id="platform-filter">
-                  <SelectValue placeholder="All platforms" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All</SelectItem>
-                  <SelectItem value="amazon">Amazon</SelectItem>
-                  <SelectItem value="flipkart">Flipkart</SelectItem>
-                  <SelectItem value="myntra">Myntra</SelectItem>
-                  <SelectItem value="nykaa">Nykaa</SelectItem>
-                  <SelectItem value="swiggy">Swiggy</SelectItem>
-                  <SelectItem value="zomato">Zomato</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="relative z-10">
+          <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter flex items-center gap-2">
+            <ShoppingBag className="w-6 h-6 text-pink-500" />
+            Material Requests
+          </h2>
+          <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest mt-1">
+            Pending Reviews: <span className="text-white">{suggestions.filter(s => s.status === 'pending').length}</span>
+          </p>
+        </div>
 
-            <div className="flex items-end">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button className="relative z-10 bg-white/10 hover:bg-white/20 border border-white/5 text-white font-bold uppercase tracking-wider text-xs">
+              <Filter className="w-4 h-4 mr-2" />
+              Filters & Options
+              {(statusFilter || platformFilter) && <div className="ml-2 w-2 h-2 rounded-full bg-pink-500" />}
+            </Button>
+          </SheetTrigger>
+          <SheetContent className="bg-neutral-950 border-l border-white/10">
+            <SheetHeader>
+              <SheetTitle className="text-white uppercase font-black tracking-tight">Data Filters</SheetTitle>
+              <SheetDescription className="text-neutral-500">
+                Refine the material request list.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="space-y-6 mt-8">
+              <div className="space-y-2">
+                <Label className="text-xs font-bold text-neutral-400 uppercase">Status</Label>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                    <SelectValue placeholder="All Statuses" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-neutral-900 border-white/10">
+                    <SelectItem value="">All</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
+                    <SelectItem value="converted">Converted</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-bold text-neutral-400 uppercase">Platform</Label>
+                <Select value={platformFilter} onValueChange={setPlatformFilter}>
+                  <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                    <SelectValue placeholder="All Platforms" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-neutral-900 border-white/10">
+                    <SelectItem value="">All</SelectItem>
+                    <SelectItem value="amazon">Amazon</SelectItem>
+                    <SelectItem value="flipkart">Flipkart</SelectItem>
+                    <SelectItem value="myntra">Myntra</SelectItem>
+                    <SelectItem value="nykaa">Nykaa</SelectItem>
+                    <SelectItem value="swiggy">Swiggy</SelectItem>
+                    <SelectItem value="zomato">Zomato</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <Button
-                variant="outline"
+                variant="destructive"
                 onClick={() => {
                   setStatusFilter("");
                   setPlatformFilter("");
                   setPage(1);
                 }}
+                className="w-full"
               >
-                Clear Filters
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Reset Filters
               </Button>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </SheetContent>
+        </Sheet>
+      </div>
 
-      {/* Suggestions Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Product Suggestions</CardTitle>
-          <CardDescription>
-            {pagination ? `${pagination.total} total suggestions` : "Loading..."}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {suggestions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Package className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No suggestions found</h3>
-              <p className="text-sm text-muted-foreground">
-                {statusFilter || platformFilter
-                  ? "Try adjusting your filters"
-                  : "No product suggestions have been submitted yet."}
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Product</TableHead>
-                      <TableHead>Platform</TableHead>
-                      <TableHead>User</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {suggestions.map((suggestion) => (
-                      <TableRow key={suggestion.id}>
-                        <TableCell className="font-medium">
-                          {suggestion.productName}
-                          {suggestion.category && (
-                            <div className="text-xs text-muted-foreground">{suggestion.category}</div>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{suggestion.platform}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            {suggestion.user.username || suggestion.user.email || suggestion.user.phone}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {suggestion.amount ? `₹${suggestion.amount.toFixed(2)}` : "-"}
-                        </TableCell>
-                        <TableCell>{getStatusBadge(suggestion.status)}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {new Date(suggestion.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {suggestion.status === "pending" && (
-                            <Button
-                              size="sm"
-                              onClick={() => setSelectedSuggestion(suggestion)}
-                            >
-                              Convert to Task
-                            </Button>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+      {/* Product Card Grid */}
+      {suggestions.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
+          <Layers className="h-16 w-16 text-neutral-700 mb-6" />
+          <h3 className="text-lg font-bold text-neutral-300">No Materials Found</h3>
+          <p className="text-sm text-neutral-500 mt-2">Try adjusting the filters or wait for new submissions.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {suggestions.map((item, idx) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.05 }}
+            >
+              <Card className="bg-black/40 backdrop-blur-sm border-white/5 hover:border-pink-500/30 transition-all duration-300 overflow-hidden group h-full flex flex-col relative">
+                {/* Card Accent */}
+                <div className={cn("absolute top-0 left-0 w-1 h-full",
+                  item.status === 'pending' ? 'bg-amber-500' :
+                    item.status === 'approved' || item.status === 'converted' ? 'bg-emerald-500' : 'bg-red-500'
+                )} />
 
-              {/* Pagination */}
-              {pagination && pagination.total_pages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <div className="text-sm text-muted-foreground">
-                    Page {pagination.page} of {pagination.total_pages}
+                <CardHeader className="pb-3 pl-6">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                      <Badge variant="outline" className="border-white/10 bg-white/5 text-[10px] uppercase tracking-widest text-neutral-400 mb-2">
+                        {item.platform}
+                      </Badge>
+                      <CardTitle className="text-lg font-bold text-white line-clamp-1" title={item.productName}>
+                        {item.productName}
+                      </CardTitle>
+                      <CardDescription className="font-mono text-xs text-neutral-500">
+                        {item.category || "Uncategorized"}
+                      </CardDescription>
+                    </div>
+                    <div className={cn("p-2 rounded-full",
+                      item.status === 'pending' ? 'bg-amber-500/10 text-amber-500' :
+                        item.status === 'approved' || item.status === 'converted' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'
+                    )}>
+                      {item.status === 'pending' && <Clock className="w-4 h-4" />}
+                      {(item.status === 'approved' || item.status === 'converted') && <CheckCircle2 className="w-4 h-4" />}
+                      {item.status === 'rejected' && <XCircle className="w-4 h-4" />}
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      disabled={pagination.page === 1}
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setPage((p) => Math.min(pagination.total_pages, p + 1))}
-                      disabled={pagination.page === pagination.total_pages}
-                    >
-                      Next
-                    </Button>
+                </CardHeader>
+                <CardContent className="space-y-4 flex-1 pl-6">
+                  <div className="grid grid-cols-2 gap-4 py-4 border-t border-b border-white/5">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-neutral-500 uppercase font-bold">User</span>
+                      <p className="text-sm font-semibold text-neutral-300 truncate">{item.user.username}</p>
+                    </div>
+                    <div className="space-y-1 text-right">
+                      <span className="text-[10px] text-neutral-500 uppercase font-bold">Value</span>
+                      <p className="text-sm font-semibold text-white">₹{item.amount?.toFixed(2) || '0.00'}</p>
+                    </div>
                   </div>
-                </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
 
-      {/* Convert Dialog */}
+                  <div className="flex items-center justify-between text-xs text-neutral-500">
+                    <span>ID: <span className="font-mono text-neutral-400">...{item.id.slice(-6)}</span></span>
+                    <span>{new Date(item.created_at).toLocaleDateString()}</span>
+                  </div>
+                </CardContent>
+                <CardFooter className="bg-white/[0.02] border-t border-white/5 p-4 flex justify-between items-center pl-6">
+                  <Button variant="ghost" size="sm" className="text-xs text-neutral-400 hover:text-white">
+                    Details <ExternalLink className="w-3 h-3 ml-2" />
+                  </Button>
+                  {item.status === 'pending' && (
+                    <Button
+                      size="sm"
+                      className="bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs"
+                      onClick={() => setSelectedSuggestion(item)}
+                    >
+                      Convert <ArrowRight className="w-3 h-3 ml-2" />
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {pagination && pagination.total_pages > 1 && (
+        <div className="flex items-center justify-center gap-4 mt-8">
+          <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="border-white/10 bg-black hover:bg-white/10">
+            Previous
+          </Button>
+          <span className="text-xs font-mono text-neutral-500">Page {page} of {pagination.total_pages}</span>
+          <Button variant="outline" size="sm" onClick={() => setPage(p => Math.min(pagination.total_pages, p + 1))} disabled={page === pagination.total_pages} className="border-white/10 bg-black hover:bg-white/10">
+            Next
+          </Button>
+        </div>
+      )}
+
+      {/* Dialog */}
       {selectedSuggestion && (
         <ConvertSuggestionDialog
           suggestion={selectedSuggestion}
@@ -345,4 +321,5 @@ export function AdminProductsClient() {
     </div>
   );
 }
+
 
