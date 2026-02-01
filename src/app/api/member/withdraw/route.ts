@@ -3,9 +3,10 @@ import { verifyAccessToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getAuthenticatedUser } from '@/lib/api-auth';
+import { settingsService } from '@/services/settings-service';
 
 const withdrawSchema = z.object({
-  amount: z.number().positive().min(100, 'Minimum withdrawal amount is ₹100'),
+  amount: z.number().positive(),
   upiId: z.string().min(1, 'UPI ID is required').max(255),
 });
 
@@ -35,9 +36,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // --- CHECK SYSTEM LIMITS ---
+    const settings = await settingsService.getEffectiveSettings(userId);
+    const maxWithdrawals = settings.limits.maxWithdrawalsPerWeek;
+    const minPayout = settings.limits.minPayoutAmount;
+
+    // Count this week's withdrawals
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const weeklyWithdrawalsCount = await prisma.withdrawal.count({
+      where: {
+        userId: userId,
+        requestedAt: { gte: oneWeekAgo },
+        status: { notIn: ['REJECTED', 'CANCELLED', 'FAILED'] }
+      }
+    });
+
+    if (weeklyWithdrawalsCount >= maxWithdrawals) {
+      return NextResponse.json(
+        { success: false, error: `Weekly withdrawal limit reached. You can only make ${maxWithdrawals} withdrawals per 7 days.` },
+        { status: 429 }
+      );
+    }
+    // ---------------------------
+
     const body = await request.json();
     const validation = withdrawSchema.parse(body);
     const { amount, upiId } = validation;
+
+    // Dynamic Minimum Payout Check
+    if (amount < minPayout) {
+      return NextResponse.json(
+        { success: false, error: `Minimum withdrawal amount is ₹${minPayout}` },
+        { status: 400 }
+      );
+    }
 
     // 2. Atomic Transaction to Prevent Race Conditions
     const withdrawal = await prisma.$transaction(async (tx) => {

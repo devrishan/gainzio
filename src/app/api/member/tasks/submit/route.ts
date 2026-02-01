@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/api-auth';
 import { prisma } from '@/lib/prisma';
 import { uploadToS3, validateFile } from '@/lib/s3';
+import { settingsService } from '@/services/settings-service';
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,6 +18,30 @@ export async function POST(request: NextRequest) {
 
     // Use the ID from the helper
     const userId = authUser.userId;
+
+    // --- CHECK SYSTEM LIMITS ---
+    const settings = await settingsService.getEffectiveSettings(userId);
+    const maxDailyTasks = settings.limits.maxTasksPerDay;
+
+    // Count today's submissions
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const dailySubmissionsCount = await prisma.taskSubmission.count({
+      where: {
+        userId: userId,
+        submittedAt: { gte: today },
+        status: { not: 'DELETED' }
+      }
+    });
+
+    if (dailySubmissionsCount >= maxDailyTasks) {
+      return NextResponse.json(
+        { success: false, error: `Daily limit reached. You can only submit ${maxDailyTasks} tasks per day.` },
+        { status: 429 } // Too Many Requests
+      );
+    }
+    // ---------------------------
 
     const formData = await request.formData();
     const taskId = formData.get('task_id') as string;

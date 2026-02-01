@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export interface AIResponse {
     role: "assistant";
@@ -8,6 +9,14 @@ export interface AIResponse {
         action: string; // e.g., "NAVIGATE:/tasks", "COPY:CODE"
     }[];
 }
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const model = genAI.getGenerativeModel({
+    model: "gemini-2.0-flash",
+    generationConfig: {
+        responseMimeType: "application/json",
+    }
+});
 
 export class AIService {
     /**
@@ -46,66 +55,73 @@ export class AIService {
     }
 
     /**
-     * Processes a user message and returns an AI response.
-     * Currently mocked to simulating intelligent behavior.
+     * Processes a user message and returns an AI response using Gemini.
      */
     async processUserMessage(userId: string, message: string): Promise<AIResponse> {
-        const context = await this.getUserContext(userId);
-        const msg = message.toLowerCase();
+        try {
+            const context = await this.getUserContext(userId);
 
-        // 1. Balance / Earnings Query
-        if (msg.includes("balance") || msg.includes("earn") || msg.includes("money")) {
-            return {
-                role: "assistant",
-                content: `You currently have **${context.balance} Coins** in your wallet. \n\nDaily Streak: 🔥 ${context.streak} days\nRank: 🏆 ${context.rank}\n\nWant to earn more? Check out the latest tasks!`,
-                suggestedActions: [
-                    { label: "View Wallet", action: "NAVIGATE:/member/wallet" },
-                    { label: "Go to Tasks", action: "NAVIGATE:/member/dashboard" }
-                ]
-            };
-        }
+            const systemInstruction = `
+                You are Gainzio AI, a helpful assistant for the Gainzio platform. 
+                Gainzio is a platform where users earn money by completing tasks.
+                
+                User Context:
+                - Username: ${context.username}
+                - Balance: ${context.balance} Coins
+                - Rank: ${context.rank}
+                - XP: ${context.xp}
+                - Streak: ${context.streak} days
+                - Pending Tasks: ${context.pendingTasks.join(", ") || "None"}
+                
+                Instructions:
+                1. Be concise, friendly, and helpful.
+                2. Use the user context to answer questions about their account.
+                3. If the user asks about earning more, suggest they check the tasks.
+                4. You MUST respond in a valid JSON format that matches this schema:
+                   {
+                     "content": "string (markdown allowed)",
+                     "suggestedActions": [
+                       { "label": "string", "action": "string" }
+                     ]
+                   }
+                5. Valid actions for suggestedActions:
+                   - "NAVIGATE:<path>" (e.g., "NAVIGATE:/member/tasks", "NAVIGATE:/member/wallet")
+                   - "CMD:<command>" (e.g., "CMD:CHECK_BALANCE")
+                6. Do not include any text before or after the JSON.
+            `;
 
-        // 2. Task Help
-        if (msg.includes("task") || msg.includes("pending")) {
-            if (context.pendingTasks.length > 0) {
+            const result = await model.generateContent(`${systemInstruction}\n\nUser Question: ${message}`);
+
+            const responseText = result.response.text();
+
+            try {
+                const parsed = JSON.parse(responseText);
+
                 return {
                     role: "assistant",
-                    content: `You have ${context.pendingTasks.length} tasks under review:\n\n${context.pendingTasks.map(t => `- ${t}`).join("\n")}\n\nKeep it up!`,
-                    suggestedActions: [
-                        { label: "Check Status", action: "NAVIGATE:/member/tasks" }
-                    ]
+                    content: parsed.content || "I'm sorry, I couldn't process your request.",
+                    suggestedActions: parsed.suggestedActions || []
                 };
-            } else {
+            } catch (parseError) {
+                console.error("Failed to parse Gemini JSON response:", responseText, parseError);
                 return {
                     role: "assistant",
-                    content: "You don't have any pending tasks right now. Ready to start a new one?",
+                    content: "I received an invalid response format from my brain. Here is the raw message: " + responseText,
                     suggestedActions: [
-                        { label: "Browse Tasks", action: "NAVIGATE:/member/tasks" }
+                        { label: "View Tasks", action: "NAVIGATE:/member/tasks" }
                     ]
                 };
             }
-        }
-
-        // 3. Support / Help (Generic)
-        if (msg.includes("help") || msg.includes("support")) {
+        } catch (error) {
+            console.error("Gemini AI Processing Error:", error);
             return {
                 role: "assistant",
-                content: "I'm Gainzio AI. I can help you check your stats, find tasks, or navigate the app. \n\nIf you need human assistance, you can submit a ticket.",
+                content: "I'm having trouble connecting to my brain right now. Please try again later!",
                 suggestedActions: [
-                    { label: "Contact Support", action: "NAVIGATE:/member/support" }
+                    { label: "Refresh Page", action: "CMD:REFRESH" }
                 ]
             };
         }
-
-        // Default Response
-        return {
-            role: "assistant",
-            content: "I'm here to help! Ask me about your **balance**, **tasks**, or **rank**.",
-            suggestedActions: [
-                { label: "Check Balance", action: "CMD:CHECK_BALANCE" }, // Example of internal command intent
-                { label: "Find Tasks", action: "NAVIGATE:/member/tasks" }
-            ]
-        };
     }
 }
 

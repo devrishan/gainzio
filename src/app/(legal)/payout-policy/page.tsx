@@ -5,7 +5,12 @@ export const metadata: Metadata = {
     description: "Policy regarding user payouts, withdrawal methods, and dispute resolution.",
 };
 
-export default function PayoutPolicyPage() {
+import { settingsService } from "@/services/settings-service";
+
+export default async function PayoutPolicyPage() {
+    const settings = await settingsService.getSystemSettings();
+    const minPayout = settings.limits.minPayoutAmount;
+
     return (
         <div className="prose prose-invert max-w-none">
             <h1 className="text-3xl font-bold text-foreground">Payout & Dispute Policy</h1>
@@ -17,7 +22,7 @@ export default function PayoutPolicyPage() {
                 <section>
                     <h2 className="text-xl font-semibold text-foreground">1. Withdrawal Eligibility</h2>
                     <ul className="list-disc pl-5 mt-2 space-y-1">
-                        <li><strong>Minimum Payout:</strong> The minimum amount eligible for withdrawal is ₹50.</li>
+                        <li><strong>Minimum Payout:</strong> The minimum amount eligible for withdrawal is ₹{minPayout}.</li>
                         <li><strong>Account Status:</strong> Users must have a verified phone number and email address.</li>
                         <li><strong>Activity:</strong> Accounts flagged for suspicious activity or policy violations are not eligible for payouts.</li>
                     </ul>
