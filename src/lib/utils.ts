@@ -35,3 +35,11 @@ export function slugify(text: string): string {
     .replace(/^-+/, '')       // Trim - from start of text
     .replace(/-+$/, '');      // Trim - from end of text
 }
+
+export function formatDate(date: Date | string | number): string {
+  return new Date(date).toLocaleDateString("en-IN", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
