@@ -24,23 +24,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const ads = await prisma.ad.findMany({
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+    // const ads = await prisma.ad.findMany({
+    //   orderBy: {
+    //     createdAt: 'desc',
+    //   },
+    // });
+    const ads: any[] = [];
 
     return NextResponse.json({
       success: true,
-      ads: ads.map((ad) => ({
-        id: ad.id,
-        name: ad.name,
-        ad_placement_id: ad.adPlacementId,
-        ad_code_snippet: ad.adCodeSnippet,
-        is_active: ad.isActive,
-        created_at: ad.createdAt.toISOString(),
-        updated_at: ad.updatedAt.toISOString(),
-      })),
+      ads: ads,
     });
   } catch (error) {
     console.error('Error fetching ads:', error);
@@ -81,26 +74,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const ad = await prisma.ad.create({
-      data: {
-        name,
-        adPlacementId: ad_placement_id,
-        adCodeSnippet: ad_code_snippet,
-        isActive: is_active,
-      },
-    });
+    // const ad = await prisma.ad.create({
+    //   data: {
+    //     name,
+    //     adPlacementId: ad_placement_id,
+    //     adCodeSnippet: ad_code_snippet,
+    //     isActive: is_active,
+    //   },
+    // });
 
     return NextResponse.json({
-      success: true,
-      ad: {
-        id: ad.id,
-        name: ad.name,
-        ad_placement_id: ad.adPlacementId,
-        ad_code_snippet: ad.adCodeSnippet,
-        is_active: ad.isActive,
-        created_at: ad.createdAt.toISOString(),
-        updated_at: ad.updatedAt.toISOString(),
-      },
+      success: false,
+      error: "Ad module maintenance"
     });
   } catch (error) {
     console.error('Error creating ad:', error);

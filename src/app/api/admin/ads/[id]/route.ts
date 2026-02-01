@@ -31,27 +31,19 @@ export async function PUT(
     const body = await request.json();
     const { name, ad_placement_id, ad_code_snippet, is_active } = body;
 
-    const ad = await prisma.ad.update({
-      where: { id: params.id },
-      data: {
-        name,
-        adPlacementId: ad_placement_id,
-        adCodeSnippet: ad_code_snippet,
-        isActive: is_active,
-      },
-    });
+    // const ad = await prisma.ad.update({
+    //   where: { id: params.id },
+    //   data: {
+    //     name,
+    //     adPlacementId: ad_placement_id,
+    //     adCodeSnippet: ad_code_snippet,
+    //     isActive: is_active,
+    //   },
+    // });
 
     return NextResponse.json({
-      success: true,
-      ad: {
-        id: ad.id,
-        name: ad.name,
-        ad_placement_id: ad.adPlacementId,
-        ad_code_snippet: ad.adCodeSnippet,
-        is_active: ad.isActive,
-        created_at: ad.createdAt.toISOString(),
-        updated_at: ad.updatedAt.toISOString(),
-      },
+      success: false,
+      error: "Ad module maintenance"
     });
   } catch (error) {
     console.error('Error updating ad:', error);
@@ -85,9 +77,9 @@ export async function DELETE(
       );
     }
 
-    await prisma.ad.delete({
-      where: { id: params.id },
-    });
+    // await prisma.ad.delete({
+    //   where: { id: params.id },
+    // });
 
     return NextResponse.json({
       success: true,
