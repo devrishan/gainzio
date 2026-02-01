@@ -15,6 +15,7 @@ import { UserMenu } from "../navigation/user-menu";
 import { mobileNavigation } from "@/config/navigation";
 
 import { BottomNav } from "./bottom-nav";
+import { AIChatShell } from "../ai/ai-chat-shell";
 
 interface AppShellProps {
   sidebarItems: NavigationItem[];
@@ -95,6 +96,7 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
         </main>
 
         <BottomNav items={role === "admin" ? sidebarItems : mobileNavigation} />
+        {role !== "admin" && <AIChatShell />}
       </div>
     </div>
   );

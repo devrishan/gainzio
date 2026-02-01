@@ -107,10 +107,10 @@ export function AIChatShell() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="pointer-events-auto w-[380px] sm:w-[420px] max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-8rem)] rounded-3xl glass-morphism border border-white/10 shadow-2xl flex flex-col overflow-hidden bg-black/40 backdrop-blur-xl"
+                        className="pointer-events-auto fixed inset-0 z-[100] w-full h-[100dvh] sm:static sm:w-[420px] sm:h-[600px] sm:max-h-[calc(100vh-8rem)] rounded-none sm:rounded-3xl glass-morphism border-0 sm:border border-white/10 shadow-2xl flex flex-col overflow-hidden bg-black/90 sm:bg-black/40 backdrop-blur-xl"
                     >
                         {/* Header */}
-                        <div className="p-4 border-b border-white/5 bg-white/5 flex items-center justify-between shrink-0">
+                        <div className="p-4 pt-8 sm:p-4 border-b border-white/5 bg-white/5 flex items-center justify-between shrink-0">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-primary/20 rounded-full">
                                     <Bot className="w-5 h-5 text-primary" />
