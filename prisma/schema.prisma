@@ -16,6 +16,8 @@ enum Role {
   ADMIN
   VERIFIER
   PAYOUT_MANAGER
+  SUPER_ADMIN
+  SUPPORT
 }
 
 enum SubmissionStatus {
@@ -250,6 +252,7 @@ model Wallet {
   withdrawable  Decimal             @default(0.0) @db.Decimal(10, 2)
   lockedAmount  Decimal             @default(0.0) @db.Decimal(10, 2)
   coins         Int                 @default(0)
+  lockedCoins   Int                 @default(0)
   totalEarned   Decimal             @default(0.0) @db.Decimal(10, 2)
   currency      String              @default("INR") @db.VarChar(3)
   updatedAt     DateTime            @updatedAt
@@ -280,6 +283,8 @@ model CoinTransaction {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   amount      Int
   type        String // EARN, SPEND
+  status      String   @default("COMPLETED") // LOCKED, COMPLETED
+  unlocksAt   DateTime?
   description String
   source      String? // STREAK_FREEZE, TASK_PEEK, TASK_REWARD, etc.
   metadata    Json?
@@ -289,6 +294,7 @@ model CoinTransaction {
   @@index([type])
   @@index([source])
   @@index([createdAt])
+  @@index([status, unlocksAt])
 }
 
 model Withdrawal {
@@ -325,6 +331,16 @@ model TaskCategory {
   templates TaskTemplate[]
 }
 
+
+enum TaskStatus {
+  DRAFT
+  SCHEDULED
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+
 model Task {
   id              String               @id @default(cuid())
   title           String
@@ -339,7 +355,9 @@ model Task {
   minRank         Rank                 @default(NEWBIE)
   targeting       Json?                // { minAge, districts: [], verifiedOnly, platform... }
   proofConfig     Json?                // { screenshotCount, duration... }
-  isActive        Boolean              @default(true)
+  status          TaskStatus           @default(DRAFT)
+  startTime       DateTime?
+  isActive        Boolean              @default(true) // Deprecated in favor of status, keeping for backward compat temporarily
   maxSubmissions  Int?
   expiresAt       DateTime?
   priority        Int                  @default(0)
@@ -351,9 +369,9 @@ model Task {
   completionRules TaskCompletionRule[]
 
   @@index([categoryId])
-  @@index([isActive])
+  @@index([status])
   @@index([slug])
-  @@index([categoryId, isActive])
+  @@index([categoryId, status])
   @@index([isDeleted, deletedAt])
 }
 
@@ -365,6 +383,7 @@ model TaskSubmission {
   user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   status       SubmissionStatus @default(SUBMITTED)
   proofUrl     String
+  proofHash    String?          // MD5/SHA256 hash of image to detect duplicates
   proofType    String?
   proofData    Json?            // { startScreenshot, endScreenshot, timestamp... }
   notes        String?          @db.Text
@@ -378,6 +397,7 @@ model TaskSubmission {
   @@index([userId])
   @@index([status])
   @@index([submittedAt])
+  @@index([proofHash])
   @@index([userId, status])
   @@index([taskId, status])
 }
