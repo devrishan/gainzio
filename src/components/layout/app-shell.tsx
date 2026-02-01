@@ -90,7 +90,7 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
           </div>
         </header>
 
-        <main className={`flex-1 overflow-y-auto p-4 pb-20 lg:p-8 lg:pb-8 relative z-10 scrollbar-thin scrollbar-thumb-primary/10 scrollbar-track-transparent transition-colors duration-500 overscroll-y-contain ${role === "admin" ? "bg-black text-white" : "bg-transparent"}`}>
+        <main className={`flex-1 overflow-y-auto p-4 pb-28 lg:p-8 lg:pb-8 relative z-10 scrollbar-thin scrollbar-thumb-primary/10 scrollbar-track-transparent transition-colors duration-500 overscroll-y-contain ${role === "admin" ? "bg-black text-white" : "bg-transparent"}`}>
           {children}
         </main>
 

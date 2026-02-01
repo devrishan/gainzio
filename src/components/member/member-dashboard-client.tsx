@@ -144,7 +144,7 @@ export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDas
                     </Button>
                 </div>
 
-                <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible no-scrollbar snap-x snap-mandatory">
+                <div className="flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible no-scrollbar snap-x snap-mandatory scroll-pl-4">
                     {/* Watch Tasks Opportunity */}
                     <div
                         onClick={() => router.push('/member/tasks')}

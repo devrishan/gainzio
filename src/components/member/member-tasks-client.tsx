@@ -45,14 +45,14 @@ function getStatusBadge(userSubmissionCount: number, canSubmit: boolean, isExpir
 function getStatusButton(task: Task) {
   if (task.is_expired) {
     return (
-      <Button variant="secondary" className="w-full bg-muted/50" disabled>
+      <Button variant="secondary" className="w-full bg-muted/50 h-10" disabled>
         Task Expired
       </Button>
     );
   }
   if (task.user_submission_count > 0) {
     return (
-      <Button variant="outline" className="w-full border-primary/20 text-primary" disabled>
+      <Button variant="outline" className="w-full border-primary/20 text-primary h-10" disabled>
         <Clock className="mr-2 h-4 w-4" />
         Processing
       </Button>
@@ -60,14 +60,14 @@ function getStatusButton(task: Task) {
   }
   if (!task.can_submit) {
     return (
-      <Button variant="secondary" className="w-full bg-muted/50" disabled>
+      <Button variant="secondary" className="w-full bg-muted/50 h-10" disabled>
         Limit Reached
       </Button>
     );
   }
   return (
     <TaskSubmissionDialog taskId={task.id} taskTitle={task.title} taskType={task.task_type}>
-      <Button className="w-full gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300">
+      <Button className="w-full gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 h-10">
         <Upload className="h-4 w-4" />
         Submit Proof
       </Button>
@@ -245,14 +245,14 @@ export function MemberTasksClient() {
       )}
 
       {/* Featured Task Banner (Mobile Only) */}
-      <div className="lg:hidden relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 p-6 text-white shadow-lg">
+      <div className="lg:hidden relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 p-6 text-white shadow-lg mb-8">
         <div className="relative z-10 flex flex-col items-start gap-4">
           <div>
             <Badge className="bg-white/20 hover:bg-white/30 text-white border-none mb-2">Featured</Badge>
             <h3 className="text-xl font-bold">Watch & Earn Premium</h3>
             <p className="text-sm text-white/80 mt-1 max-w-[80%]">Watch high-value ads and earn 2x rewards for the next hour.</p>
           </div>
-          <Button size="sm" className="bg-white text-purple-600 hover:bg-white/90 font-semibold border-none">
+          <Button size="sm" className="bg-white text-purple-600 hover:bg-white/90 font-semibold border-none h-10 px-6">
             Start Earning <ArrowUpRight className="ml-1 h-3 w-3" />
           </Button>
         </div>
@@ -266,10 +266,10 @@ export function MemberTasksClient() {
           <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-background to-transparent z-10 lg:hidden pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-background to-transparent z-10 lg:hidden pointer-events-none" />
           <div className="overflow-x-auto pb-2 -mx-4 px-4 lg:mx-0 lg:px-0 scrollbar-hide">
-            <TabsList className="w-auto inline-flex min-w-full lg:w-full lg:grid lg:grid-cols-3 bg-muted/20 p-1">
-              <TabsTrigger value="daily" className="px-6 lg:px-3">Daily Tasks</TabsTrigger>
-              <TabsTrigger value="dirpadi" className="px-6 lg:px-3">DIRPADI</TabsTrigger>
-              <TabsTrigger value="special" className="px-6 lg:px-3">Special</TabsTrigger>
+            <TabsList className="w-auto inline-flex min-w-full lg:w-full lg:grid lg:grid-cols-3 bg-muted/20 p-1 h-12">
+              <TabsTrigger value="daily" className="px-6 lg:px-3 h-full">Daily Tasks</TabsTrigger>
+              <TabsTrigger value="dirpadi" className="px-6 lg:px-3 h-full">DIRPADI</TabsTrigger>
+              <TabsTrigger value="special" className="px-6 lg:px-3 h-full">Special</TabsTrigger>
             </TabsList>
           </div>
         </div>

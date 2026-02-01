@@ -32,13 +32,13 @@ export function SquadHUD({ squad }: SquadHUDProps) {
     return (
         <Card className="border-l-4 border-l-indigo-500 bg-gradient-to-br from-card to-indigo-500/5 shadow-md">
             <CardHeader className="pb-2">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
                     <div className="flex items-center gap-2">
                         <Users className="h-5 w-5 text-indigo-500" />
                         <CardTitle className="text-lg font-bold">Squad Weekly Goal</CardTitle>
                     </div>
-                    <div className="flex items-center gap-1.5 rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 self-start sm:self-auto">
-                        <Timer className="h-3 w-3" />
+                    <div className="flex items-center gap-1.5 rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 self-start sm:self-auto">
+                        <Timer className="h-3.5 w-3.5" />
                         {timeLeft}
                     </div>
                 </div>
@@ -81,9 +81,9 @@ export function SquadHUD({ squad }: SquadHUDProps) {
                             )}
                         </div>
 
-                        <Button size="sm" variant="outline" className="ml-auto gap-2 border-indigo-200 hover:bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:hover:bg-indigo-950 dark:text-indigo-400" onClick={handleShare}>
-                            <Share2 className="h-3.5 w-3.5" />
-                            Valid
+                        <Button size="sm" variant="outline" className="ml-auto gap-2 border-indigo-200 hover:bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:hover:bg-indigo-950 dark:text-indigo-400 h-10 px-4 transition-all active:scale-95" onClick={handleShare}>
+                            <Share2 className="h-4 w-4" />
+                            Invite Squad
                         </Button>
                     </div>
                 </div>

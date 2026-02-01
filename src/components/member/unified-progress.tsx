@@ -20,22 +20,22 @@ export function UnifiedProgress({ gamification }: UnifiedProgressProps) {
             {/* Background decoration */}
             <div className="absolute top-0 right-0 p-16 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
-            <CardHeader className="pb-2">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
+            <CardHeader className="pb-4">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
                     <div className="flex flex-col">
-                        <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Current Rank</CardTitle>
+                        <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wider">Current Rank</CardTitle>
                         <div className="text-xl sm:text-2xl font-bold flex items-center gap-2">
                             {gamification.rank}
                             <Award className="h-5 w-5 text-primary" />
                         </div>
                     </div>
-                    <div className="flex items-center gap-1 text-orange-500 font-bold self-start sm:self-auto">
+                    <div className="flex items-center gap-1 text-orange-500 font-bold self-start sm:self-auto bg-orange-500/10 px-3 py-1 rounded-full sm:bg-transparent sm:px-0 sm:py-0">
                         <Flame className="h-4 w-4 sm:h-5 sm:w-5 fill-orange-500" />
                         {gamification.streak} Day Streak
                     </div>
                 </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-5 sm:px-6">
                 <div className="space-y-2">
                     <div className="flex justify-between text-xs font-medium">
                         <span>{gamification.xp.toLocaleString()} XP</span>

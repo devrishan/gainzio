@@ -51,8 +51,9 @@ export async function getDashboardData(userId: string) {
     // Handle initialization if missing (sequential part, but rare)
     let finalWallet = wallet;
     if (!finalWallet) {
-        finalWallet = await prisma.wallet.create({
-            data: {
+        finalWallet = await prisma.wallet.upsert({
+            where: { userId },
+            create: {
                 userId,
                 balance: 0,
                 pendingAmount: 0,
@@ -62,18 +63,22 @@ export async function getDashboardData(userId: string) {
                 totalEarned: 0,
                 currency: 'INR',
             },
+            update: {}, // No-op
         });
     }
 
     let finalGamification = gamificationProfile;
     if (!finalGamification) {
-        finalGamification = await prisma.gamificationState.create({
-            data: {
+        // Use upsert to prevent race conditions with calculateSmartScore which runs in parallel
+        finalGamification = await prisma.gamificationState.upsert({
+            where: { userId },
+            create: {
                 userId,
                 xp: 0,
                 rank: 'NEWBIE',
                 streakDays: 0,
             },
+            update: {}, // No-op if exists, just return it
             include: { badges: true },
         });
     }
