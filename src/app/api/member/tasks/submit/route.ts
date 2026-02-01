@@ -82,7 +82,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    if (task.maxSubmissions && existingSubmissions >= task.maxSubmissions) {
+    const limit = task.maxSubmissions || 1; // Default to 1 if not specified
+    if (existingSubmissions >= limit) {
       return NextResponse.json(
         { success: false, error: 'Maximum submissions reached for this task' },
         { status: 400 },
@@ -110,6 +111,22 @@ export async function POST(request: NextRequest) {
     // Convert file to buffer and upload main proof
     const arrayBuffer = await proofFile.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+
+    // Hash Detection (Fraud Prevention)
+    const crypto = await import('crypto');
+    const proofHash = crypto.createHash('md5').update(buffer).digest('hex');
+
+    const duplicateProof = await prisma.taskSubmission.findFirst({
+      where: { proofHash: proofHash }
+    });
+
+    if (duplicateProof) {
+      return NextResponse.json(
+        { success: false, error: 'Duplicate screenshot detected. This proof has seemingly been used before.' },
+        { status: 400 }
+      );
+    }
+
     const uploadResult = await uploadToS3({
       file: buffer,
       fileName: proofFile.name,
@@ -167,6 +184,7 @@ export async function POST(request: NextRequest) {
         userId: userId,
         status: 'SUBMITTED',
         proofUrl: uploadResult.url, // Primary proof
+        proofHash: proofHash,
         proofType: proofFile.type,
         proofData: proofData, // Store both
         notes: notes || null,

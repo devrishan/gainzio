@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
         if (!authUser || authUser.role !== Role.ADMIN) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
 
         const body = await request.json();
-        const { title, description, categoryId, rewardAmount, rewardCoins, difficulty, priority, isActive, taskType, targeting, proofConfig, minRank, maxSubmissions, expiresAt } = body;
+        const { title, description, categoryId, rewardAmount, rewardCoins, difficulty, priority, isActive, status, startTime, taskType, targeting, proofConfig, minRank, maxSubmissions, expiresAt } = body;
 
         if (!title || !categoryId) return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
 
@@ -46,7 +46,9 @@ export async function POST(request: NextRequest) {
                 rewardCoins: Number(rewardCoins) || 0,
                 difficulty: difficulty || "EASY",
                 priority: Number(priority) || 0,
-                isActive: isActive ?? false,
+                isActive: isActive ?? (status === "ACTIVE" ? true : false),
+                status: status || "DRAFT",
+                startTime: startTime ? new Date(startTime) : null,
                 minRank: (!minRank || minRank === "ALL") ? Rank.NEWBIE : (minRank as Rank),
                 taskType: taskType || "STANDARD",
                 targeting: targeting || {},

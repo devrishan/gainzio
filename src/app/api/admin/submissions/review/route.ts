@@ -100,25 +100,30 @@ export async function POST(request: NextRequest) {
         }
 
         // Update Gamification (Coins/XP)
-        // Note: Schema `GamificationState` has `xp`, but `Wallet` has `coins`.
-        // Task has `rewardCoins`.
         if (rewardCoins > 0) {
-          // Update Coins in Wallet
+          // Update Coins in Wallet -> LOCKED STATE
           let wallet = await tx.wallet.findUnique({ where: { userId: submission.userId } });
           if (!wallet) {
-            // Should exist from above if money > 0, but safe check
             wallet = await tx.wallet.create({ data: { userId: submission.userId } });
           }
+
           await tx.wallet.update({
             where: { id: wallet.id },
-            data: { coins: { increment: rewardCoins } }
+            data: { lockedCoins: { increment: rewardCoins } }
           });
+
+          // Lock period logic (Default 24h)
+          // TODO: Dynamic based on Trust Score
+          const unlockTime = new Date();
+          unlockTime.setHours(unlockTime.getHours() + 24);
 
           await tx.coinTransaction.create({
             data: {
               userId: submission.userId,
               amount: rewardCoins,
               type: "EARN",
+              status: "LOCKED",
+              unlocksAt: unlockTime,
               description: `Reward for task: ${submission.task.title}`,
               source: "TASK_REWARD",
               metadata: { taskId: submission.taskId }

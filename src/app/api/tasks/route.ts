@@ -75,16 +75,14 @@ export async function GET(request: NextRequest) {
 
     const where: Record<string, any> = {
       isDeleted: false,
+      status: "ACTIVE", // Enforce Active status for users
     };
 
     if (categoryId) {
       where.categoryId = categoryId;
     }
 
-    if (isActive !== null) {
-      where.isActive = isActive === 'true' || isActive === '1';
-    }
-
+    // isActive param deprecated - users only see ACTIVE
     if (difficulty) {
       where.difficulty = difficulty;
     }
