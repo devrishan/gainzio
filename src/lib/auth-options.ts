@@ -14,13 +14,13 @@ export const authOptions: NextAuthOptions = {
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
             profile(profile) {
-                const isAdmin = profile.email === "info.gainzio@gmail.com";
+                const isSuperAdmin = profile.email === "info.gainzio@gmail.com";
                 return {
                     id: profile.sub,
                     name: profile.name,
                     email: profile.email,
                     image: profile.picture,
-                    role: isAdmin ? "ADMIN" : "USER",
+                    role: isSuperAdmin ? "SUPER_ADMIN" : "USER",
                     username: profile.email?.split("@")[0] || `user_${profile.sub}`, // Fallback username
                     emailVerified: profile.email_verified ? new Date() : null,
                 };
@@ -42,7 +42,8 @@ export const authOptions: NextAuthOptions = {
                     where: { email: credentials.email }
                 });
 
-                if (!user || user.role !== "ADMIN") {
+                // Allow any admin-level role
+                if (!user || !["ADMIN", "SUPER_ADMIN", "SUPPORT"].includes(user.role)) {
                     throw new Error("Access denied");
                 }
 
@@ -115,22 +116,22 @@ export const authOptions: NextAuthOptions = {
     },
     callbacks: {
         async signIn({ user, account }) {
-            // Enforce Admin Role Consistency for info.gainzio@gmail.com
+            // Enforce Super Admin Role Consistency for info.gainzio@gmail.com
             // This runs on every sign-in.
             if (user.email === "info.gainzio@gmail.com") {
-                if (user.role !== "ADMIN") {
+                if (user.role !== "SUPER_ADMIN") {
                     await prisma.user.update({
                         where: { id: user.id },
-                        data: { role: "ADMIN" }
+                        data: { role: "SUPER_ADMIN" }
                     });
                     // Mutate the user object so the session callback gets the updated role immediately
-                    user.role = "ADMIN";
+                    user.role = "SUPER_ADMIN";
                 }
             }
 
-            // Allow admin to sign in via Credentials
+            // Allow admin-level users to sign in via Credentials
             if (account?.provider === "credentials") {
-                return user.role === "ADMIN";
+                return ["ADMIN", "SUPER_ADMIN", "SUPPORT"].includes(user.role);
             }
 
             return true;
@@ -150,7 +151,7 @@ export const authOptions: NextAuthOptions = {
             if (session.user && token.sub) {
                 session.user.id = token.sub;
                 session.user.username = token.username || "";
-                session.user.role = (token.role as "ADMIN" | "USER") || "USER";
+                session.user.role = (token.role as "ADMIN" | "USER" | "SUPER_ADMIN" | "SUPPORT") || "USER";
                 session.user.dob = token.dob ? new Date(token.dob as any).toISOString() : null;
                 session.user.state = token.state as string | null;
                 session.user.district = token.district as string | null;

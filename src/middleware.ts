@@ -52,7 +52,7 @@ export async function middleware(request: NextRequest) {
   // -----------------------------------------------------------------------------
   if (isUserAuthRoute) {
     if (isAuth) {
-      if (token.role === "ADMIN") {
+      if (["ADMIN", "SUPER_ADMIN", "SUPPORT"].includes(token.role as string)) {
         return NextResponse.redirect(new URL("/admin/dashboard", request.url));
       }
       return NextResponse.redirect(new URL("/member/dashboard", request.url));
@@ -65,7 +65,7 @@ export async function middleware(request: NextRequest) {
   // -----------------------------------------------------------------------------
   if (isAdminRoot) {
     if (isAuth) {
-      if (token.role === "ADMIN") {
+      if (["ADMIN", "SUPER_ADMIN", "SUPPORT"].includes(token.role as string)) {
         // Already logged in as Admin -> Go to Dashboard
         return NextResponse.redirect(new URL("/admin/dashboard", request.url));
       } else {
@@ -90,12 +90,36 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
 
-    if (token.role !== "ADMIN") {
+    const role = token.role as string;
+    if (!["ADMIN", "SUPER_ADMIN", "SUPPORT"].includes(role)) {
       if (isApiAdminRoute) {
         return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
       }
       // Authenticated but not Admin -> Kick them out to member dashboard
       return NextResponse.redirect(new URL("/member/dashboard", request.url));
+    }
+
+    // Role-Based Access Control for Specific Routes
+
+    // 1. Finance/Payouts -> SUPER_ADMIN only
+    if (pathname.includes("/admin/finance") || pathname.includes("/api/admin/payouts") || pathname.includes("/api/admin/finance")) {
+      if (role !== "SUPER_ADMIN") {
+        return NextResponse.json({ success: false, error: "Forbidden: Super Admin only" }, { status: 403 });
+      }
+    }
+
+    // 2. Settings/Config -> SUPER_ADMIN only
+    if (pathname.includes("/admin/settings") || pathname.includes("/api/admin/config")) {
+      if (role !== "SUPER_ADMIN") {
+        return NextResponse.json({ success: false, error: "Forbidden: Super Admin only" }, { status: 403 });
+      }
+    }
+
+    // 3. Ban Actions -> SUPER_ADMIN only
+    if (pathname.includes("/ban") || pathname.includes("/unban")) {
+      if (role !== "SUPER_ADMIN") {
+        return NextResponse.json({ success: false, error: "Forbidden: Super Admin only" }, { status: 403 });
+      }
     }
 
     // Auth + Admin -> Allow

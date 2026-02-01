@@ -4,7 +4,7 @@ declare module "next-auth" {
     interface Session {
         user: {
             id: string;
-            role: "ADMIN" | "USER";
+            role: "ADMIN" | "USER" | "SUPER_ADMIN" | "SUPPORT" | "VERIFIER" | "PAYOUT_MANAGER";
             username: string;
             referral_code?: string;
             dob?: string | null;
@@ -15,7 +15,7 @@ declare module "next-auth" {
 
     interface User {
         id: string;
-        role: "ADMIN" | "USER";
+        role: "ADMIN" | "USER" | "SUPER_ADMIN" | "SUPPORT" | "VERIFIER" | "PAYOUT_MANAGER";
         username: string;
         referral_code?: string;
         dob?: Date | null;
