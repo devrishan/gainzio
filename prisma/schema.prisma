@@ -589,6 +589,7 @@ model UserPreference {
   language      String   @default("en") @db.VarChar(10)
   timezone      String   @default("UTC")
   notifications Json? // notification preferences
+  aiPreferences Json? // { chat: boolean, autoSuggestions: boolean, helpTips: boolean }
   theme         String   @default("light")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
