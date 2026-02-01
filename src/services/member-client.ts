@@ -65,3 +65,18 @@ export async function getTasksClient(categoryId?: string, isActive?: boolean): P
   }
 }
 
+export async function getTaskClient(taskId: string): Promise<Task> {
+  try {
+    const data = await clientFetch<{ success: boolean; task: Task }>(`/api/tasks/${taskId}`);
+    if (!data.success) {
+      throw new Error("Failed to fetch task");
+    }
+    return data.task;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("Failed to fetch task");
+  }
+}
+

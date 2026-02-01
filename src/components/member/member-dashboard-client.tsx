@@ -133,79 +133,116 @@ export function MemberDashboardClient({ dashboard, referrals, squad }: MemberDas
                 </div>
             </div>
 
-            {/* 3. Daily Missions (Interactive Grid) */}
+            {/* 3. Live Opportunities (Horizontal Scroll) */}
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
                     <h3 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60 flex items-center gap-2">
-                        <Target className="w-5 h-5 text-primary" /> Daily Quests
+                        <Zap className="w-5 h-5 text-primary" /> Live Opportunities
                     </h3>
-                    <Badge variant="outline" className="glass-morphism border-primary/20 text-primary animate-pulse">
-                        3 Active
-                    </Badge>
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary" onClick={() => router.push('/member/tasks')}>
+                        View All <ChevronRight className="ml-1 h-4 w-4" />
+                    </Button>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-3">
-                    {/* Watch Ads Mission */}
+                <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible no-scrollbar">
+                    {/* Watch Tasks Opportunity */}
                     <div
                         onClick={() => router.push('/member/tasks')}
-                        className="group relative cursor-pointer spark-border rounded-xl overflow-hidden glass-morphism hover:bg-accent/5 transition-all duration-300"
+                        className="min-w-[280px] sm:min-w-0 group relative cursor-pointer spark-border rounded-xl overflow-hidden glass-morphism hover:bg-accent/5 transition-all duration-300"
                     >
-                        <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <ArrowUpRight className="w-5 h-5 text-blue-400" />
-                        </div>
-                        <CardContent className="flex items-start gap-4 p-6">
-                            <div className="p-3 rounded-xl bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform duration-300">
-                                <Zap className="h-6 w-6" />
+                        {/* Image Placeholder */}
+                        <div className="h-32 bg-gradient-to-br from-blue-500/20 to-purple-600/20 flex items-center justify-center relative">
+                            <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-medium text-white flex items-center gap-1 border border-white/10">
+                                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                                Available
                             </div>
-                            <div>
-                                <h4 className="font-semibold text-lg group-hover:text-blue-500 transition-colors">Watch Ads</h4>
-                                <p className="text-sm text-muted-foreground mt-1">Complete 3 videos</p>
-                                <div className="mt-3 inline-flex items-center gap-2 text-xs font-medium px-2 py-1 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                                    <Sparkles className="w-3 h-3" /> +50 XP & ₹15
+                            <Zap className="h-10 w-10 text-blue-400 opacity-80" />
+                        </div>
+
+                        <CardContent className="p-4 space-y-3">
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <Badge variant="secondary" className="text-[10px] h-5 bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20">
+                                        Verified Task
+                                    </Badge>
+                                </div>
+                                <h4 className="font-semibold text-base line-clamp-2 group-hover:text-primary transition-colors">
+                                    Watch & Earn: Premium Ads
+                                </h4>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                                <div className="text-xs text-muted-foreground">Reward</div>
+                                <div className="font-bold text-primary flex items-center gap-1">
+                                    ₹15.00 <span className="text-[10px] font-normal text-muted-foreground">+ 50 XP</span>
                                 </div>
                             </div>
                         </CardContent>
                     </div>
 
-                    {/* Referrals Mission */}
+                    {/* Referral Opportunity */}
                     <div
                         onClick={() => router.push('/member/referrals')}
-                        className="group relative cursor-pointer spark-border rounded-xl overflow-hidden glass-morphism hover:bg-accent/5 transition-all duration-300"
+                        className="min-w-[280px] sm:min-w-0 group relative cursor-pointer spark-border rounded-xl overflow-hidden glass-morphism hover:bg-accent/5 transition-all duration-300"
                     >
-                        <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <ArrowUpRight className="w-5 h-5 text-green-400" />
-                        </div>
-                        <CardContent className="flex items-start gap-4 p-6">
-                            <div className="p-3 rounded-xl bg-green-500/10 text-green-500 group-hover:scale-110 transition-transform duration-300">
-                                <Users className="h-6 w-6" />
+                        <div className="h-32 bg-gradient-to-br from-green-500/20 to-emerald-600/20 flex items-center justify-center relative">
+                            <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-medium text-white flex items-center gap-1 border border-white/10">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                Unlimited
                             </div>
-                            <div>
-                                <h4 className="font-semibold text-lg group-hover:text-green-500 transition-colors">Invite Friends</h4>
-                                <p className="text-sm text-muted-foreground mt-1">Bring 1 new member</p>
-                                <div className="mt-3 inline-flex items-center gap-2 text-xs font-medium px-2 py-1 rounded-md bg-green-500/10 text-green-600 dark:text-green-400">
-                                    <Gift className="w-3 h-3" /> +100 XP & ₹50
+                            <Gift className="h-10 w-10 text-green-400 opacity-80" />
+                        </div>
+
+                        <CardContent className="p-4 space-y-3">
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <Badge variant="secondary" className="text-[10px] h-5 bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20">
+                                        High Reward
+                                    </Badge>
+                                </div>
+                                <h4 className="font-semibold text-base line-clamp-2 group-hover:text-primary transition-colors">
+                                    Invite Friends & Earn
+                                </h4>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                                <div className="text-xs text-muted-foreground">Reward</div>
+                                <div className="font-bold text-primary flex items-center gap-1">
+                                    ₹50.00 <span className="text-[10px] font-normal text-muted-foreground">+ 100 XP</span>
                                 </div>
                             </div>
                         </CardContent>
                     </div>
 
-                    {/* Leaderboard Mission */}
+                    {/* Leaderboard Opportunity */}
                     <div
                         onClick={() => router.push('/member/leaderboard')}
-                        className="group relative cursor-pointer spark-border rounded-xl overflow-hidden glass-morphism hover:bg-accent/5 transition-all duration-300"
+                        className="min-w-[280px] sm:min-w-0 group relative cursor-pointer spark-border rounded-xl overflow-hidden glass-morphism hover:bg-accent/5 transition-all duration-300"
                     >
-                        <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <ArrowUpRight className="w-5 h-5 text-purple-400" />
-                        </div>
-                        <CardContent className="flex items-start gap-4 p-6">
-                            <div className="p-3 rounded-xl bg-purple-500/10 text-purple-500 group-hover:scale-110 transition-transform duration-300">
-                                <Trophy className="h-6 w-6" />
+                        <div className="h-32 bg-gradient-to-br from-purple-500/20 to-violet-600/20 flex items-center justify-center relative">
+                            <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-medium text-white flex items-center gap-1 border border-white/10">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                                Ending Soon
                             </div>
-                            <div>
-                                <h4 className="font-semibold text-lg group-hover:text-purple-500 transition-colors">Check Rank</h4>
-                                <p className="text-sm text-muted-foreground mt-1">See where you stand</p>
-                                <div className="mt-3 inline-flex items-center gap-2 text-xs font-medium px-2 py-1 rounded-md bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                                    <Star className="w-3 h-3" /> Competition
+                            <Trophy className="h-10 w-10 text-purple-400 opacity-80" />
+                        </div>
+
+                        <CardContent className="p-4 space-y-3">
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <Badge variant="secondary" className="text-[10px] h-5 bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20">
+                                        Competition
+                                    </Badge>
+                                </div>
+                                <h4 className="font-semibold text-base line-clamp-2 group-hover:text-primary transition-colors">
+                                    Weekly Leaderboard Race
+                                </h4>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                                <div className="text-xs text-muted-foreground">Prize Pool</div>
+                                <div className="font-bold text-primary flex items-center gap-1">
+                                    ₹10,000 <span className="text-[10px] font-normal text-muted-foreground">Total</span>
                                 </div>
                             </div>
                         </CardContent>

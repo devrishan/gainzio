@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { Menu, Wallet as WalletIcon } from "lucide-react";
 import * as React from "react";
 
 import { GainzioLogo } from "@/components/shared/logo";
@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { NavigationItem } from "@/config/navigation";
 import { Sidebar } from "../navigation/sidebar";
 import { UserMenu } from "../navigation/user-menu";
+import { mobileNavigation } from "@/config/navigation";
 
 import { BottomNav } from "./bottom-nav";
 
@@ -54,8 +55,8 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
           }`}>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden">
-                <Menu className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="lg:hidden text-foreground">
+                <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className={`w-72 p-6 ${role === "admin" ? "bg-zinc-950 border-white/5 text-white" : ""}`}>
@@ -66,9 +67,26 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
             </SheetContent>
           </Sheet>
 
-          <div className="flex items-center gap-3">
+          {/* Mobile Center Logo */}
+          <div className="lg:hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <GainzioLogo href={role === "admin" ? "/admin/dashboard" : "/member/dashboard"} size="sm" />
+          </div>
+
+          <div className="flex items-center gap-2 lg:gap-3">
+            {role !== "admin" && (
+              <div className="flex items-center gap-1.5 mr-1 lg:mr-0 bg-secondary/50 px-2 py-1 rounded-full border border-border/50">
+                <WalletIcon className="h-4 w-4 text-primary" />
+                <span className="text-xs font-semibold">$0.00</span>
+              </div>
+            )}
             <NotificationBell />
-            <UserMenu role={role} username={username} onLogout={signOut} />
+            <div className="hidden lg:block">
+              <UserMenu role={role} username={username} onLogout={signOut} />
+            </div>
+            {/* Mobile Profile Icon (if needed separately, or just rely on sidebar/bottom nav) 
+                 For now, we keep UserMenu hidden on mobile or make it accessible via bottom nav 'Profile' 
+                 The requirements say "Wallet icon (total earnings) Notification bell" for top right.
+             */}
           </div>
         </header>
 
@@ -76,7 +94,7 @@ export function AppShell({ sidebarItems, children, fallbackRole = "member" }: Ap
           {children}
         </main>
 
-        <BottomNav items={sidebarItems} />
+        <BottomNav items={role === "admin" ? sidebarItems : mobileNavigation} />
       </div>
     </div>
   );

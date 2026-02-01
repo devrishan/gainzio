@@ -9,7 +9,8 @@ export type NavigationIcon =
   | "submissions"
   | "maintenance"
   | "profile"
-  | "support";
+  | "support"
+  | "tasks";
 
 export type NavigationItem = {
   href: string;
@@ -36,5 +37,12 @@ export const adminNavigation: NavigationItem[] = [
   { href: "/admin/members", label: "Members", icon: "members" },
   { href: "/admin/security", label: "Security", icon: "security" },
   { href: "/admin/maintenance", label: "Maintenance", icon: "maintenance" },
+];
+
+export const mobileNavigation: NavigationItem[] = [
+  { href: "/member/dashboard", label: "Home", icon: "dashboard" },
+  { href: "/member/tasks", label: "Tasks", icon: "tasks" },
+  { href: "/member/earnings", label: "Earnings", icon: "withdraw" },
+  { href: "/member/settings", label: "Profile", icon: "profile" },
 ];
 

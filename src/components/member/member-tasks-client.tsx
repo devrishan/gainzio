@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSession } from "@/components/providers/session-provider";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Clock, Upload, XCircle, AlertCircle, ArrowUpRight, Zap, Coins, UserPlus, ArrowRight } from "lucide-react";
@@ -151,6 +152,77 @@ export function MemberTasksClient() {
     );
   }
 
+  // Categorize tasks (Mock logic for now, or based on real data pattern)
+  const dailyTasks = tasks || [];
+  const dirpadiTasks = tasks?.filter(t => t.title.toLowerCase().includes("dirpadi") || t.category.name.toLowerCase().includes("dirpadi")) || [];
+  const specialTasks = tasks?.filter(t => t.reward_amount > 100 || t.is_locked) || [];
+
+  const TaskGrid = ({ data }: { data: Task[] }) => (
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+    >
+      {data.length === 0 ? (
+        <div className="col-span-full flex flex-col items-center justify-center py-12 text-center text-muted-foreground bg-muted/5 rounded-xl border border-dashed border-muted">
+          <p>No tasks available in this category.</p>
+        </div>
+      ) : (
+        data.map((task) => (
+          <motion.div key={task.id} variants={item}>
+            <div className="group relative rounded-xl overflow-hidden glass-morphism border-white/5 bg-card/50 hover:bg-card/80 transition-all duration-300 shadow-sm hover:shadow-md">
+              <Card className="relative border-0 bg-transparent h-full flex flex-col">
+                <CardHeader className="p-4 pb-2">
+                  <div className="flex justify-between items-start gap-3">
+                    <div className="space-y-1">
+                      <Badge variant="outline" className="text-[10px] uppercase tracking-wider opacity-70">
+                        {task.category.name}
+                      </Badge>
+                      <CardTitle className="text-base font-semibold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                        {task.title}
+                      </CardTitle>
+                    </div>
+                    <div className="flex flex-col items-end shrink-0 bg-secondary/30 px-2 py-1.5 rounded-lg">
+                      <span className="text-lg font-bold text-primary">₹{task.reward_amount.toFixed(0)}</span>
+                      {task.reward_coins > 0 && <span className="text-[10px] text-muted-foreground flex items-center gap-0.5"><Coins className="w-3 h-3" /> {task.reward_coins}</span>}
+                    </div>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="p-4 py-2 flex-1">
+                  <CardDescription className="line-clamp-2 text-xs">
+                    {task.description}
+                  </CardDescription>
+
+                  <div className="mt-3 flex items-center gap-2">
+                    {getStatusBadge(task.user_submission_count, task.can_submit, task.is_expired)}
+                    {task.max_submissions && (
+                      <span className="text-[10px] text-muted-foreground border border-border px-1.5 py-0.5 rounded-full">
+                        Limit: {task.max_submissions}x
+                      </span>
+                    )}
+                  </div>
+                </CardContent>
+
+                <CardFooter className="p-4 pt-2">
+                  {task.is_locked ? (
+                    <Button variant="ghost" size="sm" className="w-full opacity-50 cursor-not-allowed h-9 text-xs" disabled>
+                      <AlertCircle className="w-3 h-3 mr-2" /> Locked (Lvl {task.min_rank})
+                    </Button>
+                  ) : (
+                    getStatusButton(task)
+                    // Note: TaskSubmissionDialog might need adjustment for size="sm" if wanted, 
+                    // but keeping default for touch targets on mobile
+                  )}
+                </CardFooter>
+              </Card>
+            </div>
+          </motion.div>
+        )))}
+    </motion.div>
+  );
+
   return (
     <div className="space-y-6">
       {isProfileIncomplete && (
@@ -171,82 +243,25 @@ export function MemberTasksClient() {
           </Link>
         </div>
       )}
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-      >
-        {tasks.map((task) => (
-          <motion.div key={task.id} variants={item}>
-            <div className="group relative rounded-2xl overflow-hidden glass-morphism border-white/5 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1">
-              {/* Hover Glow Effect */}
-              <div className="absolute -inset-0.5 bg-gradient-to-br from-primary/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" />
 
-              <Card className="relative border-0 bg-transparent h-full flex flex-col">
-                <CardHeader className="pb-4">
-                  <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
-                    <Badge variant="outline" className="glass-morphism border-primary/20 text-primary-foreground bg-primary/10">
-                      {task.category.name}
-                    </Badge>
-                    <div className="flex flex-col items-end">
-                      <div className="flex items-center gap-1.5 font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-400">
-                        <Zap className="w-4 h-4 text-amber-400 fill-amber-400" />
-                        {task.reward_amount.toFixed(0)} <span className="text-xs font-normal text-muted-foreground">Pts</span>
-                      </div>
-                      {task.reward_coins > 0 && (
-                        <div className="flex items-center gap-1 text-xs font-medium text-amber-500/80">
-                          <Coins className="w-3 h-3" /> {task.reward_coins}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors duration-300">
-                    {task.title}
-                  </CardTitle>
-                  <CardDescription className="line-clamp-2 mt-2">
-                    {task.description}
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent className="flex-1 pb-4">
-                  <div className="flex items-center gap-3 text-sm">
-                    <Badge variant="secondary" className="text-[10px] h-5 bg-muted/50">
-                      {task.difficulty}
-                    </Badge>
-                    {task.max_submissions && (
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <ArrowUpRight className="w-3 h-3" />
-                        Limit: {task.max_submissions}x
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
-                    {task.is_locked ? (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
-                        <AlertCircle className="h-4 w-4" />
-                        Locked (Lvl {task.min_rank})
-                      </div>
-                    ) : (
-                      getStatusBadge(task.user_submission_count, task.can_submit, task.is_expired)
-                    )}
-                  </div>
-                </CardContent>
-
-                <CardFooter className="pt-0">
-                  {task.is_locked ? (
-                    <Button variant="ghost" className="w-full opacity-50 cursor-not-allowed" disabled>
-                      Locked
-                    </Button>
-                  ) : (
-                    getStatusButton(task)
-                  )}
-                </CardFooter>
-              </Card>
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
+      <Tabs defaultValue="daily" className="w-full">
+        <TabsList className="w-full grid grid-cols-3 bg-muted/20 p-1">
+          <TabsTrigger value="daily">Daily Tasks</TabsTrigger>
+          <TabsTrigger value="dirpadi">DIRPADI</TabsTrigger>
+          <TabsTrigger value="special">Special</TabsTrigger>
+        </TabsList>
+        <div className="mt-6 min-h-[50vh]">
+          <TabsContent value="daily">
+            <TaskGrid data={dailyTasks} />
+          </TabsContent>
+          <TabsContent value="dirpadi">
+            <TaskGrid data={dirpadiTasks} />
+          </TabsContent>
+          <TabsContent value="special">
+            <TaskGrid data={specialTasks} />
+          </TabsContent>
+        </div>
+      </Tabs>
     </div>
   );
 }
