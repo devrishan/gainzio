@@ -45,7 +45,8 @@ export async function GET(request: NextRequest) {
           phone_verified: true,
           verificationLevel: true,
           is_locked: true,
-          confidenceScore: true,
+          trustScore: true,
+          isShadowBanned: true,
           // Assuming we might track used platforms in metadata or tags later, 
           // for now strictly relying on verificationLevel + profile.
         } as any
@@ -58,6 +59,13 @@ export async function GET(request: NextRequest) {
         // Locked accounts see NO tasks or specific error, but spec says "If any rule fails, the task must not appear"
         return NextResponse.json({ success: true, tasks: [], pagination: { total: 0, limit, offset, hasMore: false } });
       }
+
+      // SHADOW BAN CHECK
+      if (profile?.isShadowBanned) {
+        // Shadow banned users see 0 tasks, simulating "No tasks available" without alerting them
+        return NextResponse.json({ success: true, tasks: [], pagination: { total: 0, limit, offset, hasMore: false } });
+      }
+
       if (profile?.dob) {
         const today = new Date();
         const birthDate = new Date(profile.dob);
@@ -153,14 +161,12 @@ export async function GET(request: NextRequest) {
         if (targeting.state && profile?.state?.toLowerCase() !== targeting.state.toLowerCase()) return null; // HIDDEN
 
         // 4. Verification Check
-        // Spec: "Verification Level >= required minimum" & "Platform confidence score >= required minimum"
+        // Spec: "Verification Level >= required minimum" & "Platform trust score >= required minimum"
         if (targeting.verifiedOnly) {
           if (!profile?.phone_verified) return null;
           if ((profile?.verificationLevel || 0) < 1) return null;
-          // Default confidence check if not specified in targeting, assumed 90+ for social tasks?
-          // Spec says "Platform confidence score >= required minimum". 
-          // Let's assume targeting might have it, or we enforce strict default.
-          if ((profile?.confidenceScore || 0) < (targeting.minConfidence || 80)) return null;
+          // Default trust check if not specified in targeting, assumed 80+ for social tasks?
+          if ((profile?.trustScore || 100) < (targeting.minTrustScore || 60)) return null;
         }
       }
 

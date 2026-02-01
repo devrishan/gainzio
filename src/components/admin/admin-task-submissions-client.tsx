@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { formatDateTime } from "@/lib/utils";
 
 import type { TaskSubmission } from "@/services/admin";
 
@@ -93,15 +94,7 @@ export function AdminTaskSubmissionsClient({ submissions, pagination, statusFilt
     });
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+
 
   return (
     <>
@@ -114,6 +107,7 @@ export function AdminTaskSubmissionsClient({ submissions, pagination, statusFilt
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 text-muted-foreground" />
             <select
+              aria-label="Filter by status"
               className="rounded-md border border-border bg-background px-3 py-2 text-sm"
               value={statusFilter ?? "all"}
               onChange={(event) => handleFilterChange(event.target.value === "all" ? null : event.target.value)}
@@ -177,7 +171,7 @@ export function AdminTaskSubmissionsClient({ submissions, pagination, statusFilt
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="text-sm">{formatDate(submission.submitted_at)}</span>
+                      <span className="text-sm">{formatDateTime(submission.submitted_at)}</span>
                       {submission.reviewer && (
                         <span className="text-xs text-muted-foreground">by {submission.reviewer.username}</span>
                       )}

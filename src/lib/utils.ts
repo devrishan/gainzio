@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -37,9 +38,11 @@ export function slugify(text: string): string {
 }
 
 export function formatDate(date: Date | string | number): string {
-  return new Date(date).toLocaleDateString("en-IN", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  if (!date) return "N/A";
+  return format(new Date(date), "dd MMMM yyyy");
+}
+
+export function formatDateTime(date: Date | string | number): string {
+  if (!date) return "N/A";
+  return format(new Date(date), "dd MMM yyyy, hh:mm a");
 }

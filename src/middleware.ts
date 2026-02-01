@@ -108,9 +108,9 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // 2. Settings/Config -> SUPER_ADMIN only
+    // 2. Settings/Config -> SUPER_ADMIN or ADMIN
     if (pathname.includes("/admin/settings") || pathname.includes("/api/admin/config")) {
-      if (role !== "SUPER_ADMIN") {
+      if (!["SUPER_ADMIN", "ADMIN"].includes(role)) {
         return NextResponse.json({ success: false, error: "Forbidden: Super Admin only" }, { status: 403 });
       }
     }

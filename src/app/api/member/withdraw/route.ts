@@ -22,6 +22,19 @@ export async function POST(request: NextRequest) {
     }
     const userId = authUser.userId;
 
+    // Check Shadow Ban Status
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { isShadowBanned: true }
+    });
+
+    if (user?.isShadowBanned) {
+      return NextResponse.json(
+        { success: false, error: 'Account restricted. Please contact support.' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const validation = withdrawSchema.parse(body);
     const { amount, upiId } = validation;

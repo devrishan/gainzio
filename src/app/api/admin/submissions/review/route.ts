@@ -3,6 +3,7 @@ import { getAuthenticatedUser } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
 import { handleTaskApproval } from "@/lib/gamification";
+import { modifyTrustScore } from "@/lib/fraud-engine";
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,24 +35,30 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "reject") {
+      const currentMetadata = (submission.metadata as Record<string, any>) || {};
+
       await prisma.taskSubmission.update({
         where: { id: submission_id },
         data: {
           status: "REJECTED",
           notes: rejection_notes ? rejection_notes : submission.notes,
-          // Let's check schema for `rejectionReason` column.
-          // Wait, 'TaskSubmission' model in schema lines 348-371 does NOT show `rejectionReason`.
-          // It has `notes`, `metadata`, `status`, `reviewedBy`.
-          // I should store rejection info in `metadata` if column is missing.
           reviewedById: authUser.userId,
           reviewedAt: new Date(),
           metadata: {
-            ...(submission.metadata as object || {}),
+            ...currentMetadata,
             rejectionReason: rejection_reason,
             rejectionNotes: rejection_notes
           }
         }
       });
+
+      // Decrease Trust Score
+      try {
+        await modifyTrustScore(submission.userId, -5);
+      } catch (e) {
+        console.error("Failed to update trust score", e);
+      }
+
       return NextResponse.json({ success: true, message: "Submission rejected" });
     }
 
@@ -72,13 +79,14 @@ export async function POST(request: NextRequest) {
           }
         });
 
-        // Update Wallet
-        if (rewardAmount > 0) {
-          let wallet = await tx.wallet.findUnique({ where: { userId: submission.userId } });
-          if (!wallet) {
-            wallet = await tx.wallet.create({ data: { userId: submission.userId } });
-          }
+        // Ensure wallet exists
+        let wallet = await tx.wallet.findUnique({ where: { userId: submission.userId } });
+        if (!wallet) {
+          wallet = await tx.wallet.create({ data: { userId: submission.userId } });
+        }
 
+        // Update Wallet Balance
+        if (rewardAmount > 0) {
           await tx.wallet.update({
             where: { id: wallet.id },
             data: {
@@ -102,18 +110,12 @@ export async function POST(request: NextRequest) {
         // Update Gamification (Coins/XP)
         if (rewardCoins > 0) {
           // Update Coins in Wallet -> LOCKED STATE
-          let wallet = await tx.wallet.findUnique({ where: { userId: submission.userId } });
-          if (!wallet) {
-            wallet = await tx.wallet.create({ data: { userId: submission.userId } });
-          }
-
           await tx.wallet.update({
             where: { id: wallet.id },
             data: { lockedCoins: { increment: rewardCoins } }
           });
 
           // Lock period logic (Default 24h)
-          // TODO: Dynamic based on Trust Score
           const unlockTime = new Date();
           unlockTime.setHours(unlockTime.getHours() + 24);
 
@@ -140,8 +142,17 @@ export async function POST(request: NextRequest) {
         // Don't fail the response, just log it. The money is transferred.
       }
 
+      // Increase Trust Score
+      try {
+        await modifyTrustScore(submission.userId, 2);
+      } catch (e) {
+        console.error("Failed to update trust score", e);
+      }
+
       return NextResponse.json({ success: true, message: "Submission approved and user credited." });
     }
+
+    return NextResponse.json({ success: false, error: "Invalid action" }, { status: 400 });
 
   } catch (error) {
     console.error("Review Error:", error);

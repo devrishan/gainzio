@@ -91,7 +91,11 @@ model User {
   state             String?
   district          String?
   verificationLevel Int       @default(0) // 0=None, 1=Basic, 2=Identity, 3=Verified
-  confidenceScore   Int       @default(100)
+  trustScore        Int       @default(100)
+  
+  // Fraud & Shadow Ban
+  isShadowBanned    Boolean   @default(false)
+  shadowBannedAt    DateTime?
   
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
@@ -133,6 +137,7 @@ model User {
   preferences    UserPreference?
   paymentMethods PaymentMethod[]
   activityLogs   ActivityLog[]
+  fraudLogs      FraudLog[]
   leaderboards   Leaderboard[]
   auditLogs      AuditLog[]      @relation("AuditLogActor")
 
@@ -800,6 +805,24 @@ model AssetPrice {
   lastUpdated DateTime @default(now())
 
   @@index([symbol])
+}
+
+model FraudLog {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // IP_MISMATCH, FAST_SUBMISSION, DUPLICATE_PROOF, MULTIPLE_ACCOUNTS
+  severity    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  scoreImpact Int      @default(0) // How much it affected trust score (negative value)
+  details     String?  @db.Text
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  resolved    Boolean  @default(false)
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([severity])
 }
 
 model FuturePosition {
