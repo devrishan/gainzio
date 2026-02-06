@@ -54,7 +54,7 @@ export function SparkWall() {
             <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
                     <Zap className="h-5 w-5 text-amber-500 fill-amber-500" />
-                    Spark Wall
+                    Gainzio Wall
                     <span className="text-xs font-normal text-muted-foreground ml-auto flex items-center gap-1">
                         <span className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -93,7 +93,7 @@ export function SparkWall() {
                             </AnimatePresence>
                         ) : (
                             <div className="text-center py-10 text-muted-foreground text-sm">
-                                No active sparks yet. Be the first!
+                                No active events yet. Be the first!
                             </div>
                         )}
                     </div>

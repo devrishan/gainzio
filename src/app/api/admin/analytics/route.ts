@@ -12,20 +12,42 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 403 });
         }
 
-        // Calculate date range for "Last 30 Days"
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const { searchParams } = new URL(request.url);
+        const fromParam = searchParams.get("from");
+        const toParam = searchParams.get("to");
+
+        let fromDate: Date;
+        let toDate: Date;
+
+        if (fromParam && toParam) {
+            fromDate = new Date(fromParam);
+            toDate = new Date(toParam);
+        } else {
+            // Default Last 30 Days
+            toDate = new Date();
+            fromDate = new Date();
+            fromDate.setDate(toDate.getDate() - 30);
+        }
 
         // 1. User Signups Trend
         const users = await prisma.user.findMany({
-            where: { createdAt: { gte: thirtyDaysAgo }, role: Role.USER },
+            where: {
+                createdAt: {
+                    gte: fromDate,
+                    lte: toDate
+                },
+                role: Role.USER
+            },
             select: { createdAt: true }
         });
 
         // 2. Revenue (Completed Withdrawals) Trend
         const withdrawals = await prisma.withdrawal.findMany({
             where: {
-                processedAt: { gte: thirtyDaysAgo },
+                processedAt: {
+                    gte: fromDate,
+                    lte: toDate
+                },
                 status: 'COMPLETED'
             },
             select: { processedAt: true, amount: true }
@@ -33,9 +55,14 @@ export async function GET(request: NextRequest) {
 
         // Group by Date for Recharts
         const chartData = [];
-        for (let i = 0; i < 30; i++) {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
+        const diffTime = Math.abs(toDate.getTime() - fromDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const daysToRender = diffDays > 0 ? diffDays : 1;
+
+        // Iterate from 'from' to 'to'
+        for (let i = 0; i <= daysToRender; i++) {
+            const d = new Date(fromDate);
+            d.setDate(d.getDate() + i);
             const dateStr = d.toISOString().split('T')[0]; // YYYY-MM-DD
 
             const dailyUsers = users.filter(u => u.createdAt.toISOString().startsWith(dateStr)).length;
@@ -43,7 +70,7 @@ export async function GET(request: NextRequest) {
                 .filter(w => w.processedAt && w.processedAt.toISOString().startsWith(dateStr))
                 .reduce((sum, w) => sum + Number(w.amount), 0);
 
-            chartData.unshift({
+            chartData.push({
                 date: dateStr,
                 users: dailyUsers,
                 revenue: dailyRevenue

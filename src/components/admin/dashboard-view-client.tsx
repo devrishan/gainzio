@@ -1,11 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, DollarSign, Users, Activity, CreditCard, ShieldAlert, MessageSquare } from "lucide-react";
+import { ArrowUpRight, DollarSign, Users, Activity, CreditCard, ShieldAlert, MessageSquare, Loader2 } from "lucide-react";
 import { DashboardCharts } from "@/components/admin/dashboard-charts";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
+import { DateRange } from "react-day-picker";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 
 interface DashboardViewClientProps {
     metrics: {
@@ -22,7 +25,9 @@ interface DashboardViewClientProps {
     };
 }
 
-export function DashboardViewClient({ metrics }: DashboardViewClientProps) {
+export function DashboardViewClient({ metrics: initialMetrics }: DashboardViewClientProps) {
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+
     const { data: logsData } = useQuery({
         queryKey: ["admin-security-logs-recent"],
         queryFn: async () => {
@@ -31,20 +36,36 @@ export function DashboardViewClient({ metrics }: DashboardViewClientProps) {
         }
     });
 
+    const { data: dashboardData, isLoading: isMetricsLoading } = useQuery({
+        queryKey: ["admin-dashboard-metrics", dateRange],
+        queryFn: async () => {
+            const params = new URLSearchParams();
+            if (dateRange?.from) params.set("from", dateRange.from.toISOString());
+            if (dateRange?.to) params.set("to", dateRange.to.toISOString());
+
+            const res = await fetch(`/api/admin/dashboard?${params.toString()}`);
+            return res.json();
+        },
+        initialData: { success: true, metrics: initialMetrics },
+        enabled: !!dateRange // Only refetch if date range changes
+    });
+
+    const metrics = dashboardData?.metrics || initialMetrics;
+
     const stats = [
         {
             title: "Total Users",
             value: metrics?.total_users?.toLocaleString() || "0",
-            change: `+${metrics?.new_users_24h || 0} today`,
+            change: `+${metrics?.new_users_24h || 0} in period`,
             icon: Users,
             color: "text-blue-400",
             bg: "bg-blue-500/10",
             border: "border-blue-500/20"
         },
         {
-            title: "Active Users (24h)",
+            title: "Active Users",
             value: metrics?.active_users_24h?.toLocaleString() || "0",
-            change: "Active Now",
+            change: "Active in period",
             icon: Activity,
             color: "text-purple-400",
             bg: "bg-purple-500/10",
@@ -53,7 +74,7 @@ export function DashboardViewClient({ metrics }: DashboardViewClientProps) {
         {
             title: "Revenue",
             value: `₹${metrics?.total_earnings_paid?.toLocaleString() || "0"}`,
-            change: `+₹${metrics?.revenue_24h?.toLocaleString() || 0} today`,
+            change: `+₹${metrics?.revenue_24h?.toLocaleString() || 0} in period`,
             icon: DollarSign,
             color: "text-emerald-400",
             bg: "bg-emerald-500/10",
@@ -72,7 +93,7 @@ export function DashboardViewClient({ metrics }: DashboardViewClientProps) {
 
     return (
         <div className="space-y-8">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-black text-white tracking-tighter uppercase italic">Command Center</h1>
                     <p className="text-neutral-500 mt-1 font-mono text-xs uppercase tracking-widest">
@@ -80,9 +101,7 @@ export function DashboardViewClient({ metrics }: DashboardViewClientProps) {
                     </p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="px-4 py-2 bg-white text-black font-bold rounded-lg hover:bg-neutral-200 transition-colors text-sm">
-                        Generate Report
-                    </button>
+                    <DatePickerWithRange date={dateRange} setDate={setDateRange} />
                 </div>
             </div>
 
@@ -96,6 +115,12 @@ export function DashboardViewClient({ metrics }: DashboardViewClientProps) {
                         className={`group relative p-6 rounded-xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm overflow-hidden hover:bg-neutral-900/60 transition-all duration-300`}
                     >
                         <div className={`absolute inset-0 bg-gradient-to-br ${stat.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+
+                        {isMetricsLoading && (
+                            <div className="absolute top-2 right-2">
+                                <Loader2 className="h-4 w-4 animate-spin text-zinc-500" />
+                            </div>
+                        )}
 
                         <div className="relative z-10 flex flex-col justify-between h-full">
                             <div className="flex items-start justify-between mb-4">
@@ -159,7 +184,7 @@ export function DashboardViewClient({ metrics }: DashboardViewClientProps) {
                     </div>
 
                     {/* Real Analytics Chart */}
-                    <DashboardCharts />
+                    <DashboardCharts dateRange={dateRange} />
 
                 </motion.div>
 

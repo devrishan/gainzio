@@ -10,13 +10,19 @@ export interface AIResponse {
     }[];
 }
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
-    generationConfig: {
-        responseMimeType: "application/json",
+const getGenAIModel = () => {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+        throw new Error("GEMINI_API_KEY is not defined in the environment variables.");
     }
-});
+    const genAI = new GoogleGenerativeAI(apiKey);
+    return genAI.getGenerativeModel({
+        model: "gemini-2.0-flash",
+        generationConfig: {
+            responseMimeType: "application/json",
+        }
+    });
+};
 
 export class AIService {
     /**
@@ -59,6 +65,7 @@ export class AIService {
      */
     async processUserMessage(userId: string, message: string): Promise<AIResponse> {
         try {
+            const model = getGenAIModel();
             const context = await this.getUserContext(userId);
 
             const systemInstruction = `
@@ -112,8 +119,18 @@ export class AIService {
                     ]
                 };
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Gemini AI Processing Error:", error);
+
+            // Check for specific missing key error
+            if (error.message && error.message.includes("GEMINI_API_KEY")) {
+                return {
+                    role: "assistant",
+                    content: "I'm currently undergoing maintenance (Missing API Configuration). Please contact the administrator.",
+                    suggestedActions: []
+                };
+            }
+
             return {
                 role: "assistant",
                 content: "I'm having trouble connecting to my brain right now. Please try again later!",

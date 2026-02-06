@@ -1,6 +1,7 @@
 import { PrismaClient, Role, Rank } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
-// Forced update for deployment tracking
+import dotenv from 'dotenv';
+dotenv.config();
 
 const prisma = new PrismaClient();
 
@@ -9,45 +10,79 @@ async function main() {
 
   // Create admin user
   const adminReferralCode = 'ADMIN001';
-  const adminPassword = await bcrypt.hash('Admin@123', 10);
+  const adminPassword = await bcrypt.hash('gainzio@111', 10);
+  const targetEmail = 'admin@gainzio';
+  const targetPhone = '9999999999';
 
-  const admin = await prisma.user.upsert({
-    where: { phone: '9999999999' },
-    update: {},
-    create: {
-      phone: '9999999999',
-      email: 'admin@gainzio.com',
-      username: 'admin',
-      role: Role.ADMIN,
-      referralCode: adminReferralCode,
-      password_hash: adminPassword,
-      wallet: {
-        create: {
-          balance: 0,
-          pendingAmount: 0,
-          withdrawable: 0,
-          lockedAmount: 0,
-          coins: 0,
-          totalEarned: 0,
-          currency: 'INR',
-        },
-      },
-      gamification: {
-        create: {
-          xp: 0,
-          rank: Rank.NEWBIE,
-          streakDays: 0,
-        },
-      },
-      preferences: {
-        create: {
-          language: 'en',
-          timezone: 'Asia/Kolkata',
-          theme: 'light',
-        },
-      },
-    },
+  console.log('🔍 Checking for existing admin user...');
+
+  // Strategy: Try to find existing admin by unique fields (email, phone, username)
+  // If found, update credentials. If not found, create new.
+
+  let admin = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: targetEmail },
+        { phone: targetPhone },
+        { username: 'admin' },
+        { referralCode: adminReferralCode }
+      ]
+    }
   });
+
+  if (admin) {
+    console.log(`⚠️ Found existing user (ID: ${admin.id}). Updating to Admin...`);
+    admin = await prisma.user.update({
+      where: { id: admin.id },
+      data: {
+        email: targetEmail,
+        phone: targetPhone,
+        username: 'admin',
+        role: Role.ADMIN,
+        password_hash: adminPassword,
+        referralCode: adminReferralCode, // Ensure code is consistent
+      }
+    });
+    console.log('✅ Admin credentials updated.');
+  } else {
+    console.log('🆕 Creating new Admin user...');
+    admin = await prisma.user.create({
+      data: {
+        phone: targetPhone,
+        email: targetEmail,
+        username: 'admin',
+        role: Role.ADMIN,
+        referralCode: adminReferralCode,
+        password_hash: adminPassword,
+        wallet: {
+          create: {
+            balance: 0,
+            pendingAmount: 0,
+            withdrawable: 0,
+            lockedAmount: 0,
+            coins: 0,
+            totalEarned: 0,
+            currency: 'INR',
+          },
+        },
+        gamification: {
+          create: {
+            xp: 0,
+            rank: Rank.NEWBIE,
+            streakDays: 0,
+          },
+        },
+        preferences: {
+          create: {
+            language: 'en',
+            timezone: 'Asia/Kolkata',
+            theme: 'light',
+          },
+        },
+      },
+    });
+    console.log('✅ Admin user created.');
+  }
 
   console.log('✅ Admin user created:', admin.id);
 
@@ -320,7 +355,9 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error('❌ Seeding failed:', e);
+    console.error('❌ Seeding failed:');
+    console.error(JSON.stringify(e, null, 2));
+    console.error(e);
     process.exit(1);
   })
   .finally(async () => {

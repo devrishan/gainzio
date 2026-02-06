@@ -24,50 +24,75 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const { searchParams } = new URL(request.url);
+        const from = searchParams.get("from");
+        const to = searchParams.get("to");
+
+        let dateFilter: any = { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }; // Default 24h
+        let revenueDateFilter: any = { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) };
+
+        if (from && to) {
+            dateFilter = {
+                gte: new Date(from),
+                lte: new Date(to)
+            };
+            revenueDateFilter = {
+                gte: new Date(from),
+                lte: new Date(to)
+            }
+        }
+
+        // For total metrics (like total users), we might NOT want to filter by date range
+        // unless we want "New Users in Range".
+        // The UI requirement is usually "Total Users" (All time) vs "New Users" (In Range).
+        // Let's adjust logic:
+        // 1. Total Users -> Always All Time
+        // 2. New Users -> filtered by date range (default 24h if not specified)
+        // 3. Active Users -> filtered by last_login_at in date range
+        // 4. Revenue -> filtered by processedAt in date range
 
         const [
             totalUsers,
-            newUsers24h,
-            activeUsers24h,
+            newUsersInPeriod,
+            activeUsersInPeriod,
             pendingWithdrawals,
             totalEarningsPaid,
-            revenue24h
+            revenueInPeriod
         ] = await Promise.all([
-            // 1. Total Users
+            // 1. Total Users (All Time)
             prisma.user.count({
                 where: { role: Role.USER }
             }),
-            // 2. New Users (24h)
+            // 2. New Users (In Period)
             prisma.user.count({
                 where: {
                     role: Role.USER,
-                    createdAt: { gte: oneDayAgo }
+                    createdAt: dateFilter
                 }
             }),
-            // 3. Active Users (24h) - based on last_login_at
+            // 3. Active Users (In Period)
             prisma.user.count({
                 where: {
                     role: Role.USER,
-                    last_login_at: { gte: oneDayAgo }
+                    last_login_at: dateFilter
                 }
             }),
-            // 4. Pending Withdrawals
+            // 4. Pending Withdrawals (Current State, not date dependent usually)
             prisma.withdrawal.aggregate({
                 where: { status: WithdrawalStatus.PENDING },
                 _count: true,
                 _sum: { amount: true }
             }),
-            // 5. Total Earnings Paid
+            // 5. Total Earnings Paid (All Time)
             prisma.withdrawal.aggregate({
                 where: { status: WithdrawalStatus.COMPLETED },
                 _sum: { amount: true }
             }),
-            // 6. Revenue/Payouts (24h)
+            // 6. Revenue/Payouts (In Period)
             prisma.withdrawal.aggregate({
                 where: {
                     status: WithdrawalStatus.COMPLETED,
-                    processedAt: { gte: oneDayAgo }
+                    processedAt: revenueDateFilter
                 },
                 _sum: { amount: true }
             })
@@ -77,14 +102,14 @@ export async function GET(request: NextRequest) {
             success: true,
             metrics: {
                 total_users: totalUsers,
-                new_users_24h: newUsers24h,
-                active_users_24h: activeUsers24h,
+                new_users_24h: newUsersInPeriod, // Label says 24h but now it's "in period"
+                active_users_24h: activeUsersInPeriod,
                 pending_withdrawals: {
                     count: pendingWithdrawals._count,
                     amount: Number(pendingWithdrawals._sum.amount || 0)
                 },
                 total_earnings_paid: Number(totalEarningsPaid._sum.amount || 0),
-                revenue_24h: Number(revenue24h._sum.amount || 0)
+                revenue_24h: Number(revenueInPeriod._sum.amount || 0)
             }
         });
 

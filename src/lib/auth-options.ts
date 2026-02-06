@@ -43,8 +43,8 @@ export const authOptions: NextAuthOptions = {
                     where: { email: credentials.email }
                 });
 
-                // Allow any admin-level role
-                if (!user || !["ADMIN", "SUPER_ADMIN", "SUPPORT"].includes(user.role)) {
+                // Allow all users to log in
+                if (!user) {
                     throw new Error("Access denied");
                 }
 
@@ -153,9 +153,9 @@ export const authOptions: NextAuthOptions = {
                     }
                 }
 
-                // Allow admin-level users to sign in via Credentials
+                // Allow all users to sign in via Credentials
                 if (account?.provider === "credentials") {
-                    return ["ADMIN", "SUPER_ADMIN", "SUPPORT"].includes(user.role);
+                    return true;
                 }
 
                 return true;

@@ -11,9 +11,46 @@ import { useSearchParams } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
 export function LoginForm() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const error = searchParams?.get("error");
+  const [isLoading, setIsLoading] = useState(false);
+
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        toast.error("Invalid credentials. Please try again.");
+      } else {
+        toast.success("Login successful");
+        router.push("/member/dashboard");
+        router.refresh(); // Ensure session updates
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -56,8 +93,51 @@ export function LoginForm() {
       {/* LOGIN VIEW */}
       <div className="w-full space-y-6">
         <div className="relative group">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-purple-600/50 rounded-lg blur opacity-20 group-hover:opacity-60 transition duration-500"></div>
+          <form onSubmit={onSubmit} className="space-y-4 mb-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                placeholder="name@example.com"
+                type="email"
+                autoCapitalize="none"
+                autoComplete="email"
+                autoCorrect="off"
+                disabled={isLoading}
+                required
+                className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-emerald-500/50 focus:ring-emerald-500/20"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                placeholder="••••••••"
+                type="password"
+                autoComplete="current-password"
+                disabled={isLoading}
+                required
+                className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-emerald-500/50 focus:ring-emerald-500/20"
+              />
+            </div>
+            <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Sign In with Email
+            </Button>
+          </form>
+
           <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-white/10" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-black px-2 text-zinc-500">Or continue with</span>
+            </div>
+          </div>
+
+          <div className="relative mt-4">
             <GoogleLoginButton />
           </div>
         </div>

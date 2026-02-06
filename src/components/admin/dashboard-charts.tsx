@@ -5,11 +5,21 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
-export function DashboardCharts() {
+import { DateRange } from "react-day-picker";
+
+interface DashboardChartsProps {
+    dateRange?: DateRange;
+}
+
+export function DashboardCharts({ dateRange }: DashboardChartsProps) {
     const { data, isLoading } = useQuery({
-        queryKey: ["admin-analytics"],
+        queryKey: ["admin-analytics", dateRange],
         queryFn: async () => {
-            const res = await fetch("/api/admin/analytics");
+            const params = new URLSearchParams();
+            if (dateRange?.from) params.set("from", dateRange.from.toISOString());
+            if (dateRange?.to) params.set("to", dateRange.to.toISOString());
+
+            const res = await fetch(`/api/admin/analytics?${params.toString()}`);
             return res.json();
         },
     });

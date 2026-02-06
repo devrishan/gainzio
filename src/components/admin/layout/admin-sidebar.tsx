@@ -82,7 +82,7 @@ export function AdminSidebar() {
                     </div>
                     <div>
                         <h1 className="text-lg font-black tracking-tighter text-white uppercase italic">
-                            Spark<span className="text-emerald-500">IO</span>
+                            Gainz<span className="text-emerald-500">IO</span>
                         </h1>
                         <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
                             Command Center
