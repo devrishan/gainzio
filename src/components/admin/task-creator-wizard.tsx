@@ -180,6 +180,24 @@ export function TaskCreatorWizard() {
                                             <span className="w-1 h-1 rounded-full bg-zinc-700" />
                                             <span className="uppercase tracking-widest">{task.difficulty}</span>
                                         </div>
+
+                                        {/* Stats Row */}
+                                        {task.stats && (
+                                            <div className="flex items-center gap-4 mt-3 pt-3 border-t border-white/5">
+                                                <div className="text-[10px] uppercase font-bold text-zinc-500 flex items-center gap-1.5">
+                                                    <Target className="w-3 h-3 text-indigo-400" />
+                                                    <span className="text-zinc-300">{task.stats.totalSubmissions}</span> Submissions
+                                                </div>
+                                                <div className="text-[10px] uppercase font-bold text-zinc-500 flex items-center gap-1.5">
+                                                    <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                                                    <span className="text-zinc-300">{task.stats.approvedSubmissions}</span> Approved
+                                                </div>
+                                                <div className="text-[10px] uppercase font-bold text-zinc-500 flex items-center gap-1.5">
+                                                    <Coins className="w-3 h-3 text-amber-400" />
+                                                    <span className="text-zinc-300">₹{task.stats.totalPayout}</span> Payout
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -190,6 +208,11 @@ export function TaskCreatorWizard() {
                                     <div className="text-[10px] text-zinc-600 font-mono">
                                         Priority: {task.priority}
                                     </div>
+                                    {task.stats?.pendingSubmissions > 0 && (
+                                        <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[10px] hover:bg-amber-500/20">
+                                            {task.stats.pendingSubmissions} Pending
+                                        </Badge>
+                                    )}
                                 </div>
                             </div>
                         </div>

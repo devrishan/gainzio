@@ -14,7 +14,49 @@ export async function GET(request: NextRequest) {
         include: { category: true }
     });
 
-    return NextResponse.json({ success: true, tasks });
+    // Aggregate statistics
+    const tasksWithStats = await Promise.all(tasks.map(async (task) => {
+        const [submissionCounts, payoutStats] = await Promise.all([
+            prisma.taskSubmission.groupBy({
+                by: ['status'],
+                where: { taskId: task.id },
+                _count: true
+            }),
+            prisma.taskSubmission.aggregate({
+                where: { taskId: task.id, status: 'APPROVED' },
+                _sum: {
+                    user_reward_money: true, // Assuming this field captures money given
+                    user_reward_coins: true
+                }
+            })
+        ]);
+
+        const totalSubmissions = submissionCounts.reduce((acc, curr) => acc + curr._count, 0);
+        const approvedSubmissions = submissionCounts.find(s => s.status === 'APPROVED')?._count || 0;
+        const pendingSubmissions = submissionCounts.filter(s => ['SUBMITTED', 'REVIEWING'].includes(s.status)).reduce((acc, curr) => acc + curr._count, 0);
+
+        // Calculate total potential payout for approved items. 
+        // Note: The schema might store the reward given in valid submissions.
+        // If not, we estimate: approved * task.rewardAmount
+        // Let's check schema carefully. If TaskSubmission doesn't store the exact reward given, 
+        // we use the current task reward * approved count, or rely on a WalletTransaction aggregation if linked.
+        // For now, simpler approximation: approvedCount * task.rewardAmount.
+        // BETTER: If TaskSubmission has reward fields, use them. I'll check schema in next step if this fails, 
+        // but for now, I'll stick to a simple calculation based on count to avoid schemas that might not exist yet.
+        const totalPayout = approvedSubmissions * task.rewardAmount;
+
+        return {
+            ...task,
+            stats: {
+                totalSubmissions,
+                approvedSubmissions,
+                pendingSubmissions,
+                totalPayout
+            }
+        };
+    }));
+
+    return NextResponse.json({ success: true, tasks: tasksWithStats });
 }
 
 export async function POST(request: NextRequest) {

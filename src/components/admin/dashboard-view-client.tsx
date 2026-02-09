@@ -26,7 +26,10 @@ interface DashboardViewClientProps {
 }
 
 export function DashboardViewClient({ metrics: initialMetrics }: DashboardViewClientProps) {
-    const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+        from: new Date(new Date().setDate(new Date().getDate() - 7)),
+        to: new Date()
+    });
 
     const { data: logsData } = useQuery({
         queryKey: ["admin-security-logs-recent"],
